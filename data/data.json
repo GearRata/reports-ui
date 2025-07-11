@@ -1,0 +1,200 @@
+[
+  {
+    "id": "TASK-8782",
+    "ip_phone": "192.168.1.101",
+    "department": "IT Support",
+    "program": "Network Management",
+    "problem": "Cannot connect to wireless network in conference room",
+    "solution": "Reset wireless access point and update network drivers on conference room devices",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-7878",
+    "ip_phone": "192.168.1.102",
+    "department": "HR",
+    "program": "Employee Portal",
+    "problem": "Login authentication failing for new employees",
+    "solution": "Update authentication service and reset default passwords for new user accounts",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-7639",
+    "ip_phone": "192.168.1.103",
+    "department": "Finance",
+    "program": "Accounting System",
+    "problem": "Report generation taking too long to process",
+    "solution": "Optimize database queries and implement report caching mechanism",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-5562",
+    "ip_phone": "192.168.1.104",
+    "department": "Marketing",
+    "program": "CRM Integration",
+    "problem": "Email templates not loading properly",
+    "solution": "Fix template rendering engine and update email service configuration",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-8686",
+    "ip_phone": "192.168.1.105",
+    "department": "Sales",
+    "program": "Lead Management",
+    "problem": "Data synchronization issues with external API",
+    "solution": "Implemented retry mechanism and updated API endpoint configurations",
+    "status": "done"
+  },
+  {
+    "id": "TASK-1280",
+    "ip_phone": "192.168.1.106",
+    "department": "Operations",
+    "program": "Inventory System",
+    "problem": "Barcode scanner not recognizing new product codes",
+    "solution": "Updated barcode scanner firmware and added new product code formats to database",
+    "status": "done"
+  },
+  {
+    "id": "TASK-7262",
+    "ip_phone": "192.168.1.107",
+    "department": "Customer Service",
+    "program": "Ticketing System",
+    "problem": "Unable to assign tickets to specific agents",
+    "solution": "Fixed agent assignment logic and updated user permissions in ticketing system",
+    "status": "done"
+  },
+  {
+    "id": "TASK-1138",
+    "ip_phone": "192.168.1.108",
+    "department": "IT Support",
+    "program": "Server Monitoring",
+    "problem": "Database connection timeout during peak hours",
+    "solution": "Increase connection pool size and implement connection retry logic",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-9876",
+    "ip_phone": "192.168.1.109",
+    "department": "Development",
+    "program": "Web Application",
+    "problem": "Memory leak causing application crashes",
+    "solution": "Identify and fix memory leak in user session management module",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-5432",
+    "ip_phone": "192.168.1.110",
+    "department": "QA",
+    "program": "Testing Framework",
+    "problem": "Automated tests failing on staging environment",
+    "solution": "Update test environment configuration and fix test data dependencies",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-3456",
+    "ip_phone": "192.168.1.111",
+    "department": "Security",
+    "program": "Access Control",
+    "problem": "Two-factor authentication not working for mobile users",
+    "solution": "Update mobile app authentication flow and fix 2FA token validation",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-7890",
+    "ip_phone": "192.168.1.112",
+    "department": "Finance",
+    "program": "Payment Gateway",
+    "problem": "Credit card processing delays during transactions",
+    "solution": "Optimize payment processing workflow and implement transaction queuing",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-2468",
+    "ip_phone": "192.168.1.113",
+    "department": "HR",
+    "program": "Payroll System",
+    "problem": "Overtime calculations incorrect for part-time employees",
+    "solution": "Fix overtime calculation algorithm for part-time employee schedules",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-1357",
+    "ip_phone": "192.168.1.114",
+    "department": "Marketing",
+    "program": "Analytics Dashboard",
+    "problem": "Charts not displaying correct data for mobile traffic",
+    "solution": "Fixed mobile traffic data aggregation and updated chart rendering logic",
+    "status": "done"
+  },
+  {
+    "id": "TASK-9753",
+    "ip_phone": "192.168.1.115",
+    "department": "Operations",
+    "program": "Supply Chain",
+    "problem": "Vendor portal login issues affecting order processing",
+    "solution": "Reset vendor portal authentication system and update login credentials",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-8642",
+    "ip_phone": "192.168.1.116",
+    "department": "Customer Service",
+    "program": "Live Chat",
+    "problem": "Chat widget not loading on product pages",
+    "solution": "Fix JavaScript conflicts and update chat widget integration code",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-4681",
+    "ip_phone": "192.168.1.117",
+    "department": "Development",
+    "program": "API Gateway",
+    "problem": "Rate limiting not working correctly for premium users",
+    "solution": "Updated rate limiting rules and implemented premium user tier recognition",
+    "status": "done"
+  },
+  {
+    "id": "TASK-3579",
+    "ip_phone": "192.168.1.118",
+    "department": "IT Support",
+    "program": "Email Server",
+    "problem": "Emails being marked as spam by external providers",
+    "solution": "Configured SPF, DKIM, and DMARC records and improved email content filtering",
+    "status": "done"
+  },
+  {
+    "id": "TASK-2469",
+    "ip_phone": "192.168.1.119",
+    "department": "Security",
+    "program": "Firewall Management",
+    "problem": "VPN connection dropping frequently for remote workers",
+    "solution": "Update VPN server configuration and implement connection stability monitoring",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-1593",
+    "ip_phone": "192.168.1.120",
+    "department": "QA",
+    "program": "Performance Testing",
+    "problem": "Load testing tools not generating accurate reports",
+    "solution": "Calibrate load testing parameters and fix report generation algorithms",
+    "status": "in_progress"
+  },
+  {
+    "id": "TASK-15912",
+    "ip_phone": "192.168.1.120",
+    "department": "HR",
+    "program": "Performance Testing",
+    "problem": "Load testing tools not generating accurate reports",
+    "solution": "Calibrate load testing parameters and fix report generation algorithms",
+    "status": "done"
+  },
+  {
+    "id": "TASK-7250",
+    "ip_phone": "192.168.1.112",
+    "department": "Finance",
+    "program": "Payment Gateway",
+    "problem": "Credit card processing delays during transactions",
+    "solution": "Optimize payment processing workflow and implement transaction queuing",
+    "status": "done"
+  }
+]
