@@ -12,7 +12,7 @@ export default function LoginPage() {
             <div className="text-primary-foreground flex size-6 items-center justify-center rounded-md">
               <Image src="/logo.png" alt="Logo" width={24} height={24} />
             </div>
-            Acme Inc. Hello World
+            Acme Inc. Hello World 1234
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
