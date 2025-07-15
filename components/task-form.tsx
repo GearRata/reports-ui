@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +17,22 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { Task } from "@/types/task"
 
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"
+
+interface Program {
+  id: number;
+  name: string;
+}
+
+interface Department {
+  ip_phone: number;
+  branchoffice: string;
+}
+// const departments: Department[] = [
+//   { id: 1, branch_office: "IT Support" },
+//   { id: 2, branch_office: "HR" },
+//   { id: 3, branch_office: "Finance" },
+// ]
 interface TaskFormProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -25,35 +40,63 @@ interface TaskFormProps {
   onSubmit: (task: Omit<Task, "id" | "created_at"> & { id?: string }) => void
 }
 
-const departments = [
-  "IT Support",
-  "HR",
-  "Finance",
-  "Marketing",
-  "Sales",
-  "Operations",
-  "Customer Service",
-  "Development",
-  "QA",
-  "Security",
-]
-
 const statusOptions = [
-  // { value: "todo", label: "Todo" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "done", label: "Done" },
-  // { value: "canceled", label: "Canceled" },
+  { value: "pending", label: "Pending" },
+  { value: "solved", label: "Solved" },
 ]
 
 export function TaskForm({ open, onOpenChange, task, onSubmit }: TaskFormProps) {
-  const [formData, setFormData] = useState({
+  const [programs, setPrograms] = useState<Program[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [formData, setFormData] = useState<{
+    ip_phone: string;
+    department: string;
+    program: string;
+    problem: string;
+    solution: string;
+    status: "pending" | "solved";
+  }>({
     ip_phone: "",
     department: "",
     program: "",
     problem: "",
     solution: "",
-    status: "on_progress" as Task["status"],
+    status: "pending",
   })
+
+     // Fetch programs from API
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/branchEntry/branchOffices`)
+        if (!response.ok) throw new Error('Failed to fetch departments')
+        const data = await response.json()
+        if (data.success && data.branchOffices) {
+          setDepartments(data.branchOffices)
+        }
+      } catch (error) {
+        console.error('Error fetching departments:', error)
+      }
+    }
+    fetchDepartments()
+  }, [open]) // Refresh when form opens
+
+  // Fetch programs from API
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/programEntry/programs`)
+        if (!response.ok) throw new Error('Failed to fetch programs')
+        const data = await response.json()
+        if (data.success && data.programs) {
+          setPrograms(data.programs)
+        }
+      } catch (error) {
+        console.error('Error fetching programs:', error)
+      }
+    }
+    fetchPrograms()
+  }, [open]) // Refresh when form opens
 
   useEffect(() => {
     if (task) {
@@ -63,7 +106,7 @@ export function TaskForm({ open, onOpenChange, task, onSubmit }: TaskFormProps) 
         program: task.program,
         problem: task.problem,
         solution: task.solution,
-        status: task.status,
+        status: task.status as "pending" | "solved",
       })
     } else {
       setFormData({
@@ -72,7 +115,7 @@ export function TaskForm({ open, onOpenChange, task, onSubmit }: TaskFormProps) 
         program: "",
         problem: "",
         solution: "",
-        status: "in_progress",
+        status: "pending",
       })
     }
   }, [task, open])
@@ -81,6 +124,7 @@ export function TaskForm({ open, onOpenChange, task, onSubmit }: TaskFormProps) 
     e.preventDefault()
     onSubmit({
       ...formData,
+      status: formData.status,
       ...(task && { id: task.id }),
     })
     onOpenChange(false)
@@ -114,42 +158,49 @@ export function TaskForm({ open, onOpenChange, task, onSubmit }: TaskFormProps) 
               <Label htmlFor="department" className="text-right">
                 Department
               </Label>
-              <Input
-                id="department"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                className="col-span-2"
-                placeholder="Department name"
-                required
-              />
-              <Select
-                value={departments.includes(formData.department) ? formData.department : ""}
-                onValueChange={(value) => setFormData({ ...formData, department: value })}
-              >
-                <SelectTrigger className="col-span-1 w-full">
-                  <SelectValue placeholder="Select de.." />
-                </SelectTrigger>
-                <SelectContent>
-                  {departments.map((dept) => (
-                    <SelectItem key={dept} value={dept}>
-                      {dept}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+               <div className="col-span-3 flex gap-2">
+                <div className="flex-grow">
+                  <Select
+                    value={formData.department}
+                    onValueChange={(value) => setFormData({ ...formData, department: value })}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {departments.map((dept) => (
+                        <SelectItem key={dept.ip_phone} value={dept.branchoffice}>
+                          {dept.branchoffice}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="program" className="text-right">
                 Program
               </Label>
-              <Input
-                id="program"
-                value={formData.program}
-                onChange={(e) => setFormData({ ...formData, program: e.target.value })}
-                className="col-span-3"
-                placeholder="System name or application"
-                required
-              />
+              <div className="col-span-3 flex gap-2">
+                <div className="flex-grow">
+                  <Select
+                    value={formData.program}
+                    onValueChange={(value) => setFormData({ ...formData, program: value })}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select program" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {programs.map((program) => (
+                        <SelectItem key={program.id} value={program.name}>
+                          {program.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="problem" className="text-right">
@@ -183,15 +234,15 @@ export function TaskForm({ open, onOpenChange, task, onSubmit }: TaskFormProps) 
               </Label>
               <Select
                 value={formData.status}
-                onValueChange={(value: Task["status"]) => setFormData({ ...formData, status: value })}
+                onValueChange={(value: "pending" | "solved") => setFormData({ ...formData, status: value })}
               >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue />
+                <SelectTrigger className="col-span-3 w-full">
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {statusOptions.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      {status.label}
+                  {statusOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>

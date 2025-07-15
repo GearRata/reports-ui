@@ -197,3 +197,10 @@ export function UserTable({
     </div>
   )
 }
+
+UserTable.defaultProps = {
+  users: [],
+  currentPage: 1,
+  pageSize: 10,
+  totalItems: 0,
+}

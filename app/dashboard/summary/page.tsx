@@ -6,26 +6,22 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { TaskStatsCards } from "@/components/task-stats"
 import type { Task, TaskStats } from "@/types/task"
-import tasksData from "@/data/data.json"
-import { useState, useEffect, useMemo } from "react"
+import { useTasks } from "@/hooks/use-api"
+import { useMemo } from "react"
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
 
 function Page() {
-   const [tasks, setTasks] = useState<Task[]>([])
+  const { tasks, loading, error } = useTasks()
 
-     useEffect(() => {
-        setTasks(tasksData as Task[])
-      }, [])
-  
     // Calculate stats
     const stats: TaskStats = useMemo(() => {
       const total = tasks.length
-      const in_progress = tasks.filter((t) => t.status === "in_progress").length
-      const done = tasks.filter((t) => t.status === "done").length
-      return { total, in_progress, done,  }
+      const pending = tasks.filter((t) => t.status?.toLowerCase() === "pending").length
+      const solved = tasks.filter((t) => t.status?.toLowerCase() === "solved").length
+      return { total, pending, solved }
     }, [tasks])
   return (
     <SidebarProvider
@@ -45,7 +41,7 @@ function Page() {
               <TaskStatsCards stats={stats} />
                 <div className="grid grid-cols-1 gap-4 px-3 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-1
                  @xl/main:grid-cols-1 ">
-                    <ChartBarMultiple />
+                    <ChartBarMultiple tasks={tasks} />
                 </div>
             </div>
           </div>

@@ -34,6 +34,31 @@ const data = {
       url: "../management/summary",
       icon: IconChartBar,
     },
+    {
+      title: "Branch Offices",
+      url: "/branches/",
+      icon: IconChartBar,
+    },
+     {
+      title: "Departments",
+      url: "/department/",
+      icon: IconChartBar,
+    },
+    {
+      title: "Program",
+      url: "/program/",
+      icon: IconChartBar,
+    },
+    {
+      title: "IP Phones",
+      url: "/phone/",
+      icon: IconChartBar,
+    },
+    {
+      title: "Tasks",
+      url: "/tasks/",
+      icon: IconChartBar,
+    },
   ],
 }
 
@@ -44,7 +69,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5 my-2 w-full ">
-              <Link href="/management">
+              <Link href="/dashboard" className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
                   <Image src="/logo.png" alt="" width={40} height={40} className="w-15 h-15"/>
                   <span className="text-base font-semibold">FixTrack</span>

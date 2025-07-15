@@ -1,9 +1,7 @@
 import { useState } from "react"
-import users from "@/data/users.json"
 import type { User } from "@/types/user"
 
 export function useAuth() {
-  // Try to get user from localStorage
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("user")
@@ -12,18 +10,33 @@ export function useAuth() {
     return null
   })
 
-  function login(username: string, password: string): User | null {
-    const found = (users as User[]).find(
-      (u) => u.username === username && u.password === password
-    )
-    if (found) {
-      setUser(found)
-      if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(found))
+  async function login(username: string, password: string): Promise<User | null> {
+    try {
+      const res = await fetch("http://localhost:5000/authEntry/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      })
+      const data = await res.json()
+      if (data.success && data.role) {
+        const userObj: User = {
+          id: data.id || "",
+          username,
+          password: "", // never store password
+          role: data.role,
+          created_at: data.created_at || "",
+        }
+        setUser(userObj)
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(userObj))
+        }
+        return userObj
+      } else {
+        return null
       }
-      return found
+    } catch (e) {
+      return null
     }
-    return null
   }
 
   function logout() {

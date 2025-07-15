@@ -19,22 +19,18 @@ interface TaskTableProps {
   onPageSizeChange: (pageSize: number) => void
 }
 
-const statusColors = {
-  // todo: "bg-yellow-100 text-yellow-800",
-  in_progress: "bg-blue-100 text-blue-800",
-  done: "bg-green-100 text-green-800",
-  // canceled: "bg-red-100 text-red-800",
-}
+const statusColors: Record<string, string> = {
+  pending: "bg-orange-100 text-orange-800",
+  solved: "bg-green-100 text-green-800",
+};
 
-const statusLabels = {
-  // todo: "Todo",
-  in_progress: "In Progress",
-  done: "Done",
-  // canceled: "Canceled",
+const statusLabels: Record<string, string> = {
+  pending: "Pending",
+  solved: "Solved",
 }
 
 export function TaskTable({
-  tasks,
+  tasks = [],
   onEditTask,
   onDeleteTask,
   currentPage,
@@ -56,6 +52,7 @@ export function TaskTable({
               <TableHead>Department</TableHead>
               <TableHead>Program</TableHead>
               <TableHead>Problem</TableHead>
+              <TableHead>Solution</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-[70px]"></TableHead>
             </TableRow>
@@ -75,9 +72,12 @@ export function TaskTable({
                   <TableCell className="cursor-pointer" onClick={() => onEditTask(task)}>{task.ip_phone}</TableCell>
                   <TableCell>{task.department}</TableCell>
                   <TableCell>{task.program}</TableCell>
-                  <TableCell className="max-w-[300px] truncate">{task.problem}</TableCell>
+                  <TableCell className="max-w-[50px] truncate">{task.problem}</TableCell>
+                  <TableCell className="max-w-[50px] truncate">{task.solution}</TableCell>
                   <TableCell>
-                    <Badge className={statusColors[task.status]}>{statusLabels[task.status]}</Badge>
+                    <Badge className={statusColors[task.status?.toLowerCase() || "pending"]}>
+                      {statusLabels[task.status?.toLowerCase() || "pending"]}
+                    </Badge>
                   </TableCell>
                   
                   <TableCell>
