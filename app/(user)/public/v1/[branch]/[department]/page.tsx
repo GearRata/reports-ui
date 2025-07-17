@@ -1,17 +1,15 @@
 "use client"
 
 import type React from "react"
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"
 
 import { useState, useEffect, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
-import { TasksNewTable } from "@/components/tables/tasks-new-table"
-import { TaskNewForm } from "@/components/entities-form"
-import { useTasksNew, useIPPhones, addTaskNew, updateTaskNew, deleteTaskNew } from "@/api/route"
-import type { TaskWithPhone } from "@/types/entities"
-
+import { Problem } from "@/components/department-table/problem"
+import { TaskNewForm } from "@/components/entities-report"
+import { useTasksNew, useIPPhones, useBranches, useDepartments, usePrograms, addTaskDepartment, deleteTaskNew } from "@/api/route"
+import type { TaskWithPhone } from "@/types/report/model"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -21,52 +19,34 @@ function Page() {
 
   const { tasks, refreshTasks } = useTasksNew()
   const { ipPhones } = useIPPhones()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
+  const { branches } = useBranches()
+  const { departments } = useDepartments()
+  const { programs } = usePrograms()
+  const [isTaskFormOpen, setIsTaskFormOpen] = useState(true)
   const [editingTask, setEditingTask] = useState<TaskWithPhone | null>(null)
-
-
 
    const handleAddTask = () => {
     setEditingTask(null)
     setIsTaskFormOpen(true)
   }
 
-  const handleEditTask = (task: TaskWithPhone) => {
-    setEditingTask(task)
-    setIsTaskFormOpen(true)
-  }
+  // useEffect(() => {
+  //   const reponse 
+  // }
 
-  const handleTaskSubmit = async (data: { phone_id: number; text: string; status: string; id?: number }) => {
+
+  const handleTaskSubmit = async (data: {  text: string; status: string; id?: number; program_id: number; branch_id: number; department_id: number }) => {
     try {
       if (data.id) {
-        await updateTaskNew(data.id, { phone_id: data.phone_id, text: data.text, status: data.status })
-      } else {
-        await addTaskNew({ phone_id: data.phone_id, text: data.text, status: data.status })
-      }
+        await addTaskDepartment({  text: data.text, status: data.status, id: data.id, program_id: data.program_id, branch_id: data.branch_id, department_id: data.department_id })
+      } 
+      
+      
       refreshTasks()
     } catch (error) {
       console.error("Error saving task:", error)
     }
   }
-
-  const handleDeleteTask = async (id: number) => {
-    try {
-      await deleteTaskNew(id)
-      refreshTasks()
-    } catch (error) {
-      console.error("Error deleting task:", error)
-    }
-  }
-
-  // Filter tasks
-   const filteredTasks = tasks.filter(
-    (task) =>
-      task.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.phone_number?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.phone_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      task.status.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
 
  
 
@@ -88,14 +68,6 @@ function Page() {
             <div className="container mx-auto space-y-6">
               {/* Header with search and add button */}
               <div className="flex items-center justify-between">
-                <div className="flex flex-1 items-center space-x-2">
-                  <Input
-                    placeholder="Filter tasks..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-8 w-[150px] lg:w-[450px]"
-                  />
-                </div>
                 <Button onClick={handleAddTask} size="sm" className="ml-auto h-8">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Task
@@ -104,7 +76,7 @@ function Page() {
 
               {/* Content */}
               <div className="space-y-4">
-                <TasksNewTable tasks={filteredTasks} onEditTask={handleEditTask} onDeleteTask={handleDeleteTask} />
+                <Problem tasks={tasks}  />
               </div>
 
               {/* Form */}
@@ -114,6 +86,9 @@ function Page() {
                 task={editingTask}
                 onSubmit={handleTaskSubmit}
                 ipPhones={ipPhones}
+                branches={branches}
+                departments={departments}
+                programs={programs}
               />
             </div>
           </div>

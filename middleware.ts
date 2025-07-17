@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
 
   // ถ้าเป็น user ห้ามเข้า /account หรือ /management/summary
   if (user.role === "user" && adminOnlyPaths.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL("/management", request.url))
+    return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
   // อื่นๆ เข้าได้ปกติ
@@ -34,5 +34,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account", "/management/:path*"],
+  matcher: ["/account", "/dashboard/:path*"],
 }

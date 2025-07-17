@@ -4,27 +4,32 @@ import type React from "react"
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"
 
 import { useState, useEffect, useMemo } from "react"
-import { TaskStatsCards } from "@/components/task-stats"
-import { TaskFilters } from "@/components/task-filters"
-import { TaskTable } from "@/components/task-table"
-import { TaskForm } from "@/components/task-form"
-import { DepartmentForm } from "@/components/department-form"
-import { ProgramForm } from "@/components/program-form"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Plus } from "lucide-react"
+import { TaskStatsCards } from "@/components/task/task-stats"
+import { ProgramsTable } from "@/components/tables/programs-table"
+import { ProgramFormNew } from "@/components/entities-form"
+import { usePrograms, addProgram, updateProgram, deleteProgram } from "@/api/route"
+import type { Program } from "@/types/entities"
 import type { Task, TaskStats } from "@/types/task"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { useTasks, addTask, updateTask } from "@/hooks/use-api"
 
 function Page() {
   const { tasks, loading, error, refreshTasks } = useTasks()
-  const [searchQuery, setSearchQuery] = useState("")
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([])
   const [selectedTasks, setSelectedTasks] = useState<string[]>([])
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | null>(null)
   const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false)
+  const { programs, refreshPrograms } = usePrograms()
+  const [searchQuery, setSearchQuery] = useState("")
   const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
+  const [editingProgram, setEditingProgram] = useState<Program | null>(null)
+
 
   // Add pagination state
   const [currentPage, setCurrentPage] = useState(1)
@@ -35,9 +40,6 @@ function Page() {
     setIsDepartmentFormOpen(true)
   }
 
-  const handleAddProgram = () => {
-    setIsProgramFormOpen(true)
-  }
 
   const handleDepartmentSubmit = async (data: { ip_phone: string; department: string }) => {
     try {
@@ -78,52 +80,42 @@ function Page() {
     }
   }
 
-  const handleProgramSubmit = async (data: { name: string }) => {
-    try {
-      console.log('Sending program data to API:', {
-        name: data.name
-      });
+  // const handleProgramSubmit = async (data: { name: string }) => {
+  //   try {
+  //     console.log('Sending program data to API:', {
+  //       name: data.name
+  //     });
 
-      const response = await fetch(`${API_BASE}/programEntry/program`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ 
-          name: data.name
-        }),
-      })
+  //     const response = await fetch(`${API_BASE}/programEntry/program`, {
+  //       method: "POST",
+  //       headers: { 
+  //         "Content-Type": "application/json",
+  //         "Accept": "application/json"
+  //       },
+  //       body: JSON.stringify({ 
+  //         name: data.name
+  //       }),
+  //     })
 
-      const responseData = await response.json();
-      console.log('API Response:', responseData);
+  //     const responseData = await response.json();
+  //     console.log('API Response:', responseData);
 
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Failed to add program')
-      }
+  //     if (!response.ok) {
+  //       throw new Error(responseData.message || 'Failed to add program')
+  //     }
 
-      if (responseData.success) {
-        console.log('Program added successfully');
-        setIsProgramFormOpen(false)
-        refreshTasks()
-      } else {
-        throw new Error(responseData.message || 'Failed to add program')
-      }
-    } catch (error) {
-      console.error('Error adding program:', error)
-      console.error(error instanceof Error ? error.message : "เพิ่ม Program ไม่สำเร็จ กรุณาลองใหม่")
-    }
-  }
-
-  // Calculate stats
-  const stats = useMemo(() => {
-    const total = tasks.length
-    const pending = tasks.filter((t) => t.status?.toLowerCase() === "pending").length
-    const solved = tasks.filter((t) => t.status?.toLowerCase() === "solved").length
-    const in_progress = tasks.filter((t) => t.status?.toLowerCase() === "in_progress").length
-    const done = tasks.filter((t) => t.status?.toLowerCase() === "done").length
-    return { total, pending, solved, in_progress, done }
-  }, [tasks])
+  //     if (responseData.success) {
+  //       console.log('Program added successfully');
+  //       setIsProgramFormOpen(false)
+  //       refreshTasks()
+  //     } else {
+  //       throw new Error(responseData.message || 'Failed to add program')
+  //     }
+  //   } catch (error) {
+  //     console.error('Error adding program:', error)
+  //     console.error(error instanceof Error ? error.message : "เพิ่ม Program ไม่สำเร็จ กรุณาลองใหม่")
+  //   }
+  // }
 
   // Filter tasks
   const filteredTasks = useMemo(() => {
@@ -224,6 +216,43 @@ function Page() {
     setCurrentPage(1)
   }
 
+   const handleAddProgram = () => {
+    setEditingProgram(null)
+    setIsProgramFormOpen(true)
+  }
+
+  const handleEditProgram = (program: Program) => {
+    setEditingProgram(program)
+    setIsProgramFormOpen(true)
+  }
+
+  const handleProgramSubmit = async (data: { name: string; id?: number }) => {
+    try {
+      if (data.id) {
+        await updateProgram(data.id, { name: data.name })
+      } else {
+        await addProgram({ name: data.name })
+      }
+      refreshPrograms()
+    } catch (error) {
+      console.error("Error saving program:", error)
+    }
+  }
+
+  const handleDeleteProgram = async (id: number) => {
+    try {
+      await deleteProgram(id)
+      refreshPrograms()
+    } catch (error) {
+      console.error("Error deleting program:", error)
+    }
+  }
+
+    const filteredPrograms = programs.filter((program) => program.name.
+    toLowerCase().includes(searchQuery.toLowerCase()))
+
+  
+
   return (
     <SidebarProvider
       style={
@@ -235,60 +264,47 @@ function Page() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
-              <div className="container mx-auto space-y-6">
-                
-
-                {/* <TaskStatsCards stats={stats} /> */}
-
-                <div className="space-y-4">
-                  <TaskFilters
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    selectedStatuses={selectedStatuses}
-                    onStatusChange={setSelectedStatuses}
-                    onAddTask={handleAddTask}
-                    onAddDepartment={handleAddDepartment}
-                    onAddProgram={handleAddProgram}
-                  />
-
-                  <TaskTable
-                    tasks={paginatedTasks}
-                    onEditTask={handleEditTask}
-                    onDeleteTask={handleDeleteTask}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    totalItems={filteredTasks.length}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
+       <SiteHeader title="Programs" />
+      <div className="flex flex-1 flex-col">
+        <div className="@container/main flex flex-1 flex-col gap-2">
+          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+            <div className="container mx-auto space-y-6">
+              {/* Header with search and add button */}
+              <div className="flex items-center justify-between">
+                <div className="flex flex-1 items-center space-x-2">
+                  <Input
+                    placeholder="Filter programs..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="h-8 w-[150px] lg:w-[450px]"
                   />
                 </div>
+                <Button onClick={handleAddProgram} size="sm" className="ml-auto h-8">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Program
+                </Button>
+              </div>
 
-                <TaskForm
-                  open={isFormOpen}
-                  onOpenChange={setIsFormOpen}
-                  task={editingTask}
-                  onSubmit={handleTaskSubmit}
-                />
-
-                <DepartmentForm 
-                  open={isDepartmentFormOpen}
-                  onOpenChange={setIsDepartmentFormOpen}
-                  onSubmit={handleDepartmentSubmit}
-                />
-
-                <ProgramForm
-                  open={isProgramFormOpen}
-                  onOpenChange={setIsProgramFormOpen}
-                  onSubmit={handleProgramSubmit}
+              {/* Content */}
+              <div className="space-y-4">
+                <ProgramsTable
+                  programs={filteredPrograms}
+                  onEditProgram={handleEditProgram}
+                  onDeleteProgram={handleDeleteProgram}
                 />
               </div>
+
+              {/* Form */}
+              <ProgramFormNew
+                open={isProgramFormOpen}
+                onOpenChange={setIsProgramFormOpen}
+                program={editingProgram}
+                onSubmit={handleProgramSubmit}
+              />
             </div>
           </div>
         </div>
+      </div>
       </SidebarInset>
     </SidebarProvider>
   )

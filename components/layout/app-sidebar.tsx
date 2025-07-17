@@ -1,14 +1,12 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconChartBar,
-} from "@tabler/icons-react"
+import { Building2, Users, Code, Phone, CheckSquare, BarChart3 } from "lucide-react"
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav/nav-main"
+import { NavUser } from "@/components/nav/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -27,38 +25,38 @@ const data = {
 
     },
 
-   
   navMain: [
     {
-      title: "Summary",
-      url: "../management/summary",
-      icon: IconChartBar,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: BarChart3,
+    },
+     {
+      title: "Tasks",
+      url: "/tasks",
+      icon: CheckSquare,
     },
     {
       title: "Branch Offices",
-      url: "/branches/",
-      icon: IconChartBar,
+      url: "/branches",
+      icon: Building2,
     },
-     {
+       {
+      title: "IP Phones",
+      url: "/phone",
+      icon: Phone,
+    },
+    {
       title: "Departments",
-      url: "/department/",
-      icon: IconChartBar,
+      url: "/department",
+      icon: Users,
     },
     {
       title: "Program",
-      url: "/program/",
-      icon: IconChartBar,
+      url: "/program",
+      icon: Code,
     },
-    {
-      title: "IP Phones",
-      url: "/phone/",
-      icon: IconChartBar,
-    },
-    {
-      title: "Tasks",
-      url: "/tasks/",
-      icon: IconChartBar,
-    },
+    
   ],
 }
 

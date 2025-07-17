@@ -27,7 +27,7 @@ export function LoginForm({
     if (user) {
       setError("")
       setUserCookie(user)
-      router.push("/management")
+      router.push("/dashboard")
     } else {
       setError("Invalid username or password")
     }

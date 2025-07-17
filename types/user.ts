@@ -3,7 +3,6 @@ export interface User {
   username: string
   password: string
   role: "admin" | "user"
-  created_at: string
 }
 
 export interface UserStats {
