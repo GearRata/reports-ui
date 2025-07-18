@@ -13,9 +13,12 @@ export default function DialogForm() {
   const [departmentID, setDepartmentID] = useState(0);
   const [text, setText] = useState("");
   const [department, setDepartment] = useState<Department | undefined>();
+  const [branch, setBranch] = useState<Branch | undefined>();
   const [program, setProgram] = useState<Program | undefined>();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
+  const [loadingBranch, setLoadingBranch] = useState(false);
+  const [loadingDepartment, setLoadingDepartment] = useState(false);
 
   // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
   const loadProgram = useCallback(async () => {
@@ -40,9 +43,28 @@ export default function DialogForm() {
     }
   }, [])
 
+  // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
+  const loadBranch = useCallback(async () => {
+    if (branchID <= 0) return
+    
+    setLoadingBranch(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/branch/${branchID}`)
+      const data = await response.json()
+      if (data.data) {
+        setBranch(data.data)
+      }
+    } catch (error) {
+      console.error("Error loading branch:", error)
+    } finally {
+      setLoadingBranch(false)
+    }
+  }, [branchID])
+
   const loadDepartment = useCallback(async () => {
     if (departmentID <= 0) return
     
+    setLoadingDepartment(true)
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/${departmentID}`)
       const data = await response.json() 
@@ -51,6 +73,8 @@ export default function DialogForm() {
       }
     } catch (error) {
       console.error("Error loading department:", error) 
+    } finally {
+      setLoadingDepartment(false)
     }
   }, [departmentID])
 
@@ -68,6 +92,11 @@ export default function DialogForm() {
   useEffect(() => {
     loadProgram()
   }, [loadProgram])
+
+  // useEffect สำหรับโหลดข้อมูล branch เมื่อ branchID เปลี่ยน
+  useEffect(() => {
+    loadBranch()
+  }, [loadBranch])
 
   // useEffect สำหรับโหลดข้อมูล department เมื่อ departmentID เปลี่ยน
   useEffect(() => {
@@ -111,7 +140,18 @@ export default function DialogForm() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">{department?.name} / {department?.branch_name}</h2>
+      <h2 className="text-lg font-semibold mb-4">
+        {loadingDepartment ? (
+          <span className="animate-pulse bg-gray-200 rounded h-6 w-32 inline-block"></span>
+        ) : (
+          department?.name || "Loading..."
+        )} / {loadingBranch ? (
+          <span className="animate-pulse bg-gray-200 rounded h-6 w-24 inline-block"></span>
+        ) : (
+          branch?.name || "Loading..."
+        )}
+      </h2>
+
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
@@ -170,10 +210,10 @@ export default function DialogForm() {
               variant="outline"
               onClick={() => window.location.reload()}
             >
-              Cancel
+              ยกเลิก
             </Button>
             <Button type="submit">
-              Create Task
+              แจ้งปัญหา
             </Button>
           </DialogFooter>
         </form>
