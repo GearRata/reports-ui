@@ -69,7 +69,7 @@ export function usePrograms() {
   const fetchPrograms = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_BASE}//api/v1/program/list`)
+      const response = await fetch(`${API_BASE}/api/v1/program/list`)
       if (!response.ok) throw new Error("Failed to fetch programs")
       const data = await response.json()
       setPrograms(data.data || [])
@@ -273,11 +273,12 @@ export async function deleteTaskNew(id: number) {
 }
 
 // Department Report
-export async function addTaskDepartment(task: {  text: string; status: string; department_id: number; id?: number; program_id: number; branch_id: number; }) {
+export async function addTaskDepartment(task: {  text: string; status: string; program_id: number; phone_id: number }) {
   const response = await fetch(`${API_BASE}/api/v1/problem/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(task),
   })
+  console.log("send task", task);
   return await response.json()
 }

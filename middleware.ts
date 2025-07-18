@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 // เส้นทางที่ admin เท่านั้นเข้าได้
-const adminOnlyPaths = ["/account", "/management/summary"]
+const adminOnlyPaths = ["/account", "/dashboard"]
 
 export function middleware(request: NextRequest) {
   // อ่าน user จาก cookie (ควรเซ็ต cookie หลัง login)

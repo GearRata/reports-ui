@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { Textarea } from "@/components/ui/textarea";
@@ -23,8 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type {
-  Branch,
-  Department,
   Program,
   IPPhone,
   TaskWithPhone,
@@ -36,16 +33,15 @@ interface TaskNewFormProps {
   task?: TaskWithPhone | null;
   onSubmit: (data: {
     text: string;
-    status: string;
+    status: number;
     id?: number;
     program_id: number;
-    branch_id: number;
-    department_id: number;
+    phone_id: number;
   }) => void;
   ipPhones: IPPhone[];
-  branches: Branch[];
-  departments: Department[];
   programs: Program[];
+  branchParams: string;
+  departmentParams: string;
 }
 
 export function TaskNewForm({
@@ -53,21 +49,19 @@ export function TaskNewForm({
   onOpenChange,
   task,
   onSubmit,
-  branches,
-  departments,
   programs,
+  branchParams,
+  departmentParams,
 }: TaskNewFormProps) {
   const [text, setText] = useState("");
-  const [branchId, setBranchId] = useState<number>(1);
-  const [departmentId, setDepartmentID] = useState<number>(1);
+  const [branchId, setBranchId] = useState({branchParams});
+  const [departmentId, setDepartmentID] = useState({departmentParams});
   const [programId, setProgramID] = useState<number>(0);
   const [status, setStatus] = useState<"pending" | "solved">("pending");
 
   useEffect(() => {
     if (task) {
       setText(task.text);
-      setBranchId(task.branch_id);
-      setDepartmentID(task.department_id);
       setStatus(task.status as "pending");
     } else {
       setText("");
@@ -78,11 +72,10 @@ export function TaskNewForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
+      phone_id: 0,
       program_id: programId,
-      branch_id: branchId,
-      department_id: departmentId,
       text,
-      status,
+      status: 0,
       ...(task && { id: task.id }),
     });
     console.log(
@@ -93,32 +86,38 @@ export function TaskNewForm({
       text,
       status
     );
-    onOpenChange(false);
+    onOpenChange(true);
   };
 
-  console.log("branches Array:", branches);
+  // console.log( "branchId: ",branchId,
+  //     "departmentId: ", departmentId,
+  //     "programId", programId,
+  //     "text", text,
+  //     "status", status)
+  // console.log("branches Array:", branches);
+  // console.log("branches ID:", branchId)
+  console.log("branchParams", branchParams)
+  console.log("departmentParams", departmentParams)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-            <DialogTitle>
-             {branches.map((branch) => (
+          <DialogTitle>
+            {/* {branches.map((branch) => (
               <div key={branch.id}>
-                {branch.id === branchId
-                  ? "สาขาใหญ่"
-                  : "" }
+                {branch.id === branchId ? "สาขาใหญ่" : ""}
               </div>
-            ))}
+            ))} */}
+            {branchParams? "สาขาใหญ่" : ""}
           </DialogTitle>
           <DialogDescription>
-            {departments.map((department) => (
+            {/* {departments.map((department) => (
               <div key={department.id}>
-                {department.id === departmentId
-                  ? "IT"
-                  : "" }
+                {department.id === departmentId ? "IT" : ""}
               </div>
-            ))}
+            ))} */}
+            {departmentParams? " IT " : ""}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>

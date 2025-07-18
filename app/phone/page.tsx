@@ -78,7 +78,6 @@ function Page() {
   );
 
 
-  console.log("departments Array:", ipPhones)
   return (
     <SidebarProvider
       style={
