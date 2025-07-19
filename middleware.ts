@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // ถ้าเป็น user ห้ามเข้า /account หรือ /management/summary
+  // ถ้าเป็น user ห้ามเข้า /account หรือ /dashboard
   if (user.role === "user" && adminOnlyPaths.some((p) => pathname.startsWith(p))) {
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }

@@ -17,6 +17,7 @@ export function useBranches() {
     const response = await fetch(`${API_BASE}/api/v1/branch/list`)
     if (!response.ok) throw new Error("Failed to fetch branches")
     const data = await response.json()
+    console.log(data.data)
     setBranches(data.data || [])
   } catch (err) {
     setError(err instanceof Error ? err.message : "Unknown error")
