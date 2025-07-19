@@ -21,14 +21,13 @@ export function LoginForm({
     document.cookie = `user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=86400`
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const user = login(username, password)
+    const user = await login(username, password)
     if (user) {
       setError("")
       setUserCookie(user)
-      // Redirect by role
-      router.push("/management")
+      router.push("/dashboard")
     } else {
       setError("Invalid username or password")
     }

@@ -19,8 +19,8 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
       bgHover: "hover:from-blue-500/30",
     },
     {
-      title: "In Progress",
-      value: stats.in_progress,
+      title: "Pending",
+      value: stats.pending,
       icon: Clock,
       gradient: "from-orange-500/20 via-orange-400/10 to-transparent",
       border: "border-orange-500/50",
@@ -29,8 +29,8 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
       bgHover: "hover:from-orange-500/30",
     },
     {
-      title: "Completed",
-      value: stats.done,
+      title: "Solved",
+      value: stats.solved,
       icon: CheckCircle,
       gradient: "from-green-500/20 via-green-400/10 to-transparent",
       border: "border-green-500/50",
@@ -38,7 +38,7 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
       valueColor: "text-green-600 dark:text-green-400",
       bgHover: "hover:from-green-500/30",
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 gap-6 px-4 lg:px-1 @xl/main:grid-cols-3 @5xl/main:grid-cols-3">
@@ -92,9 +92,9 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
                     width:
                       card.title === "Total Tasks"
                         ? "100%"
-                        : card.title === "In Progress"
-                          ? `${(stats.in_progress / stats.total) * 100}%`
-                          : `${(stats.done / stats.total) * 100}%`,
+                        : card.title === "Pending"
+                          ? `${(stats.pending / stats.total) * 100}%`
+                          : `${(stats.solved / stats.total) * 100}%`,
                   }}
                 />
               </div>
@@ -102,9 +102,9 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
               {/* Percentage text */}
               {card.title !== "Total Tasks" && (
                 <div className="mt-2 text-xs text-muted-foreground">
-                  {card.title === "In Progress"
-                    ? `${Math.round((stats.in_progress / stats.total) * 100)}% of total`
-                    : `${Math.round((stats.done / stats.total) * 100)}% completed`}
+                  {card.title === "Pending"
+                    ? `${Math.round((stats.pending / stats.total) * 100)}% pending`
+                    : `${Math.round((stats.solved / stats.total) * 100)}% solved`}
                 </div>
               )}
             </CardContent>

@@ -10,9 +10,9 @@ export default function LoginPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <Image src="/logo.png" alt="Logo" width={24} height={24} />
+              <Image src="/logo.png" alt="Logo" width={30} height={30} />
             </div>
-            Acme Inc. Hello World
+            FIXTRACK
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

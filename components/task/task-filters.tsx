@@ -19,13 +19,13 @@ interface TaskFiltersProps {
   selectedStatuses: string[]
   onStatusChange: (statuses: string[]) => void
   onAddTask: () => void
+  onAddDepartment: () => void
+  onAddProgram: () => void
 }
 
 const statusOptions = [
-  // { value: "todo", label: "Todo" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "done", label: "Done" },
-  // { value: "canceled", label: "Canceled" },
+  { value: "pending", label: "Pending" },
+  { value: "solved", label: "Solved" },
 ]
 
 export function TaskFilters({
@@ -34,6 +34,8 @@ export function TaskFilters({
   selectedStatuses,
   onStatusChange,
   onAddTask,
+  onAddDepartment,
+  onAddProgram,
 }: TaskFiltersProps) {
   const handleStatusToggle = (status: string) => {
     if (selectedStatuses.includes(status)) {
@@ -80,10 +82,20 @@ export function TaskFilters({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <Button onClick={onAddTask} size="sm" className="ml-auto h-8">
-        <Plus className="mr-2 h-4 w-4" />
+      <div className="flex items-center space-x-2">
+      <Button onClick={onAddTask} size="sm" className="ml-auto h-8 bg-blue-500 hover:bg-blue-600">
+        <Plus className=" h-4 w-4" />
         Add Task
       </Button>
+      <Button onClick={onAddDepartment} size="sm" className="ml-auto h-8">
+        <Plus className=" h-4 w-4" />
+        Add Department
+      </Button>
+      <Button onClick={onAddProgram} size="sm" className="ml-auto h-8 bg-green-500 hover:bg-green-600">
+        <Plus className=" h-4 w-4" />
+        Add Program
+      </Button>
+      </div>
     </div>
   )
 }

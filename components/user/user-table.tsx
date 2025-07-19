@@ -50,10 +50,6 @@ export function UserTable({
     }))
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString()
-  }
-
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case "admin":
@@ -95,7 +91,6 @@ export function UserTable({
                 <TableCell>
                   <Badge className={getRoleBadgeColor(user.role)}>{user.role}</Badge>
                 </TableCell>
-                <TableCell>{formatDate(user.created_at)}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -196,4 +191,11 @@ export function UserTable({
       </AlertDialog>
     </div>
   )
+}
+
+UserTable.defaultProps = {
+  users: [],
+  currentPage: 1,
+  pageSize: 10,
+  totalItems: 0,
 }

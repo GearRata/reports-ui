@@ -1,39 +1,51 @@
-import { useState } from "react"
-import users from "@/data/users.json"
-import type { User } from "@/types/user"
+import { useState } from "react";
+import type { User } from "@/types/user";
 
 export function useAuth() {
-  // Try to get user from localStorage
   const [user, setUser] = useState<User | null>(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("user")
-      if (stored) return JSON.parse(stored)
+      const stored = localStorage.getItem("user");
+      if (stored) return JSON.parse(stored);
     }
-    return null
-  })
+    return null;
+  });
 
-  function login(username: string, password: string): User | null {
-    const found = (users as User[]).find(
-      (u) => u.username === username && u.password === password
-    )
-    if (found) {
-      setUser(found)
+  async function login(
+    username: string,
+    password: string
+  ): Promise<User | null> {
+    try {
+      const res = await fetch("http://192.168.0.192:5000/authEntry/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      const data = await res.json();
+
+      const userObj: User = {
+        id: data.data.id || "",
+        username: data.data.username,
+        password: "", // never store password
+        role: data.data.role,
+      };
+      setUser(userObj);
       if (typeof window !== "undefined") {
-        localStorage.setItem("user", JSON.stringify(found))
+        localStorage.setItem("user", JSON.stringify(userObj));
       }
-      return found
+      return userObj;
+    } catch (e) {
+      return null;
     }
-    return null
   }
 
   function logout() {
-    setUser(null)
+    setUser(null);
     if (typeof window !== "undefined") {
-      localStorage.removeItem("user")
+      localStorage.removeItem("user");
     }
   }
 
-  return { user, login, logout }
+  return { user, login, logout };
 }
 
 // ไม่ต้องใช้ useAuth สำหรับ role guard อีกต่อไป (middleware จะจัดการแทน)

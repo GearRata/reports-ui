@@ -9,7 +9,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Filter, RotateCcw, Search } from "lucide-react"
-import taskData from "@/data/data.json"
 
 interface Task {
   id: string
@@ -35,7 +34,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartBarMultiple() {
+interface ChartBarMultipleProps {
+  tasks: Task[]
+}
+
+export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
   const [selectedProgram, setSelectedProgram] = useState<string | null>(null)
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null)
@@ -43,8 +46,6 @@ export function ChartBarMultiple() {
   // Search states for dropdowns
   const [departmentSearch, setDepartmentSearch] = useState("")
   const [programSearch, setProgramSearch] = useState("")
-
-  const tasks = taskData as Task[]
 
   // Get unique values for filters with search functionality
   const departments = useMemo(() => {

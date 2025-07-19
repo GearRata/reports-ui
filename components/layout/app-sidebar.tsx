@@ -1,14 +1,12 @@
 "use client"
 
 import * as React from "react"
-import {
-  IconChartBar,
-} from "@tabler/icons-react"
+import { Building2, Users, Code, Phone, CheckSquare, BarChart3 } from "lucide-react"
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/nav/nav-main"
+import { NavUser } from "@/components/nav/nav-user"
 import {
   Sidebar,
   SidebarContent,
@@ -27,13 +25,38 @@ const data = {
 
     },
 
-   
   navMain: [
     {
-      title: "Summary",
-      url: "../management/summary",
-      icon: IconChartBar,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: BarChart3,
     },
+     {
+      title: "Tasks",
+      url: "/tasks",
+      icon: CheckSquare,
+    },
+    {
+      title: "Branch Offices",
+      url: "/branches",
+      icon: Building2,
+    },
+       {
+      title: "IP Phones",
+      url: "/phone",
+      icon: Phone,
+    },
+    {
+      title: "Departments",
+      url: "/department",
+      icon: Users,
+    },
+    {
+      title: "Program",
+      url: "/program",
+      icon: Code,
+    },
+    
   ],
 }
 
@@ -44,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5 my-2 w-full ">
-              <Link href="/management">
+              <Link href="/dashboard" className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
                   <Image src="/logo.png" alt="" width={40} height={40} className="w-15 h-15"/>
                   <span className="text-base font-semibold">FixTrack</span>

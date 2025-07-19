@@ -2,13 +2,13 @@
 
 import type React from "react"
 import { useState, useEffect, useMemo } from "react"
-import { UserStatsCards } from "@/components/user-stats"
-import { UserTable } from "@/components/user-table"
-import { UserForm } from "@/components/user-form"
+import { UserStatsCards } from "@/components/user/user-stats"
+import { UserTable } from "@/components/user/user-table"
+import { UserForm } from "@/components/user/user-form"
 import type { User, UserStats } from "@/types/user"
 import usersData from "@/data/users.json"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -47,9 +47,7 @@ function AccountPage() {
       if (roleComparison !== 0) {
         return roleComparison
       }
-
-      // If roles are the same, sort by creation date (newest first)
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      return a.username.localeCompare(b.username) 
     })
   }, [users])
 
@@ -83,7 +81,6 @@ function AccountPage() {
             ? ({
                 ...userData,
                 id: editingUser.id,
-                created_at: editingUser.created_at,
               } as User)
             : u,
         ),

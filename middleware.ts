@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
 // เส้นทางที่ admin เท่านั้นเข้าได้
-const adminOnlyPaths = ["/account", "/management/summary"]
+const adminOnlyPaths = ["/account", "/dashboard"]
 
 export function middleware(request: NextRequest) {
   // อ่าน user จาก cookie (ควรเซ็ต cookie หลัง login)
@@ -24,9 +24,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // ถ้าเป็น user ห้ามเข้า /account หรือ /management/summary
+  // ถ้าเป็น user ห้ามเข้า /account หรือ /dashboard
   if (user.role === "user" && adminOnlyPaths.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL("/management", request.url))
+    return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
   // อื่นๆ เข้าได้ปกติ
@@ -34,5 +34,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/account", "/management/:path*"],
+  matcher: ["/account", "/dashboard/:path*"],
 }
