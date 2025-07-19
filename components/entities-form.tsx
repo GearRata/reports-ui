@@ -327,6 +327,8 @@ export function IPPhoneForm({
     }
   }, [ipPhone, open]);
 
+  console.log("IP Phone Form", ipPhone)
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({ number, name, branch_id: branchId, department_id: departmentId, ...(ipPhone && { id: ipPhone.id }) });
