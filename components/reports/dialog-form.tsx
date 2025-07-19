@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '../ui/textarea'
 import { DialogFooter } from '../ui/dialog'
 import { Button } from '../ui/button'
-import { useRouter, useParams } from "next/navigation"
+import { useParams } from "next/navigation"
 import { Branch, Department, Program } from '@/types/entities'
 
 export default function DialogForm() {
@@ -80,10 +80,10 @@ export default function DialogForm() {
 
   // useEffect สำหรับ set parameters จาก URL
   useEffect(() => {
-    let branchParam = params.branch
-    let departmentParam = params.department
-    let branchId = Number(branchParam)
-    let departmentId = Number(departmentParam)
+    const branchParam = params.branch
+    const departmentParam = params.department
+    const branchId = Number(branchParam)
+    const departmentId = Number(departmentParam)
     setBranchID(branchId)
     setDepartmentID(departmentId)
   }, [params])
@@ -112,9 +112,9 @@ export default function DialogForm() {
       text,
       branch_id: branchID,
       department_id: departmentID,
-      program_id: program?.id
+      system_id: program?.id
     }
-
+    
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
         method: 'POST',

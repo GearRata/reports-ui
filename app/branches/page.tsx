@@ -1,11 +1,9 @@
 "use client";
 
 import type React from "react";
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { BranchesTable } from "@/components/tables/branches-table";
-import type { Task, TaskStats } from "@/types/task";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { BranchForm } from "@/components/entities-form";
@@ -17,20 +15,12 @@ import {
 } from "@/api/route";
 import type { Branch } from "@/types/entities";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useTasks, addTask, updateTask } from "@/hooks/use-api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
 function Page() {
-  const { tasks, loading, error, refreshTasks } = useTasks();
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false);
-  const [isProgramFormOpen, setIsProgramFormOpen] = useState(false);
   const { branches, refreshBranches } = useBranches();
   const [isBranchFormOpen, setIsBranchFormOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
@@ -83,31 +73,6 @@ function Page() {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <SiteHeader title="Branch Offices" />
-       
-                {/* <TaskStatsCards stats={stats} /> */}
-
-                {/* <TaskTable
-                    tasks={paginatedTasks}
-                    onEditTask={handleEditTask}
-                    onDeleteTask={handleDeleteTask}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    totalItems={filteredTasks.length}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
-                  /> */}
-                {/* <BranchesTable
-                    branches={filteredBranches}
-                    onEditBranch={handleEditBranch}
-                    onDeleteBranch={handleDeleteBranch}
-                    currentPage={currentPage}
-                    pageSize={pageSize}
-                    totalItems={filteredBranches.length}
-                    onPageChange={handlePageChange}
-                    onPageSizeChange={handlePageSizeChange}
-                    onAddBranch={handleAddBranch}
-                  /> */}
-
                 <div className="flex flex-1 flex-col">
                   <div className="@container/main flex flex-1 flex-col gap-2">
                     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">

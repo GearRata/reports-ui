@@ -1,10 +1,7 @@
 "use client"
 
 import type React from "react"
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"
-
-import { useState, useEffect, useMemo } from "react"
-import { TaskStatsCards } from "@/components/task/task-stats"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
@@ -15,7 +12,6 @@ import type { Department } from "@/types/entities"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { useTasks, addTask, updateTask } from "@/hooks/use-api"
 
 function Page() {
   const { branches } = useBranches()

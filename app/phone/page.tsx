@@ -1,13 +1,10 @@
 "use client";
 
 import type React from "react";
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
-
-import { useState, useEffect, useMemo } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
-import { TaskStatsCards } from "@/components/task/task-stats";
 import { IPPhonesTable } from "@/components/tables/ip-phones-table";
 import { IPPhoneForm } from "@/components/entities-form";
 import {

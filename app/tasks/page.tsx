@@ -1,9 +1,7 @@
 "use client"
 
 import type React from "react"
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000"
-
-import { useState, useEffect, useMemo } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
@@ -24,8 +22,6 @@ function Page() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<TaskWithPhone | null>(null)
-
-
 
    const handleAddTask = () => {
     setEditingTask(null)
