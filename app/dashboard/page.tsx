@@ -5,7 +5,7 @@ import { ChartBarMultiple } from "@/components/chart-bar-multiple"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { TaskStatsCards } from "@/components/task/task-stats"
-import type { Task, TaskStats } from "@/types/task"
+import type { TaskStats } from "@/types/task"
 import { useTasks } from "@/hooks/use-api"
 import { useMemo } from "react"
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/sidebar"
 
 function Page() {
-  const { tasks, loading, error } = useTasks()
+  const { tasks } = useTasks()
 
     // Calculate stats
     const stats: TaskStats = useMemo(() => {
