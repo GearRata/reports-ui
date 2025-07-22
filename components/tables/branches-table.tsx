@@ -32,9 +32,9 @@ export function BranchesTable({ branches, onEditBranch, onDeleteBranch }: Branch
               </TableCell>
             </TableRow>
           ) : (
-            branches.map((branch) => (
+            branches.map((branch, index) => (
               <TableRow key={branch.id}>
-                <TableCell className="font-medium">{branch.id}</TableCell>
+                <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{branch.name}</TableCell>
                 <TableCell>
                   <DropdownMenu>

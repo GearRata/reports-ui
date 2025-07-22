@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { RequestIpPhone } from "../types/entities"
 
+
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://192.168.0.192:5000"
 
 // Branches Hook
@@ -17,7 +18,6 @@ export function useBranches() {
     const response = await fetch(`${API_BASE}/api/v1/branch/list`)
     if (!response.ok) throw new Error("Failed to fetch branches")
     const data = await response.json()
-    console.log(data.data)
     setBranches(data.data || [])
   } catch (err) {
     setError(err instanceof Error ? err.message : "Unknown error")
@@ -127,12 +127,14 @@ export function useTasksNew() {
       const response = await fetch(`${API_BASE}/api/v1/problem/list`)
       if (!response.ok) throw new Error("Failed to fetch tasks")
       const data = await response.json()
+      console.log("fetch GET data from API:", data.data)
       setTasks(data.data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
     } finally {
       setLoading(false)
     }
+   
   }
 
   useEffect(() => {
@@ -248,7 +250,7 @@ export async function deleteIPPhone(id: number) {
   return response.ok
 }
 
-export async function addTaskNew(task: { phone_id: number; text: string; status: string }) {
+export async function addTaskNew(task: { phone_id: number; system_id: number; text: string; status: number }) {
   const response = await fetch(`${API_BASE}/api/v1/problem/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -257,7 +259,7 @@ export async function addTaskNew(task: { phone_id: number; text: string; status:
   return await response.json()
 }
 
-export async function updateTaskNew(id: number, task: { phone_id: number; text: string; status: string }) {
+export async function updateTaskNew(id: number, task: { phone_id: number; system_id: number; text: string; status: number }) {
   const response = await fetch(`${API_BASE}/api/v1/problem/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -273,13 +275,3 @@ export async function deleteTaskNew(id: number) {
   return response.ok
 }
 
-// Department Report
-export async function addTaskDepartment(task: {  text: string; status: string; program_id: number; phone_id: number }) {
-  const response = await fetch(`${API_BASE}/api/v1/problem/create`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(task),
-  })
-  console.log("send task", task);
-  return await response.json()
-}

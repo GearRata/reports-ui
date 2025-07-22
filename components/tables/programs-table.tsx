@@ -31,9 +31,9 @@ export function ProgramsTable({ programs, onEditProgram, onDeleteProgram }: Prog
               </TableCell>
             </TableRow>
           ) : (
-            programs.map((program) => (
+            programs.map((program, index) => (
               <TableRow key={program.id}>
-                <TableCell className="font-medium">{program.id}</TableCell>
+                <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{program.name}</TableCell>
                 <TableCell>
                   <DropdownMenu>

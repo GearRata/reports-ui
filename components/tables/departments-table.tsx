@@ -32,9 +32,9 @@ export function DepartmentsTable({ departments, onEditDepartment, onDeleteDepart
               </TableCell>
             </TableRow>
           ) : (
-            departments.map((department) => (
+            departments.map((department, index) => (
               <TableRow key={department.id}>
-                <TableCell className="font-medium">{department.id}</TableCell>
+                <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{department.name}</TableCell>
                 <TableCell>{department.branch_name}</TableCell>
                 <TableCell>

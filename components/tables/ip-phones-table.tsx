@@ -34,9 +34,9 @@ export function IPPhonesTable({ ipPhones, onEditIPPhone, onDeleteIPPhone }: IPPh
               </TableCell>
             </TableRow>
           ) : (
-            ipPhones.map((ipPhone) => (
+            ipPhones.map((ipPhone, index) => (
               <TableRow key={ipPhone.id}>
-                <TableCell className="font-medium">{ipPhone.id}</TableCell>
+                <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{ipPhone.number}</TableCell>
                 <TableCell>{ipPhone.name}</TableCell>
                 <TableCell>{ipPhone.department_name}</TableCell>

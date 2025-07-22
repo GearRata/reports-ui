@@ -24,7 +24,6 @@ const statusLabels: Record<number, string> = {
 }
 
 export function TasksNewTable({ tasks, onEditTask, onDeleteTask }: TasksNewTableProps) {
-  console.log("TasksNewTable tasks:", tasks)
   return (
     <div className="rounded-md border">
       <Table>
@@ -34,6 +33,7 @@ export function TasksNewTable({ tasks, onEditTask, onDeleteTask }: TasksNewTable
             <TableHead>Phone Number</TableHead>
             <TableHead>Phone Name</TableHead>
             <TableHead>Department</TableHead>
+            <TableHead>Program</TableHead>
             <TableHead>Branch</TableHead>
             <TableHead>Text</TableHead>
             <TableHead>Status</TableHead>
@@ -48,12 +48,13 @@ export function TasksNewTable({ tasks, onEditTask, onDeleteTask }: TasksNewTable
               </TableCell>
             </TableRow>
           ) : (
-            tasks.map((task) => (
+            tasks.map((task, index) => (
               <TableRow key={task.id}>
-                <TableCell className="font-medium">{task.id}</TableCell>
+                <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{task.number}</TableCell>
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>
+                <TableCell>{task.system_name || "-"}</TableCell>
                 <TableCell>{task.branch_name || "-"}</TableCell>
                 <TableCell className="max-w-[200px] truncate">{task.text}</TableCell>
                 <TableCell>

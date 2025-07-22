@@ -21,7 +21,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="bg-muted relative hidden lg:block"> 
         <Image
           src="/logo-img.jpg"
           alt="Image"

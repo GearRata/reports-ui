@@ -295,7 +295,13 @@ interface IPPhoneFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   ipPhone?: IPPhone | null;
-  onSubmit: (data: { number: number; name: string; id?: number; department_id: number; branch_id: number; }) => void;
+  onSubmit: (data: {
+    number: number;
+    name: string;
+    id?: number;
+    department_id: number;
+    branch_id: number;
+  }) => void;
   branches: { id: number; name: string }[];
   departments: { id: number; name: string }[];
 }
@@ -327,11 +333,17 @@ export function IPPhoneForm({
     }
   }, [ipPhone, open]);
 
-  console.log("IP Phone Form", ipPhone)
+  console.log("IP Phone Form", ipPhone);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ number, name, branch_id: branchId, department_id: departmentId, ...(ipPhone && { id: ipPhone.id }) });
+    onSubmit({
+      number,
+      name,
+      branch_id: branchId,
+      department_id: departmentId,
+      ...(ipPhone && { id: ipPhone.id }),
+    });
     onOpenChange(false);
   };
 
@@ -390,14 +402,17 @@ export function IPPhoneForm({
                 </SelectTrigger>
                 <SelectContent>
                   {departments.map((department) => (
-                    <SelectItem key={department.id} value={department.id.toString()}>
+                    <SelectItem
+                      key={department.id}
+                      value={department.id.toString()}
+                    >
                       {department.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-             <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="branch" className="text-right">
                 Branch
               </Label>
@@ -443,11 +458,13 @@ interface TaskNewFormProps {
   task?: TaskWithPhone | null;
   onSubmit: (data: {
     phone_id: number;
+    system_id: number;
     text: string;
-    status: string;
+    status: number;
     id?: number;
   }) => void;
   ipPhones: IPPhone[];
+  programs: Program[];
 }
 
 export function TaskNewForm({
@@ -456,28 +473,35 @@ export function TaskNewForm({
   task,
   onSubmit,
   ipPhones,
+  programs,
 }: TaskNewFormProps) {
   const [phoneId, setPhoneId] = useState<number>(0);
+  const [programID, setProgramID] = useState<number>(0);
   const [text, setText] = useState("");
-  const [status, setStatus] = useState<"pending" | "solved">("pending");
-
-  console.log("task", task);
+  const [status, setStatus] = useState<number>(0);
 
   useEffect(() => {
     if (task) {
       setPhoneId(task.phone_id);
+      setProgramID(task.system_id);
       setText(task.text);
-      setStatus(task.status as "pending" | "solved");
+      setStatus(task.status);
     } else {
       setPhoneId(0);
       setText("");
-      setStatus("pending");
+      setStatus(0);
     }
   }, [task, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ phone_id: phoneId, text, status, ...(task && { id: task.id }) });
+    onSubmit({
+      phone_id: phoneId,
+      system_id: programID,
+      text,
+      status: status,
+      ...(task && { id: task.id }),
+    });
     onOpenChange(false);
   };
 
@@ -515,6 +539,26 @@ export function TaskNewForm({
               </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="program_id" className="text-right">
+                Program
+              </Label>
+              <Select
+                value={programID.toString()}
+                onValueChange={(value) => setProgramID(Number(value))}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select Program" />
+                </SelectTrigger>
+                <SelectContent>
+                  {programs.map((program) => (
+                    <SelectItem key={program.id} value={program.id.toString()}>
+                      {program.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="text" className="text-right">
                 Text
               </Label>
@@ -527,25 +571,25 @@ export function TaskNewForm({
                 required
               />
             </div>
-            {/* <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">
-                Status
-              </Label>
-              <Select
-                value={status}
-                onValueChange={(value: "pending" | "solved") =>
-                  setStatus(value)
-                }
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="solved">Solved</SelectItem>
-                </SelectContent>
-              </Select>
-            </div> */}
+            {task && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <Select
+                  value={status.toString()}
+                  onValueChange={(value) => setStatus(Number(value))}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Pending</SelectItem>
+                    <SelectItem value="1">Solved</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button

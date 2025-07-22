@@ -10,32 +10,25 @@ import { Input } from "@/components/ui/input"
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Filter, RotateCcw, Search } from "lucide-react"
 
-interface Task {
-  id: string
-  ip_phone: string
-  department: string
-  program: string
-  problem: string
-  status: "in_progress" | "done"
-}
+import type { TaskWithPhone } from "@/types/entities"
 
 const chartConfig = {
   count: {
     label: "Tasks",
     color: "var(--chart-task)",
   },
-  in_progress: {
-    label: "In Progress",
+  pending: {
+    label: "Pending",
     color: "var(--chart-1)",
   },
-  done: {
-    label: "Done",
+  solved: {
+    label: "Solved",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
 interface ChartBarMultipleProps {
-  tasks: Task[]
+  tasks: TaskWithPhone[]
 }
 
 export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
@@ -49,13 +42,13 @@ export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
 
   // Get unique values for filters with search functionality
   const departments = useMemo(() => {
-    const allDepartments = Array.from(new Set(tasks.map((task) => task.department))).sort()
-    return allDepartments.filter((dept) => dept.toLowerCase().includes(departmentSearch.toLowerCase()))
+    const allDepartments = Array.from(new Set(tasks.map((task) => task.department_name).filter(Boolean))).sort()
+    return allDepartments.filter((dept) => dept && dept.toLowerCase().includes(departmentSearch.toLowerCase()))
   }, [tasks, departmentSearch])
 
   const programs = useMemo(() => {
-    const allPrograms = Array.from(new Set(tasks.map((task) => task.program))).sort()
-    return allPrograms.filter((program) => program.toLowerCase().includes(programSearch.toLowerCase()))
+    const allPrograms = Array.from(new Set(tasks.map((task) => task.system_name).filter(Boolean))).sort()
+    return allPrograms.filter((program) => program && program.toLowerCase().includes(programSearch.toLowerCase()))
   }, [tasks, programSearch])
 
   const statuses = useMemo(() => Array.from(new Set(tasks.map((task) => task.status))).sort(), [tasks])
@@ -63,9 +56,9 @@ export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
   // Filter tasks based on selected filters
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
-      if (selectedDepartment && task.department !== selectedDepartment) return false
-      if (selectedProgram && task.program !== selectedProgram) return false
-      if (selectedStatus && task.status !== selectedStatus) return false
+      if (selectedDepartment && task.department_name !== selectedDepartment) return false
+      if (selectedProgram && task.system_name !== selectedProgram) return false
+      if (selectedStatus && task.status.toString() !== selectedStatus) return false
       return true
     })
   }, [tasks, selectedDepartment, selectedProgram, selectedStatus])
@@ -74,7 +67,8 @@ export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
   const departmentData = useMemo(() => {
     const counts = filteredTasks.reduce(
       (acc, task) => {
-        acc[task.department] = (acc[task.department] || 0) + 1
+        const deptName = task.department_name || 'Unknown Department'
+        acc[deptName] = (acc[deptName] || 0) + 1
         return acc
       },
       {} as Record<string, number>,
@@ -91,7 +85,8 @@ export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
   const programData = useMemo(() => {
     const counts = filteredTasks.reduce(
       (acc, task) => {
-        acc[task.program] = (acc[task.program] || 0) + 1
+        const programName = task.system_name || 'Unknown Program'
+        acc[programName] = (acc[programName] || 0) + 1
         return acc
       },
       {} as Record<string, number>,
@@ -108,15 +103,16 @@ export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
   const statusData = useMemo(() => {
     const counts = filteredTasks.reduce(
       (acc, task) => {
-        acc[task.status] = (acc[task.status] || 0) + 1
+        const statusKey = task.status === 0 ? "solved" : "pending"
+        acc[statusKey] = (acc[statusKey] || 0) + 1
         return acc
       },
       {} as Record<string, number>,
     )
     return Object.entries(counts).map(([status, count]) => ({
-      name: status === "in_progress" ? "In Progress" : "Done",
+      name: status === "pending" ? "Pending" : "Solved",
       count,
-      fill: status === "in_progress" ? "var(--color-in_progress)" : "var(--color-done)",
+      fill: status === "pending" ? "var(--chart-1)" : "var(--chart-2)",
     }))
   }, [filteredTasks])
 
@@ -124,20 +120,25 @@ export function ChartBarMultiple({ tasks }: ChartBarMultipleProps) {
   const departmentStatusData = useMemo(() => {
     const breakdown = filteredTasks.reduce(
       (acc, task) => {
-        if (!acc[task.department]) {
-          acc[task.department] = { in_progress: 0, done: 0 }
+        const deptName = task.department_name || 'Unknown Department'
+        if (!acc[deptName]) {
+          acc[deptName] = { pending: 0, solved: 0 }
         }
-        acc[task.department][task.status]++
+        if (task.status === 0) {
+          acc[deptName].solved++
+        } else {
+          acc[deptName].pending++
+        }
         return acc
       },
-      {} as Record<string, { in_progress: number; done: number }>,
+      {} as Record<string, { pending: number; solved: number }>,
     )
     return Object.entries(breakdown)
       .map(([department, counts]) => ({
         department,
-        in_progress: counts.in_progress,
-        done: counts.done,
-        total: counts.in_progress + counts.done,
+        pending: counts.pending,
+        solved: counts.solved,
+        total: counts.pending + counts.solved,
       }))
       .sort((a, b) => b.total - a.total)
   }, [filteredTasks])
