@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CheckCircle, Clock, ListTodo } from "lucide-react"
-import type { TaskStats } from "@/types/task"
+import type { TaskStats } from "@/types/entities"
 
 interface TaskStatsProps {
   stats: TaskStats

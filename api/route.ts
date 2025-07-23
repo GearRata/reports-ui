@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react"
-import { RequestIpPhone } from "../types/entities"
+import { RequestIpPhone, DashboardData } from "../types/entities"
 
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://192.168.0.192:5000"
@@ -144,6 +144,33 @@ export function useTasksNew() {
   return { tasks, loading, error, refreshTasks: fetchTasks }
 }
 
+export function useDashboard() {
+  const [data, setData] = useState<DashboardData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchDashboard = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`${API_BASE}/api/v1/dashboard/data`)
+      if (!response.ok) throw new Error("Failed to fetch dashboard data")
+      const dashboardData = await response.json()
+      setData(dashboardData)
+      console.log("fetch GET data from API:", dashboardData)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDashboard()
+  }, [])
+
+  return { data, loading, error, refreshDashboard: fetchDashboard }
+}
+
 // API Functions
 export async function addBranch(branch: { name: string }) {
   const response = await fetch(`${API_BASE}/api/v1/branch/create`, {
@@ -274,4 +301,6 @@ export async function deleteTaskNew(id: number) {
   })
   return response.ok
 }
+
+
 
