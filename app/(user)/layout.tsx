@@ -1,5 +1,5 @@
 import type React from "react";
-import { BlurFade } from "@/components/blur-fade";
+import { BlurFade } from "@/components/magicui/blur-fade";
 import { TypingAnimation } from "@/components/magicui/typing-animation";
 import Image from 'next/image'
 export default function UserLayout({
@@ -14,7 +14,7 @@ export default function UserLayout({
         <BlurFade delay={0.3} inView>
           <h2 className=" text-center text-3xl font-bold sm:text-5xl xl:text-6xl/none">
           <div className="flex items-center justify-center gap-2 ">
-            <Image src="/LOGO-NOPADOL.png" alt="logo" width={50} height={30}/>
+            <Image src="/Logo-Nopadol.png" alt="logo" width={50} height={0}/>
              <TypingAnimation>นพดลพานิช</TypingAnimation>
           </div>
           </h2>
