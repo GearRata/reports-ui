@@ -14,15 +14,13 @@
  * Data Source: Dashboard API (/api/v1/dashboard/data)
  * Filters: By department_id
  * Groups: By system_name (program)
- * 
- * @author Kiro AI Assistant
- * @created 2025-01-24
+ 
  */
 
 "use client";
 
 import * as React from "react";
-import { Pie, PieChart, Cell, ResponsiveContainer } from "recharts";
+import { Pie, PieChart, Cell } from "recharts";
 
 import {
   Card,

@@ -12,12 +12,13 @@ export default function UserLayout({
     <div className=" flex min-h-screen  flex-col items-center justify-center dark:bg-gray-900">
       <div className=" ">
         <BlurFade delay={0.3} inView>
-          <h2 className=" text-center text-3xl font-bold sm:text-5xl xl:text-6xl/none">
+          <h2 className=" text-center text-3xl font-bold sm:text-5xl xl:text-6xl/none"></h2>
           <div className="flex items-center justify-center gap-2 ">
             <Image src="/Logo-Nopadol.png" alt="logo" width={50} height={0}/>
              <TypingAnimation>นพดลพานิช</TypingAnimation>
           </div>
-          </h2>
+        </BlurFade>
+        <BlurFade delay={0.3 * 2} inView>
           {children}
         </BlurFade>
       </div>
