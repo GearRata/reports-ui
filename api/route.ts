@@ -1,3 +1,29 @@
+/**
+ * API Routes and Custom Hooks
+ * 
+ * This file contains all API interaction functions and custom React hooks
+ * for the task tracking system. Features include:
+ * 
+ * Custom Hooks:
+ * - useDashboard(): Fetches comprehensive dashboard data
+ * - useBranches(): Manages branch data with CRUD operations
+ * - useDepartments(): Manages department data with CRUD operations
+ * - usePrograms(): Manages program data with CRUD operations
+ * - useIPPhones(): Manages IP phone data with CRUD operations
+ * - useTasksNew(): Manages task data with CRUD operations
+ * 
+ * API Functions:
+ * - CRUD operations for all entities (branches, departments, programs, IP phones, tasks)
+ * - Proper error handling and loading states
+ * - TypeScript interfaces for type safety
+ * 
+ * Base API URL: http://192.168.0.192:5000
+ * Main endpoint: /api/v1/dashboard/data
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24
+ */
+
 "use client";
 
 import { useEffect, useState } from "react"
@@ -156,7 +182,6 @@ export function useDashboard() {
       if (!response.ok) throw new Error("Failed to fetch dashboard data")
       const dashboardData = await response.json()
       setData(dashboardData)
-      console.log("fetch GET data from API:", dashboardData)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
     } finally {

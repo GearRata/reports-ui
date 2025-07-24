@@ -1,3 +1,23 @@
+/**
+ * Login Page Component (Root Page)
+ * 
+ * This is the main login page that serves as the entry point to the application.
+ * Features include:
+ * 
+ * - Two-column layout (form + image)
+ * - FixTrack branding with logo
+ * - LoginForm component integration
+ * - Responsive design (mobile-first)
+ * - Background image on desktop
+ * - Dark mode support
+ * 
+ * Route: / (root)
+ * Access: Public (no authentication required)
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24
+ */
+
 "use client"
 import Image from 'next/image'
 

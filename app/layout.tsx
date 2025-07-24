@@ -1,3 +1,21 @@
+/**
+ * Root Layout Component
+ * 
+ * This is the main layout component that wraps the entire application.
+ * Features include:
+ * 
+ * - Global font configuration (Geist Sans and Geist Mono)
+ * - Theme provider setup for dark/light mode support
+ * - Global CSS imports
+ * - Application metadata (title, description)
+ * - HTML structure with proper font variables
+ * 
+ * Applied to all pages in the application
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24
+ */
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";

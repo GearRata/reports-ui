@@ -1,3 +1,24 @@
+/**
+ * Interactive Area Chart Component (Original Chart)
+ * 
+ * This is the original chart component that displays task statistics
+ * with time range filtering. Features include:
+ * 
+ * - Time range selector (7, 30, 90 days)
+ * - Area chart with pending and solved task lines
+ * - Daily data aggregation across all branches
+ * - Interactive tooltip with detailed information
+ * - Thai language labels and formatting
+ * - Responsive design with proper error handling
+ * 
+ * Data Source: Dashboard API (/api/v1/dashboard/data)
+ * Filters: By time range from current date
+ * Groups: By date, aggregates all branches
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24 (Enhanced from existing)
+ */
+
 "use client"
 
 import * as React from "react"

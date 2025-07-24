@@ -1,3 +1,26 @@
+/**
+ * Branch Area Chart Component
+ *
+ * This component displays an area chart showing problem statistics
+ * for all branches with separate pending/solved lines for each branch.
+ * Features include:
+ *
+ * - Month dropdown selector with Thai labels and task counts
+ * - Dynamic area chart generation based on available branches
+ * - Two lines per branch: pending (status=0) and solved (status=1)
+ * - Daily data display within selected month
+ * - Interactive tooltip showing branch details
+ * - Dynamic color assignment for multiple branches
+ * - Comprehensive error handling and validation
+ *
+ * Data Source: Dashboard API (/api/v1/dashboard/data)
+ * Filters: By month from created_at field
+ * Groups: By date and branch_name, counts by status
+ *
+ * @author Kiro AI Assistant
+ * @created 2025-01-24
+ */
+
 "use client";
 
 import * as React from "react";

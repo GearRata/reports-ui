@@ -1,9 +1,34 @@
+/**
+ * Dashboard Main Page Component
+ * 
+ * This is the main dashboard page that displays various charts and statistics
+ * for the task tracking system. Features include:
+ * 
+ * - Task statistics cards showing total, pending, and solved counts
+ * - Multiple chart components for different data visualizations:
+ *   - ChartAreaInteractive: Original chart with time range filtering
+ *   - BranchAreaChart: Monthly branch comparison with pending/solved breakdown
+ *   - YearlyBranchChart: Yearly comparison between two main branches
+ *   - PieChartSummary: Program statistics by department
+ * 
+ * - Sidebar navigation and responsive layout
+ * - Real-time data fetching from dashboard API
+ * - Loading and error state handling
+ * 
+ * Data Source: useDashboard() hook -> /api/v1/dashboard/data
+ * Layout: Sidebar + main content area with grid layout for charts
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24
+ */
+
 "use client";
 // test git commit
 import type React from "react";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { BranchAreaChart } from "@/components/charts/branch-area-chart";
 import { YearlyBranchChart } from "@/components/charts/yearly-branch-chart";
+import { PieChartSummary } from "@/components/charts/pie-chart";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { TaskStatsCards } from "@/components/task/task-stats";
@@ -15,7 +40,6 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 function Page() {
   const { data, loading, error } = useDashboard();
 
-  console.log(data);
 
   // Calculate stats from dashboard data
   const status: TaskStats = useMemo(() => {
@@ -51,6 +75,7 @@ function Page() {
                 <ChartAreaInteractive data={data} loading={loading} error={error} />
                 <BranchAreaChart data={data} loading={loading} error={error} />
                 <YearlyBranchChart data={data} loading={loading} error={error} />
+                <PieChartSummary data={data} loading={loading} error={error} />
               </div>
             </div>
           </div>

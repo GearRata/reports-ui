@@ -1,3 +1,25 @@
+/**
+ * Yearly Branch Chart Component
+ * 
+ * This component displays an area chart showing problem statistics
+ * for two specific branches (สำนักงานใหญ่ and สาขาสันกำแพง) over a year.
+ * Features include:
+ * 
+ * - Year dropdown selector with Buddhist calendar format
+ * - Two separate area lines for each branch
+ * - Monthly data display (12 months)
+ * - Interactive tooltip with branch details
+ * - Custom legend with proper ordering
+ * - Thai language labels and formatting
+ * 
+ * Data Source: Dashboard API (/api/v1/dashboard/data)
+ * Filters: By year from created_at field
+ * Groups: By month and branch_name
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24
+ */
+
 "use client";
 
 import * as React from "react";

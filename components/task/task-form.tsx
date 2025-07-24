@@ -1,3 +1,29 @@
+/**
+ * Task Form Component
+ * 
+ * This component provides a dialog form for creating and editing tasks.
+ * Features include:
+ * 
+ * - Modal dialog with form fields for task creation/editing
+ * - Dynamic dropdown population from API:
+ *   - Departments (from /branchEntry/branchOffices)
+ *   - Programs (from /programEntry/programs)
+ * - Form validation and error handling
+ * - Support for both create and edit modes
+ * - Status selection (pending/solved)
+ * 
+ * Form Fields:
+ * - IP Phone (text input)
+ * - Department (dropdown)
+ * - Program (dropdown)
+ * - Problem description (textarea)
+ * - Solution (textarea)
+ * - Status (dropdown)
+ * 
+ * @author Kiro AI Assistant
+ * @created 2025-01-24 (Enhanced from existing)
+ */
+
 "use client"
 
 import type React from "react"
