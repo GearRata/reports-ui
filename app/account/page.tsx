@@ -1,12 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { UserStatsCards } from "@/components/user/user-stats"
 import { UserTable } from "@/components/user/user-table"
 import { UserForm } from "@/components/user/user-form"
 import type { User, UserStats } from "@/types/user"
-import usersData from "@/data/users.json"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -20,10 +19,10 @@ function AccountPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  // Load initial data
-  useEffect(() => {
-    setUsers(usersData as User[])
-  }, [])
+  // // Load initial data
+  // useEffect(() => {
+  //   setUsers(usersData as User[])
+  // }, [])
 
   // Calculate stats
   const stats: UserStats = useMemo(() => {

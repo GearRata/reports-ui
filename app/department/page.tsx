@@ -82,7 +82,7 @@ function Page() {
                     className="h-8 w-[150px] lg:w-[450px]"
                   />
                 </div>
-                <Button onClick={handleAddDepartment} size="sm" className="ml-auto h-8">
+                <Button onClick={handleAddDepartment} size="sm" className="ml-auto h-8 text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Department
                 </Button>

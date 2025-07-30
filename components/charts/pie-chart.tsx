@@ -101,37 +101,52 @@ export function PieChartSummary({
       return [];
     }
 
-    return data.departments.map((dept) => ({
+    // Add "ALL" option at the beginning
+    const allOption: DepartmentOption = {
+      value: "ALL",
+      label: "All Department",
+      id: -1,
+    };
+
+    const departmentList = data.departments.map((dept) => ({
       value: dept.id.toString(),
       label: dept.name,
       id: dept.id,
     }));
+
+    return [allOption, ...departmentList];
   }, [data]);
 
-  // Set default selected department
+  // Set default selected department to "ALL"
   React.useEffect(() => {
     if (departmentOptions.length > 0 && !selectedDepartment) {
-      setSelectedDepartment(departmentOptions[0].value);
+      setSelectedDepartment("ALL"); // Default to show all departments
     }
   }, [departmentOptions, selectedDepartment]);
 
   /**
    * Transform tasks data to pie chart format
-   * Groups by program and counts problems for selected department
+   * Groups by program and counts problems for selected department or all departments
    */
   const pieChartData = React.useMemo<PieChartDataPoint[]>(() => {
     if (!data?.tasks || data.tasks.length === 0 || !selectedDepartment) {
       return [];
     }
-    console.log(data.tasks)
-    
+    console.log(data.tasks);
 
-    const departmentId = parseInt(selectedDepartment);
+    let departmentTasks;
 
-    // Filter tasks by selected department
-    const departmentTasks = data.tasks.filter(
-      (task) => task.department_id === departmentId
-    );
+    // Filter tasks based on selected department
+    if (selectedDepartment === "ALL") {
+      // Show all tasks from all departments
+      departmentTasks = data.tasks;
+    } else {
+      // Filter tasks by selected department
+      const departmentId = parseInt(selectedDepartment);
+      departmentTasks = data.tasks.filter(
+        (task) => task.department_id === departmentId
+      );
+    }
 
     if (departmentTasks.length === 0) {
       return [];
@@ -214,8 +229,10 @@ export function PieChartSummary({
         <div className="grid flex-1 gap-1 text-center sm:text-left">
           <CardTitle>สถิติปัญหาตามโปรแกรม</CardTitle>
           <CardDescription>
-            แสดงเปอร์เซ็นต์ปัญหาของแต่ละโปรแกรมในแผนก
-            {selectedDepartmentName && ` ${selectedDepartmentName}`}
+            แสดงเปอร์เซ็นต์ปัญหาของแต่ละโปรแกรม
+            {selectedDepartment === "ALL"
+              ? "ในทุกแผนก"
+              : selectedDepartmentName && `ในแผนก ${selectedDepartmentName}`}
           </CardDescription>
         </div>
         <Select
@@ -248,7 +265,11 @@ export function PieChartSummary({
           </div>
         ) : pieChartData.length === 0 ? (
           <div className="flex items-center justify-center h-[400px]">
-            <div className="text-gray-500">ไม่มีข้อมูลในแผนกที่เลือก</div>
+            <div className="text-gray-500">
+              {selectedDepartment === "ALL"
+                ? "ไม่มีข้อมูลปัญหาในระบบ"
+                : "ไม่มีข้อมูลในแผนกที่เลือก"}
+            </div>
           </div>
         ) : (
           <div className="flex flex-col lg:flex-row gap-6">
@@ -276,7 +297,7 @@ export function PieChartSummary({
                     }) => {
                       // Only show percentage if it's >= 3% to avoid clutter
                       if (percentage < 3) return null;
-                      
+
                       // Check for undefined values
                       if (
                         cx === undefined ||
@@ -288,6 +309,29 @@ export function PieChartSummary({
                         return null;
                       }
 
+                      // Special handling for 100% (single segment)
+                      if (percentage === 100) {
+                        return (
+                          <text
+                            x={cx}
+                            y={cy}
+                            fill="white"
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fontSize="14"
+                            fontWeight="bold"
+                            style={{
+                              textShadow: "1px 1px 2px rgba(0,0,0,0.8)",
+                              filter:
+                                "drop-shadow(1px 1px 2px rgba(0,0,0,0.8))",
+                            }}
+                          >
+                            {`${percentage}%`}
+                          </text>
+                        );
+                      }
+
+                      // Normal positioning for multiple segments
                       const RADIAN = Math.PI / 180;
                       const radius =
                         innerRadius + (outerRadius - innerRadius) * 0.5;

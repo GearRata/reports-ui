@@ -29,10 +29,11 @@ export default function LoginPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="text-primary-foreground flex size-6 items-center justify-center rounded-md">
-              <Image src="/logo.png" alt="Logo" width={30} height={30} />
+            <div className="text-primary-foreground flex items-center justify-center gap-2">
+              <Image src="/LOGO-NOPADOL.png" alt="Logo" width={40} height={30} />
+              <h1 className='text-2xl font-bold text-blue-700'>NOPADOL</h1>
             </div>
-            FIXTRACK
+          
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">

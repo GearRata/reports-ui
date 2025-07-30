@@ -12,7 +12,7 @@ import { DialogFooter } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useParams } from "next/navigation";
 import { Branch, Department, Program } from "@/types/entities";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import axios from "axios";
 
 export default function DialogForm() {
@@ -27,7 +27,7 @@ export default function DialogForm() {
   const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [loadingBranch, setLoadingBranch] = useState(false);
   const [loadingDepartment, setLoadingDepartment] = useState(false);
-  const notify = () => toast.success("แจ้งปัญหาเรียบร้อยแล้ว");
+
 
   // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
   const loadProgram = useCallback(async () => {
@@ -131,11 +131,10 @@ export default function DialogForm() {
     // Prepare Telegram message data
     const telegramData = {
       branchName: `${branch?.name || "Unknown Branch"}`,
-      departmentName:  `${department?.name || "Unknown Department"}`,
+      departmentName: `${department?.name || "Unknown Department"}`,
       program: `${program?.name || "Unknown Program"}`,
       reportmessage: `${text}`,
       url: `https://www.youtube.com/watch?v=PCDYbzbYP4w&list=RDPCDYbzbYP4w&start_radio=1`,
-
     };
 
     try {
@@ -151,7 +150,10 @@ export default function DialogForm() {
         }),
 
         // 2. Send to Telegram API
-        axios.post(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/telegramMessage`, telegramData),
+        axios.post(
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/telegramMessage`,
+          telegramData
+        ),
       ]);
 
       // Check if both requests succeeded
@@ -159,15 +161,24 @@ export default function DialogForm() {
       const telegramSuccess = telegramResponse.status === 200;
 
       if (problemSuccess && telegramSuccess) {
+        if(text === "") {
+          toast.error("กรอกข้อมูลที่ต้องการจะแจ้ง")
+        }
         toast.success(
           "แจ้งปัญหาเรียบร้อยแล้ว และส่งแจ้งเตือนไปยัง Telegram แล้ว"
         );
         setText("");
-        window.location.reload();
+        // รอให้ toast แสดงผลก่อนรีโหลด
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       } else if (problemSuccess) {
         toast.success("แจ้งปัญหาเรียบร้อยแล้ว (แต่ไม่สามารถส่ง Telegram ได้)");
         setText("");
-        window.location.reload();
+        // รอให้ toast แสดงผลก่อนรีโหลด
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         toast.error("ไม่สามารถแจ้งปัญหาได้ กรุณาลองใหม่อีกครั้ง");
         console.error("Failed to submit task");
@@ -180,7 +191,7 @@ export default function DialogForm() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">
+      <h1 className="text-xl text-center font-extrabold mb-4 text-black">
         {loadingDepartment ? (
           <span className="animate-pulse bg-gray-200 rounded h-6 w-32 inline-block"></span>
         ) : (
@@ -192,12 +203,12 @@ export default function DialogForm() {
         ) : (
           branch?.name || "Loading..."
         )}
-      </h2>
+      </h1>
 
       <form onSubmit={handleSubmit}>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 text-black">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="program" className="text-right">
+            <Label htmlFor="program" className="text-right text-md font-bold">
               Program
             </Label>
             <Select
@@ -210,7 +221,7 @@ export default function DialogForm() {
               }}
               disabled={loadingPrograms}
             >
-              <SelectTrigger className="col-span-3">
+              <SelectTrigger className="col-span-3 border-gray-700">
                 <SelectValue
                   placeholder={
                     loadingPrograms ? "Loading..." : "Select Program"
@@ -241,31 +252,36 @@ export default function DialogForm() {
             </Select>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="text" className="text-right">
+            <Label htmlFor="text" className="text-right text-md font-bold">
               Text
             </Label>
             <Textarea
               id="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              className="col-span-3"
+              className="col-span-3 bg-white border-1 border-gray-700 focus:outline-3 focus:outline-blue-500"
               placeholder="อธิบายปัญหาที่พบเกี่ยวกับโปรแกรมนี้.."
               required
             />
           </div>
         </div>
         <DialogFooter>
-          <Button
+          {/* <Button
             type="button"
             variant="outline"
             onClick={() => window.location.reload()}
+            className="text-black border"
           >
             ยกเลิก
-          </Button>
-          <Button type="submit" onClick={notify}>
+          </Button> */}
+          <Button
+            type="submit"
+            className="text-white font-bold rounded-2xl shadow-blue-500/100 inset-shadow-2xs shadow-xl/30"
+          >
             แจ้งปัญหา
           </Button>
-          <Toaster />
+
+          {/* <Microphone/> */}
         </DialogFooter>
       </form>
     </div>

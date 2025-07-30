@@ -30,7 +30,7 @@ import { useEffect, useState } from "react"
 import { RequestIpPhone, DashboardData } from "../types/entities"
 
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://192.168.0.192:5000"
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://192.168.0.192"
 
 // Branches Hook
 export function useBranches() {
@@ -153,7 +153,6 @@ export function useTasksNew() {
       const response = await fetch(`${API_BASE}/api/v1/problem/list`)
       if (!response.ok) throw new Error("Failed to fetch tasks")
       const data = await response.json()
-      console.log("fetch GET data from API:", data.data)
       setTasks(data.data || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")

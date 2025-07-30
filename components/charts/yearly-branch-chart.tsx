@@ -368,6 +368,8 @@ export function YearlyBranchChart({
     );
   }
 
+
+
   return (
     <Card>
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
@@ -456,7 +458,9 @@ export function YearlyBranchChart({
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                minTickGap={32}
+                angle={-45}
+                textAnchor="end"
+                interval="preserveStartEnd" // แสดงตัวแรกและสุดท้าย
                 tickFormatter={(value) => value.substring(0, 3)} // แสดงแค่ 3 ตัวอักษรแรก
               />
               <ChartTooltip
@@ -518,11 +522,13 @@ export function YearlyBranchChart({
 
               <Area
                 dataKey="สำนักงานใหญ่"
-                type="natural"
+                type="monotone"
                 fill="url(#fillสำนักงานใหญ่)"
                 stroke="var(--color-สำนักงานใหญ่)"
                 strokeWidth={2}
-                fillOpacity={0.6}
+                fillOpacity={0.3}
+                connectNulls={false}  // ไม่เชื่อมจุดที่เป็น null/0
+
               />
               <Area
                 dataKey="สาขาสันกำแพง"
@@ -530,7 +536,9 @@ export function YearlyBranchChart({
                 fill="url(#fillสาขาสันกำแพง)"
                 stroke="var(--color-สาขาสันกำแพง)"
                 strokeWidth={2}
-                fillOpacity={0.6}
+                fillOpacity={0.3}
+                connectNulls={false}  // ไม่เชื่อมจุดที่เป็น null/0
+
               />
 
               <ChartLegend

@@ -103,7 +103,7 @@ function Page() {
                   <Button
                     onClick={handleAddIPPhone}
                     size="sm"
-                    className="ml-auto h-8"
+                    className="ml-auto h-8 text-white"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add IP Phone
