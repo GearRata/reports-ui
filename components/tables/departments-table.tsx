@@ -13,7 +13,6 @@ interface DepartmentsTableProps {
 }
 
 export function DepartmentsTable({ departments, onEditDepartment, onDeleteDepartment }: DepartmentsTableProps) {
-  console.log("Departments:", departments)
   return (
     <div className="rounded-md border">
       <Table>

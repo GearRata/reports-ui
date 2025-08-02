@@ -28,7 +28,6 @@ export default function DialogForm() {
   const [loadingBranch, setLoadingBranch] = useState(false);
   const [loadingDepartment, setLoadingDepartment] = useState(false);
 
-
   // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
   const loadProgram = useCallback(async () => {
     setLoadingPrograms(true);
@@ -121,6 +120,7 @@ export default function DialogForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+
     const formData = {
       text,
       branch_id: branchID,
@@ -140,7 +140,7 @@ export default function DialogForm() {
     try {
       // Send to both endpoints simultaneously
       const [problemResponse, telegramResponse] = await Promise.all([
-        // 1. Send to problem/create API
+        // Send to problem/create API
         fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
           method: "POST",
           headers: {
@@ -149,7 +149,7 @@ export default function DialogForm() {
           body: JSON.stringify(formData),
         }),
 
-        // 2. Send to Telegram API
+        //end to Telegram API
         axios.post(
           `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/telegramMessage`,
           telegramData
@@ -161,9 +161,6 @@ export default function DialogForm() {
       const telegramSuccess = telegramResponse.status === 200;
 
       if (problemSuccess && telegramSuccess) {
-        if(text === "") {
-          toast.error("กรอกข้อมูลที่ต้องการจะแจ้ง")
-        }
         toast.success(
           "แจ้งปัญหาเรียบร้อยแล้ว และส่งแจ้งเตือนไปยัง Telegram แล้ว"
         );

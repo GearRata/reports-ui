@@ -91,10 +91,11 @@ export function BranchForm({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="hover:scale-105"
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="text-white hover:scale-105" >
               {branch ? "Update Branch" : "Create Branch"}
             </Button>
           </DialogFooter>
@@ -143,9 +144,6 @@ export function DepartmentFormNew({
     onOpenChange(false);
   };
 
-  console.log("branches Array:", branches);
-  console.log("branches ID:", branchId);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -183,7 +181,8 @@ export function DepartmentFormNew({
                 onValueChange={(value) => setBranchId(Number(value))}
               >
                 <SelectTrigger className="col-span-3 w-full">
-                  <SelectValue placeholder="Select Department" />
+                  <SelectValue placeholder="Select Branch" />
+                  
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch) => (
@@ -200,10 +199,11 @@ export function DepartmentFormNew({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="hover:scale-105"
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="text-white hover:scale-105">
               {department ? "Update Department" : "Create Department"}
             </Button>
           </DialogFooter>
@@ -332,8 +332,6 @@ export function IPPhoneForm({
       setDepartmentID(0);
     }
   }, [ipPhone, open]);
-
-  console.log("IP Phone Form", ipPhone);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

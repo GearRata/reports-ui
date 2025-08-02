@@ -30,7 +30,6 @@ import { useEffect, useState } from "react"
 import { RequestIpPhone, DashboardData } from "../types/entities"
 
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://192.168.0.192"
 
 // Branches Hook
 export function useBranches() {
@@ -41,7 +40,7 @@ export function useBranches() {
   const fetchBranches = async () => {
   setLoading(true)
   try {
-    const response = await fetch(`${API_BASE}/api/v1/branch/list`)
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/branch/list`)
     if (!response.ok) throw new Error("Failed to fetch branches")
     const data = await response.json()
     setBranches(data.data || [])
@@ -68,7 +67,7 @@ export function useDepartments() {
   const fetchDepartments = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_BASE}/api/v1/department/list`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/list`)
       if (!response.ok) throw new Error("Failed to fetch departments")
       const data = await response.json()
       setDepartments(data.data || [])
@@ -96,7 +95,7 @@ export function usePrograms() {
   const fetchPrograms = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_BASE}/api/v1/program/list`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/list`)
       if (!response.ok) throw new Error("Failed to fetch programs")
       const data = await response.json()
       setPrograms(data.data || [])
@@ -123,7 +122,7 @@ export function useIPPhones() {
   const fetchIPPhones = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_BASE}/api/v1/ipphone/list`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`)
       if (!response.ok) throw new Error("Failed to fetch IP phones")
       const data = await response.json()
       setIPPhones(data.data || [])
@@ -150,7 +149,7 @@ export function useTasksNew() {
   const fetchTasks = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_BASE}/api/v1/problem/list`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`)
       if (!response.ok) throw new Error("Failed to fetch tasks")
       const data = await response.json()
       setTasks(data.data || [])
@@ -177,7 +176,7 @@ export function useDashboard() {
   const fetchDashboard = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${API_BASE}/api/v1/dashboard/data`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/dashboard/data`)
       if (!response.ok) throw new Error("Failed to fetch dashboard data")
       const dashboardData = await response.json()
       setData(dashboardData)
@@ -197,7 +196,7 @@ export function useDashboard() {
 
 // API Functions
 export async function addBranch(branch: { name: string }) {
-  const response = await fetch(`${API_BASE}/api/v1/branch/create`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/branch/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(branch),
@@ -206,7 +205,7 @@ export async function addBranch(branch: { name: string }) {
 }
 
 export async function updateBranch(id: number, branch: { name: string }) {
-  const response = await fetch(`${API_BASE}/api/v1/branch/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/branch/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(branch),
@@ -215,14 +214,14 @@ export async function updateBranch(id: number, branch: { name: string }) {
 }
 
 export async function deleteBranch(id: number) {
-  const response = await fetch(`${API_BASE}/api/v1/branch/delete/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/branch/delete/${id}`, {
     method: "DELETE",
   })
   return response.ok
 }
 
 export async function addDepartment(department: { name: string, branch_id: number }) {
-  const response = await fetch(`${API_BASE}/api/v1/department/create`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(department),
@@ -231,7 +230,7 @@ export async function addDepartment(department: { name: string, branch_id: numbe
 }
 
 export async function updateDepartment(id: number, department: { name: string; branch_id: number }) {
-  const response = await fetch(`${API_BASE}/api/v1/department/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(department),
@@ -240,14 +239,14 @@ export async function updateDepartment(id: number, department: { name: string; b
 }
 
 export async function deleteDepartment(id: number) {
-  const response = await fetch(`${API_BASE}/api/v1/department/delete/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/delete/${id}`, {
     method: "DELETE",
   })
   return response.ok
 }
 
 export async function addProgram(program: { name: string }) {
-  const response = await fetch(`${API_BASE}/api/v1/program/create`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(program),
@@ -256,7 +255,7 @@ export async function addProgram(program: { name: string }) {
 }
 
 export async function updateProgram(id: number, program: { name: string }) {
-  const response = await fetch(`${API_BASE}/api/v1/program/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(program),
@@ -265,7 +264,7 @@ export async function updateProgram(id: number, program: { name: string }) {
 }
 
 export async function deleteProgram(id: number) {
-  const response = await fetch(`${API_BASE}/api/v1/program/delete/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/delete/${id}`, {
     method: "DELETE",
   })
   return response.ok
@@ -273,7 +272,7 @@ export async function deleteProgram(id: number) {
 
 export async function addIPPhone(req: RequestIpPhone) {
   try {
-    const response = await fetch(`${API_BASE}/api/v1/ipphone/create`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
@@ -286,7 +285,7 @@ export async function addIPPhone(req: RequestIpPhone) {
 }
 
 export async function updateIPPhone(id: number, ipPhone: { number: number; name: string; branch_id: number; department_id: number }) {
-  const response = await fetch(`${API_BASE}/api/v1/ipphone/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ipPhone),
@@ -295,14 +294,14 @@ export async function updateIPPhone(id: number, ipPhone: { number: number; name:
 }
 
 export async function deleteIPPhone(id: number) {
-  const response = await fetch(`${API_BASE}/api/v1/ipphone/delete/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/delete/${id}`, {
     method: "DELETE",
   })
   return response.ok
 }
 
 export async function addTaskNew(task: { phone_id: number; system_id: number; text: string; status: number }) {
-  const response = await fetch(`${API_BASE}/api/v1/problem/create`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(task),
@@ -311,7 +310,7 @@ export async function addTaskNew(task: { phone_id: number; system_id: number; te
 }
 
 export async function updateTaskNew(id: number, task: { phone_id: number; system_id: number; text: string; status: number }) {
-  const response = await fetch(`${API_BASE}/api/v1/problem/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(task),
@@ -320,7 +319,7 @@ export async function updateTaskNew(id: number, task: { phone_id: number; system
 }
 
 export async function deleteTaskNew(id: number) {
-  const response = await fetch(`${API_BASE}/api/v1/problem/delete/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/delete/${id}`, {
     method: "DELETE",
   })
   return response.ok

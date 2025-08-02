@@ -37,7 +37,7 @@ export function useAuth() {
     password: string
   ): Promise<User | null> {
     try {
-      const res = await fetch("http://192.168.0.192:5000/authEntry/login", {
+      const res = await fetch (`${process.env.NEXT_PUBLIC_API_BASE}/api/authEntry/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

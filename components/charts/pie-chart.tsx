@@ -132,7 +132,6 @@ export function PieChartSummary({
     if (!data?.tasks || data.tasks.length === 0 || !selectedDepartment) {
       return [];
     }
-    console.log(data.tasks);
 
     let departmentTasks;
 
