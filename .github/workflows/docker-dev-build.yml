@@ -21,7 +21,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f Dockerfile.dev -t gearmcc/reports-ui:dev ./frontend
+          docker build -f Dockerfile.dev -t gearmcc/reports-ui:dev .
 
       - name: Push Docker image to Docker Hub
         run: |
