@@ -16,8 +16,7 @@
  * 3. Middleware checks authentication for protected routes
  * 4. Logout clears localStorage and resets state
  * 
- * @author Kiro AI Assistant
- * @created 2025-01-24 (Enhanced from existing)
+
  */
 
 import { useState } from "react";
