@@ -120,12 +120,12 @@ export default function DialogForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-
     const formData = {
       text,
       branch_id: branchID,
       department_id: departmentID,
       system_id: program?.id,
+      telegram: true,
     };
 
     // Prepare Telegram message data
