@@ -23,6 +23,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 function Page() {
   const { branches } = useBranches()
   const { departments } = useDepartments()
+  const { loading } = useIPPhones()
   const { ipPhones, refreshIPPhones } = useIPPhones();
   const [searchQuery, setSearchQuery] = useState("");
   const [isIPPhoneFormOpen, setIsIPPhoneFormOpen] = useState(false);
@@ -127,6 +128,7 @@ function Page() {
                   onSubmit={handleIPPhoneSubmit}
                   branches={branches}
                   departments={departments}
+                  loading={loading}
                 />
               </div>
             </div>

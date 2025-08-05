@@ -15,6 +15,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 function Page() {
   const { branches } = useBranches()
+  const { loading } = useDepartments()
   const { departments, refreshDepartments } = useDepartments()
   const [searchQuery, setSearchQuery] = useState("")
   const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false)
@@ -104,6 +105,7 @@ function Page() {
                 department={editingDepartment}
                 onSubmit={handleDepartmentSubmit}
                 branches={branches}
+                loading={loading}
               />
             </div>
           </div>

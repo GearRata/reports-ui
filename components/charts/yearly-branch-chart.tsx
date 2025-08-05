@@ -5,12 +5,6 @@
  * for two specific branches (สำนักงานใหญ่ and สาขาสันกำแพง) over a year.
  * Features include:
  * 
- * - Year dropdown selector with Buddhist calendar format
- * - Two separate area lines for each branch
- * - Monthly data display (12 months)
- * - Interactive tooltip with branch details
- * - Custom legend with proper ordering
- * - Thai language labels and formatting
  * 
  * Data Source: Dashboard API (/api/v1/dashboard/data)
  * Filters: By year from created_at field

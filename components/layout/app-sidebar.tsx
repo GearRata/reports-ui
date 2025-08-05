@@ -69,7 +69,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5 my-2 w-full ">
               <Link href="/dashboard" className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
-                  <Image src="/Logo-Nopadol.png" alt="" width={30} height={30}/>
+                  <Image src="/LOGO-NOPADOL.png" alt="" width={30} height={30}/>
                   <span className="text-base font-semibold">NOPADOL</span>
                 </div>
               </Link>

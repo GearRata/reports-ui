@@ -95,7 +95,7 @@ export function BranchForm({
             >
               Cancel
             </Button>
-            <Button type="submit" className="text-white hover:scale-105" >
+            <Button type="submit" className="text-white hover:scale-105">
               {branch ? "Update Branch" : "Create Branch"}
             </Button>
           </DialogFooter>
@@ -112,6 +112,7 @@ interface DepartmentFormProps {
   department?: Department | null;
   onSubmit: (data: { name: string; id?: number; branch_id: number }) => void;
   branches: { id: number; name: string }[];
+  loading: boolean;
 }
 
 export function DepartmentFormNew({
@@ -120,17 +121,18 @@ export function DepartmentFormNew({
   department,
   onSubmit,
   branches,
+  loading,
 }: DepartmentFormProps) {
   const [name, setName] = useState("");
-  const [branchId, setBranchId] = useState<number>(0);
+  const [branchId, setBranchId] = useState<string>("");
 
   useEffect(() => {
     if (department) {
       setName(department.name);
-      setBranchId(department.branch_id);
+      setBranchId(department.branch_id.toString());
     } else {
       setName("");
-      setBranchId(0);
+      setBranchId("");
     }
   }, [department, open]);
 
@@ -138,7 +140,7 @@ export function DepartmentFormNew({
     e.preventDefault();
     onSubmit({
       name,
-      branch_id: branchId,
+      branch_id: Number(branchId),
       ...(department && { id: department.id }),
     });
     onOpenChange(false);
@@ -177,12 +179,13 @@ export function DepartmentFormNew({
                 Branch
               </Label>
               <Select
-                value={branchId.toString()}
-                onValueChange={(value) => setBranchId(Number(value))}
+                value={branchId}
+                onValueChange={(value) => setBranchId(value)}
               >
                 <SelectTrigger className="col-span-3 w-full">
-                  <SelectValue placeholder="Select Branch" />
-                  
+                  <SelectValue
+                    placeholder={loading ? "Loading..." : "Select Branch"}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch) => (
@@ -277,10 +280,11 @@ export function ProgramFormNew({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="hover:scale-105"
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="text-white hover:scale-105">
               {program ? "Update Program" : "Create Program"}
             </Button>
           </DialogFooter>
@@ -304,6 +308,7 @@ interface IPPhoneFormProps {
   }) => void;
   branches: { id: number; name: string }[];
   departments: { id: number; name: string }[];
+  loading: boolean;
 }
 
 export function IPPhoneForm({
@@ -313,9 +318,10 @@ export function IPPhoneForm({
   onSubmit,
   branches,
   departments,
+  loading,
 }: IPPhoneFormProps) {
-  const [branchId, setBranchId] = useState<number>(0);
-  const [departmentId, setDepartmentID] = useState<number>(0);
+  const [branchId, setBranchId] = useState<string>("");
+  const [departmentId, setDepartmentID] = useState<string>("");
   const [number, setNumber] = useState(0);
   const [name, setName] = useState("");
 
@@ -323,13 +329,13 @@ export function IPPhoneForm({
     if (ipPhone) {
       setNumber(ipPhone.number);
       setName(ipPhone.name);
-      setBranchId(ipPhone.branch_id);
-      setDepartmentID(ipPhone.department_id);
+      setBranchId(ipPhone.branch_id.toString());
+      setDepartmentID(ipPhone.department_id.toString());
     } else {
       setNumber(0);
       setName("");
-      setBranchId(0);
-      setDepartmentID(0);
+      setBranchId("");
+      setDepartmentID("");
     }
   }, [ipPhone, open]);
 
@@ -338,8 +344,8 @@ export function IPPhoneForm({
     onSubmit({
       number,
       name,
-      branch_id: branchId,
-      department_id: departmentId,
+      branch_id: Number(branchId),
+      department_id: Number(departmentId),
       ...(ipPhone && { id: ipPhone.id }),
     });
     onOpenChange(false);
@@ -392,11 +398,13 @@ export function IPPhoneForm({
                 Department
               </Label>
               <Select
-                value={departmentId.toString()}
-                onValueChange={(value) => setDepartmentID(Number(value))}
+                value={departmentId}
+                onValueChange={(value) => setDepartmentID(value)}
               >
                 <SelectTrigger className="col-span-3 w-full">
-                  <SelectValue placeholder="Select Department" />
+                  <SelectValue
+                    placeholder={loading ? "Loading..." : "Select Department"}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {departments.map((department) => (
@@ -415,11 +423,13 @@ export function IPPhoneForm({
                 Branch
               </Label>
               <Select
-                value={branchId.toString()}
-                onValueChange={(value) => setBranchId(Number(value))}
+                value={branchId}
+                onValueChange={(value) => setBranchId(value)}
               >
                 <SelectTrigger className="col-span-3 w-full">
-                  <SelectValue placeholder="Select Department" />
+                  <SelectValue
+                    placeholder={loading ? "Loading..." : "Select Branch"}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {branches.map((branch) => (
@@ -436,10 +446,11 @@ export function IPPhoneForm({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="hover:scale-105"
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="text-white hover:scale-105">
               {ipPhone ? "Update IP Phone" : "Create IP Phone"}
             </Button>
           </DialogFooter>
@@ -473,31 +484,32 @@ export function TaskNewForm({
   ipPhones,
   programs,
 }: TaskNewFormProps) {
-  const [phoneId, setPhoneId] = useState<number>(0);
-  const [programID, setProgramID] = useState<number>(0);
+  const [phoneId, setPhoneId] = useState<string>("");
+  const [programID, setProgramID] = useState<string>("");
   const [text, setText] = useState("");
-  const [status, setStatus] = useState<number>(0);
+  const [status, setStatus] = useState<string>("");
 
   useEffect(() => {
     if (task) {
-      setPhoneId(task.phone_id);
-      setProgramID(task.system_id);
+      setPhoneId(task.phone_id.toString());
+      setProgramID(task.system_id.toString());
       setText(task.text);
-      setStatus(task.status);
+      setStatus(task.status.toString());
     } else {
-      setPhoneId(0);
+      setPhoneId("");
+      setProgramID("");
       setText("");
-      setStatus(0);
+      setStatus("");
     }
   }, [task, open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      phone_id: phoneId,
-      system_id: programID,
+      phone_id: Number(phoneId),
+      system_id: Number(programID),
       text,
-      status: status,
+      status: Number(status),
       ...(task && { id: task.id }),
     });
     onOpenChange(false);
@@ -521,8 +533,8 @@ export function TaskNewForm({
                 IP Phone
               </Label>
               <Select
-                value={phoneId.toString()}
-                onValueChange={(value) => setPhoneId(Number(value))}
+                value={phoneId}
+                onValueChange={(value) => setPhoneId(value)}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select IP phone" />
@@ -541,8 +553,8 @@ export function TaskNewForm({
                 Program
               </Label>
               <Select
-                value={programID.toString()}
-                onValueChange={(value) => setProgramID(Number(value))}
+                value={programID}
+                onValueChange={(value) => setProgramID(value)}
               >
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select Program" />
@@ -575,8 +587,8 @@ export function TaskNewForm({
                   Status
                 </Label>
                 <Select
-                  value={status.toString()}
-                  onValueChange={(value) => setStatus(Number(value))}
+                  value={status}
+                  onValueChange={(value) => setStatus(value)}
                 >
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select status" />
@@ -594,10 +606,11 @@ export function TaskNewForm({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="hover:scale-105"
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="text-white hover:scale-105">
               {task ? "Update Task" : "Create Task"}
             </Button>
           </DialogFooter>
