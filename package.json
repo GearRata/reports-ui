@@ -1,13 +1,13 @@
 {
   "name": "frontend",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "release": "standard-version"
+    "release": "standard-version && node scripts/update-version.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
