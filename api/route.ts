@@ -17,11 +17,8 @@
  * - Proper error handling and loading states
  * - TypeScript interfaces for type safety
  * 
- * Base API URL: http://192.168.0.192:5000
  * Main endpoint: /api/v1/dashboard/data
  * 
- * @author Kiro AI Assistant
- * @created 2025-01-24
  */
 
 "use client";

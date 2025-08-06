@@ -13,7 +13,7 @@ import { Button } from "../ui/button";
 import { useParams } from "next/navigation";
 import { Branch, Department, Program } from "@/types/entities";
 import toast from "react-hot-toast";
-import axios from "axios";
+// import axios from "axios";
 
 export default function DialogForm() {
   const params = useParams();
@@ -128,18 +128,28 @@ export default function DialogForm() {
       telegram: true,
     };
 
-    // Prepare Telegram message data
-    const telegramData = {
-      branchName: `${branch?.name || "Unknown Branch"}`,
-      departmentName: `${department?.name || "Unknown Department"}`,
-      program: `${program?.name || "Unknown Program"}`,
-      reportmessage: `${text}`,
-      url: `https://www.youtube.com/watch?v=PCDYbzbYP4w&list=RDPCDYbzbYP4w&start_radio=1`,
-    };
+    // // Prepare Telegram message data
+    // const telegramData = {
+    //   branchName: `${branch?.name || "Unknown Branch"}`,
+    //   departmentName: `${department?.name || "Unknown Department"}`,
+    //   program: `${program?.name || "Unknown Program"}`,
+    //   reportmessage: `${text}`,
+    //   url: `https://www.youtube.com/watch?v=PCDYbzbYP4w&list=RDPCDYbzbYP4w&start_radio=1`,
+    // };
 
+    // try {
+    //   // Send to both endpoints simultaneously
+    //   const [problemResponse, telegramResponse] = await Promise.all([
+    //     // Send to problem/create API
+    //     fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify(formData),
+    //     }),
     try {
-      // Send to both endpoints simultaneously
-      const [problemResponse, telegramResponse] = await Promise.all([
+      const [problemResponse] = await Promise.all([
         // Send to problem/create API
         fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
           method: "POST",
@@ -150,17 +160,18 @@ export default function DialogForm() {
         }),
 
         //end to Telegram API
-        axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/telegramMessage`,
-          telegramData
-        ),
+        // axios.post(
+        //   `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/telegramMessage`,
+        //   telegramData
+        // ),
       ]);
 
       // Check if both requests succeeded
       const problemSuccess = problemResponse.ok;
-      const telegramSuccess = telegramResponse.status === 200;
+      // const telegramSuccess = telegramResponse.status === 200;
 
-      if (problemSuccess && telegramSuccess) {
+      // if (problemSuccess && telegramSuccess) {
+      if (problemSuccess) {
         toast.success(
           "แจ้งปัญหาเรียบร้อยแล้ว และส่งแจ้งเตือนไปยัง Telegram แล้ว"
         );

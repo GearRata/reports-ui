@@ -66,9 +66,9 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className=" p-3 inset-shadow-sm inset-shadow-blue-600"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar>
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
@@ -101,18 +101,20 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Link href="/account" className="flex items-center gap-2">
-                  <IconUserCircle /> Account
-                </Link>
+            <Link href="/account" className="flex items-center gap-2">
+              <DropdownMenuItem className="w-full cursor-pointer">
+                  <IconUserCircle /> 
+                  <p>Account</p>
               </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link href="/" className="flex items-center gap-2"> 
-                <IconLogout /> Logout
-              </Link>
+            <Link href="/" className="flex items-center gap-2"> 
+            <DropdownMenuItem className="w-full cursor-pointer">
+                <IconLogout /> 
+                <p>Logout</p>
             </DropdownMenuItem>
+            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

@@ -14,14 +14,13 @@
  * Route: / (root)
  * Access: Public (no authentication required)
  * 
- * @author Kiro AI Assistant
- * @created 2025-01-24
  */
 
 "use client"
 import Image from 'next/image'
 
 import { LoginForm } from "@/components/login-form"
+import Version from "@/components/Version";
 
 export default function LoginPage() {
   return (
@@ -50,6 +49,10 @@ export default function LoginPage() {
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>
+        </div>
+        
+        <div className='text-gray-400 font-light text-sm absolute bottom-23 right-75 '>
+            <Version/>
         </div>
       </div>
     </div>

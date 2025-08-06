@@ -18,12 +18,9 @@
  * Data Source: useDashboard() hook -> /api/v1/dashboard/data
  * Layout: Sidebar + main content area with grid layout for charts
  * 
- * @author Kiro AI Assistant
- * @created 2025-01-24
  */
 
 "use client";
-// test git commit
 import type React from "react";
 // import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 // import { BranchAreaChart } from "@/components/charts/branch-area-chart";

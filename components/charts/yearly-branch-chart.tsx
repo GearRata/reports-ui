@@ -10,8 +10,6 @@
  * Filters: By year from created_at field
  * Groups: By month and branch_name
  * 
- * @author Kiro AI Assistant
- * @created 2025-01-24
  */
 
 "use client";

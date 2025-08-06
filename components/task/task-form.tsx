@@ -20,8 +20,6 @@
  * - Solution (textarea)
  * - Status (dropdown)
  * 
- * @author Kiro AI Assistant
- * @created 2025-01-24 (Enhanced from existing)
  */
 
 "use client"
