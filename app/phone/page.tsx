@@ -7,13 +7,15 @@ import { Plus } from "lucide-react";
 import { IPPhonesTable } from "@/components/tables/ip-phones-table";
 import { IPPhoneForm } from "@/components/entities-form";
 import {
-  useIPPhones,
+  useIPPhonesPaginated,
   addIPPhone,
   updateIPPhone,
   deleteIPPhone,
-  useBranches,
-  useDepartments,
+  useBranchesForDropdown,
+  useDepartmentsForDropdown,
 } from "@/api/route";
+import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
+import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { IPPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
@@ -21,10 +23,21 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 
 function Page() {
-  const { branches } = useBranches()
-  const { departments } = useDepartments()
-  const { loading } = useIPPhones()
-  const { ipPhones, refreshIPPhones } = useIPPhones();
+  const { branches } = useBranchesForDropdown()
+  const { departments } = useDepartmentsForDropdown()
+  const {
+    ipPhones,
+    currentPage,
+    pageSize,
+    totalItems,
+    totalPages,
+    loading,
+    error,
+    goToPage,
+    changePageSize,
+    refreshIPPhones,
+  } = useIPPhonesPaginated({ page: 1, limit: 10 })
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [isIPPhoneFormOpen, setIsIPPhoneFormOpen] = useState(false);
   const [editingIPPhone, setEditingIPPhone] = useState<IPPhone | null>(null);
@@ -70,6 +83,8 @@ function Page() {
     }
   };
 
+  // Note: Server-side filtering will be implemented later
+  // For now, we'll use client-side filtering with paginated data
   const filteredIPPhones = ipPhones.filter((ipPhone) =>
     (ipPhone.number + "").toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -113,11 +128,29 @@ function Page() {
 
                 {/* Content */}
                 <div className="space-y-4">
-                  <IPPhonesTable
-                    ipPhones={filteredIPPhones}
-                    onEditIPPhone={handleEditIPPhone}
-                    onDeleteIPPhone={handleDeleteIPPhone}
-                  />
+                  <PaginationErrorBoundary onRetry={refreshIPPhones}>
+                    <IPPhonesTable
+                      ipPhones={filteredIPPhones}
+                      onEditIPPhone={handleEditIPPhone}
+                      onDeleteIPPhone={handleDeleteIPPhone}
+                      loading={loading}
+                      error={error}
+                    />
+                    
+                    {!loading && !error && (
+                      <PaginationWrapper
+                        currentPage={currentPage}
+                        pageSize={pageSize}
+                        totalItems={totalItems}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                        onPageSizeChange={changePageSize}
+                        disabled={loading}
+                        itemName="โทรศัพท์"
+                        pageSizeOptions={[10, 20, 50, 100]}
+                      />
+                    )}
+                  </PaginationErrorBoundary>
                 </div>
 
                 {/* Form */}

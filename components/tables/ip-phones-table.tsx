@@ -10,9 +10,17 @@ interface IPPhonesTableProps {
   ipPhones: IPPhone[]
   onEditIPPhone: (ipPhone: IPPhone) => void
   onDeleteIPPhone: (ipPhoneId: number) => void
+  loading?: boolean
+  error?: string | null
 }
 
-export function IPPhonesTable({ ipPhones, onEditIPPhone, onDeleteIPPhone }: IPPhonesTableProps) {
+export function IPPhonesTable({ 
+  ipPhones, 
+  onEditIPPhone, 
+  onDeleteIPPhone,
+  loading = false,
+  error = null 
+}: IPPhonesTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -27,10 +35,25 @@ export function IPPhonesTable({ ipPhones, onEditIPPhone, onDeleteIPPhone }: IPPh
           </TableRow>
         </TableHeader>
         <TableBody>
-          {ipPhones.length === 0 ? (
+          {loading ? (
             <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
-                No IP phones found.
+              <TableCell colSpan={6} className="h-24 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                  กำลังโหลดข้อมูล...
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : error ? (
+            <TableRow>
+              <TableCell colSpan={6} className="h-24 text-center text-red-500">
+                เกิดข้อผิดพลาด: {error}
+              </TableCell>
+            </TableRow>
+          ) : ipPhones.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                ไม่พบข้อมูลโทรศัพท์
               </TableCell>
             </TableRow>
           ) : (
@@ -44,19 +67,30 @@ export function IPPhonesTable({ ipPhones, onEditIPPhone, onDeleteIPPhone }: IPPh
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button 
+                        variant="ghost" 
+                        className="h-8 w-8 p-0"
+                        disabled={loading}
+                      >
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEditIPPhone(ipPhone)}>
+                      <DropdownMenuItem 
+                        onClick={() => onEditIPPhone(ipPhone)}
+                        disabled={loading}
+                      >
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        แก้ไข
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDeleteIPPhone(ipPhone.id)} className="text-red-600">
+                      <DropdownMenuItem 
+                        onClick={() => onDeleteIPPhone(ipPhone.id)} 
+                        className="text-red-600"
+                        disabled={loading}
+                      >
                         <Trash className="mr-2 h-4 w-4" />
-                        Delete
+                        ลบ
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

@@ -8,14 +8,28 @@ import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
 import { ProgramsTable } from "@/components/tables/programs-table"
 import { ProgramFormNew } from "@/components/entities-form"
-import { usePrograms, addProgram, updateProgram, deleteProgram } from "@/api/route"
+import { useProgramsPaginated, addProgram, updateProgram, deleteProgram } from "@/api/route"
+import { PaginationWrapper } from "@/components/pagination/pagination-wrapper"
+import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary"
 import type { Program } from "@/types/entities"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 function Page() {
-  const { programs, refreshPrograms } = usePrograms()
+  const {
+    programs,
+    currentPage,
+    pageSize,
+    totalItems,
+    totalPages,
+    loading,
+    error,
+    goToPage,
+    changePageSize,
+    refreshPrograms,
+  } = useProgramsPaginated({ page: 1, limit: 10 })
+  
   const [searchQuery, setSearchQuery] = useState("")
   const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
   const [editingProgram, setEditingProgram] = useState<Program | null>(null)
@@ -52,8 +66,11 @@ function Page() {
     }
   }
 
-    const filteredPrograms = programs.filter((program) => program.name.
-    toLowerCase().includes(searchQuery.toLowerCase()))
+  // Note: Server-side filtering will be implemented later
+  // For now, we'll use client-side filtering with paginated data
+  const filteredPrograms = programs.filter((program) => 
+    program.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   
 
@@ -91,11 +108,29 @@ function Page() {
 
               {/* Content */}
               <div className="space-y-4">
-                <ProgramsTable
-                  programs={filteredPrograms}
-                  onEditProgram={handleEditProgram}
-                  onDeleteProgram={handleDeleteProgram}
-                />
+                <PaginationErrorBoundary onRetry={refreshPrograms}>
+                  <ProgramsTable
+                    programs={filteredPrograms}
+                    onEditProgram={handleEditProgram}
+                    onDeleteProgram={handleDeleteProgram}
+                    loading={loading}
+                    error={error}
+                  />
+                  
+                  {!loading && !error && (
+                    <PaginationWrapper
+                      currentPage={currentPage}
+                      pageSize={pageSize}
+                      totalItems={totalItems}
+                      totalPages={totalPages}
+                      onPageChange={goToPage}
+                      onPageSizeChange={changePageSize}
+                      disabled={loading}
+                      itemName="โปรแกรม"
+                      pageSizeOptions={[10, 20, 50, 100]}
+                    />
+                  )}
+                </PaginationErrorBoundary>
               </div>
 
               {/* Form */}

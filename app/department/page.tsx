@@ -7,16 +7,29 @@ import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
 import { DepartmentsTable } from "@/components/tables/departments-table"
 import { DepartmentFormNew } from "@/components/entities-form"
-import { useDepartments, addDepartment, updateDepartment, deleteDepartment, useBranches } from "@/api/route"
+import { useDepartmentsPaginated, addDepartment, updateDepartment, deleteDepartment, useBranchesForDropdown } from "@/api/route"
+import { PaginationWrapper } from "@/components/pagination/pagination-wrapper"
+import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary"
 import type { Department } from "@/types/entities"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 function Page() {
-  const { branches } = useBranches()
-  const { loading } = useDepartments()
-  const { departments, refreshDepartments } = useDepartments()
+  const { branches } = useBranchesForDropdown()
+  const {
+    departments,
+    currentPage,
+    pageSize,
+    totalItems,
+    totalPages,
+    loading,
+    error,
+    goToPage,
+    changePageSize,
+    refreshDepartments,
+  } = useDepartmentsPaginated({ page: 1, limit: 10 })
+  
   const [searchQuery, setSearchQuery] = useState("")
   const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false)
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null)
@@ -53,6 +66,8 @@ function Page() {
     }
   }
 
+  // Note: Server-side filtering will be implemented later
+  // For now, we'll use client-side filtering with paginated data
   const filteredDepartments = departments.filter((department) =>
     department.name.toLowerCase().includes(searchQuery.toLowerCase()),
   )
@@ -91,11 +106,29 @@ function Page() {
 
               {/* Content */}
               <div className="space-y-4">
-                <DepartmentsTable
-                  departments={filteredDepartments}
-                  onEditDepartment={handleEditDepartment}
-                  onDeleteDepartment={handleDeleteDepartment}
-                />
+                <PaginationErrorBoundary onRetry={refreshDepartments}>
+                  <DepartmentsTable
+                    departments={filteredDepartments}
+                    onEditDepartment={handleEditDepartment}
+                    onDeleteDepartment={handleDeleteDepartment}
+                    loading={loading}
+                    error={error}
+                  />
+                  
+                  {!loading && !error && (
+                    <PaginationWrapper
+                      currentPage={currentPage}
+                      pageSize={pageSize}
+                      totalItems={totalItems}
+                      totalPages={totalPages}
+                      onPageChange={goToPage}
+                      onPageSizeChange={changePageSize}
+                      disabled={loading}
+                      itemName="แผนก"
+                      pageSizeOptions={[10, 20, 50, 100]}
+                    />
+                  )}
+                </PaginationErrorBoundary>
               </div>
 
               {/* Form */}

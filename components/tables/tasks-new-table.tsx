@@ -28,6 +28,7 @@ interface TasksNewTableProps {
   onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
   loading?: boolean;
+  error?: string | null;
 }
 
 const statusColors: Record<number, string> = {
@@ -44,6 +45,8 @@ export function TasksNewTable({
   tasks,
   onEditTask,
   onDeleteTask,
+  loading = false,
+  error = null,
 }: TasksNewTableProps) {
   // Set Thai locale for moment
   moment.locale("th");
@@ -96,10 +99,25 @@ export function TasksNewTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.length === 0 ? (
+          {loading ? (
             <TableRow>
-              <TableCell colSpan={10} className="h-24 text-center">
-                No tasks found.
+              <TableCell colSpan={9} className="h-24 text-center">
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                  กำลังโหลดข้อมูล...
+                </div>
+              </TableCell>
+            </TableRow>
+          ) : error ? (
+            <TableRow>
+              <TableCell colSpan={9} className="h-24 text-center text-red-500">
+                เกิดข้อผิดพลาด: {error}
+              </TableCell>
+            </TableRow>
+          ) : tasks.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={9} className="h-24 text-center text-muted-foreground">
+                ไม่พบข้อมูลงาน
               </TableCell>
             </TableRow>
           ) : (
@@ -152,22 +170,30 @@ export function TasksNewTable({
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
+                      <Button 
+                        variant="ghost" 
+                        className="h-8 w-8 p-0"
+                        disabled={loading}
+                      >
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEditTask(task)}>
+                      <DropdownMenuItem 
+                        onClick={() => onEditTask(task)}
+                        disabled={loading}
+                      >
                         <Pencil className="mr-2 h-4 w-4" />
-                        Edit
+                        แก้ไข
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => onDeleteTask(task.id)}
                         className="text-red-600"
+                        disabled={loading}
                       >
                         <Trash className="mr-2 h-4 w-4" />
-                        Delete
+                        ลบ
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

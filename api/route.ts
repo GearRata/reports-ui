@@ -2,6 +2,20 @@
 
 import { useEffect, useState } from "react"
 import { RequestIpPhone, DashboardData } from "../types/entities"
+import {
+  TasksPaginationParams,
+  TasksPaginationResponse,
+  TasksPaginationState,
+  ProgramsPaginationParams,
+  ProgramsPaginationResponse,
+  ProgramsPaginationState,
+  DepartmentsPaginationParams,
+  DepartmentsPaginationResponse,
+  DepartmentsPaginationState,
+  IPPhonesPaginationParams,
+  IPPhonesPaginationResponse,
+  IPPhonesPaginationState
+} from "../types/pagination"
 
 
 
@@ -32,114 +46,322 @@ export function useBranches() {
   return { branches, loading, error, refreshBranches: fetchBranches }
 }
 
-// Departments Hook
-export function useDepartments() {
-  const [departments, setDepartments] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// Departments Hook - DEPRECATED: Use useDepartmentsPaginated or useDepartmentsForDropdown instead
+// Keeping for backward compatibility, but not recommended for new usage
 
-  const fetchDepartments = async () => {
-    setLoading(true)
+// Departments Hook with Pagination Support
+export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
+  const [state, setState] = useState<DepartmentsPaginationState>({
+    departments: [],
+    currentPage: params?.page || 1,
+    pageSize: params?.limit || 10,
+    totalItems: 0,
+    totalPages: 0,
+    loading: true,
+    error: null,
+  })
+
+  const fetchDepartments = async (page: number = 1, limit: number = 10) => {
+    setState(prev => ({ ...prev, loading: true, error: null }))
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/list`)
+      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/list`)
+      url.searchParams.set('page', page.toString())
+      url.searchParams.set('limit', limit.toString())
+
+      const response = await fetch(url.toString())
       if (!response.ok) throw new Error("Failed to fetch departments")
-      const data = await response.json()
-      setDepartments(data.data || [])
 
+      const data: DepartmentsPaginationResponse = await response.json()
+
+      setState(prev => ({
+        ...prev,
+        departments: data.data || [],
+        currentPage: data.pagination?.page || page,
+        pageSize: data.pagination?.limit || limit,
+        totalItems: data.pagination?.total || 0,
+        totalPages: data.pagination?.total_pages || 0,
+        loading: false,
+        error: null,
+      }))
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setLoading(false)
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      }))
     }
   }
 
-  useEffect(() => {
-    fetchDepartments()
-  }, [])
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= state.totalPages) {
+      fetchDepartments(page, state.pageSize)
+    }
+  }
 
-  return { departments, loading, error, refreshDepartments: fetchDepartments }
+  const changePageSize = (limit: number) => {
+    fetchDepartments(1, limit) // Reset to first page when changing page size
+  }
+
+  const refreshDepartments = () => {
+    fetchDepartments(state.currentPage, state.pageSize)
+  }
+
+  useEffect(() => {
+    fetchDepartments(state.currentPage, state.pageSize)
+  }, []) // Only run on mount
+
+  return {
+    ...state,
+    fetchDepartments,
+    goToPage,
+    changePageSize,
+    refreshDepartments,
+  }
 }
 
-// Programs Hook
-export function usePrograms() {
-  const [programs, setPrograms] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// Programs Hook - DEPRECATED: Use useProgramsPaginated or useProgramsForDropdown instead
+// Keeping for backward compatibility, but not recommended for new usage
 
-  const fetchPrograms = async () => {
-    setLoading(true)
+// Programs Hook with Pagination Support
+export function useProgramsPaginated(params?: ProgramsPaginationParams) {
+  const [state, setState] = useState<ProgramsPaginationState>({
+    programs: [],
+    currentPage: params?.page || 1,
+    pageSize: params?.limit || 10,
+    totalItems: 0,
+    totalPages: 0,
+    loading: true,
+    error: null,
+  })
+
+  const fetchPrograms = async (page: number = 1, limit: number = 10) => {
+    setState(prev => ({ ...prev, loading: true, error: null }))
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/list`)
+      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/list`)
+      url.searchParams.set('page', page.toString())
+      url.searchParams.set('limit', limit.toString())
+
+      const response = await fetch(url.toString())
       if (!response.ok) throw new Error("Failed to fetch programs")
-      const data = await response.json()
-      setPrograms(data.data || [])
+
+      const data: ProgramsPaginationResponse = await response.json()
+
+      setState(prev => ({
+        ...prev,
+        programs: data.data || [],
+        currentPage: data.pagination?.page || page,
+        pageSize: data.pagination?.limit || limit,
+        totalItems: data.pagination?.total || 0,
+        totalPages: data.pagination?.total_pages || 0,
+        loading: false,
+        error: null,
+      }))
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setLoading(false)
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      }))
     }
   }
 
-  useEffect(() => {
-    fetchPrograms()
-  }, [])
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= state.totalPages) {
+      fetchPrograms(page, state.pageSize)
+    }
+  }
 
-  return { programs, loading, error, refreshPrograms: fetchPrograms }
+  const changePageSize = (limit: number) => {
+    fetchPrograms(1, limit) // Reset to first page when changing page size
+  }
+
+  const refreshPrograms = () => {
+    fetchPrograms(state.currentPage, state.pageSize)
+  }
+
+  useEffect(() => {
+    fetchPrograms(state.currentPage, state.pageSize)
+  }, []) // Only run on mount
+
+  return {
+    ...state,
+    fetchPrograms,
+    goToPage,
+    changePageSize,
+    refreshPrograms,
+  }
 }
 
-// IP Phones Hook
-export function useIPPhones() {
-  const [ipPhones, setIPPhones] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// IP Phones Hook - DEPRECATED: Use useIPPhonesPaginated or useIPPhonesForDropdown instead
+// Keeping for backward compatibility, but not recommended for new usage
 
-  const fetchIPPhones = async () => {
-    setLoading(true)
+// IP Phones Hook with Pagination Support
+export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {
+  const [state, setState] = useState<IPPhonesPaginationState>({
+    ipPhones: [],
+    currentPage: params?.page || 1,
+    pageSize: params?.limit || 10,
+    totalItems: 0,
+    totalPages: 0,
+    loading: true,
+    error: null,
+  })
+
+  const fetchIPPhones = async (page: number = 1, limit: number = 10) => {
+    setState(prev => ({ ...prev, loading: true, error: null }))
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`)
+      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`)
+      url.searchParams.set('page', page.toString())
+      url.searchParams.set('limit', limit.toString())
+
+      const response = await fetch(url.toString())
       if (!response.ok) throw new Error("Failed to fetch IP phones")
-      const data = await response.json()
-      setIPPhones(data.data || [])
+
+      const data: IPPhonesPaginationResponse = await response.json()
+
+      setState(prev => ({
+        ...prev,
+        ipPhones: data.data || [],
+        currentPage: data.pagination?.page || page,
+        pageSize: data.pagination?.limit || limit,
+        totalItems: data.pagination?.total || 0,
+        totalPages: data.pagination?.total_pages || 0,
+        loading: false,
+        error: null,
+      }))
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setLoading(false)
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      }))
     }
   }
 
-  useEffect(() => {
-    fetchIPPhones()
-  }, [])
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= state.totalPages) {
+      fetchIPPhones(page, state.pageSize)
+    }
+  }
 
-  return { ipPhones, loading, error, refreshIPPhones: fetchIPPhones }
+  const changePageSize = (limit: number) => {
+    fetchIPPhones(1, limit) // Reset to first page when changing page size
+  }
+
+  const refreshIPPhones = () => {
+    fetchIPPhones(state.currentPage, state.pageSize)
+  }
+
+  useEffect(() => {
+    fetchIPPhones(state.currentPage, state.pageSize)
+  }, []) // Only run on mount
+
+  return {
+    ...state,
+    fetchIPPhones,
+    goToPage,
+    changePageSize,
+    refreshIPPhones,
+  }
 }
 
-// Tasks Hook (updated for new structure)
-export function useTasksNew() {
-  const [tasks, setTasks] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+// Tasks Hook (updated for new structure) - DEPRECATED: Use useTasksNewPaginated instead
+// Keeping for backward compatibility, but not recommended for new usage
 
-  const fetchTasks = async () => {
-    setLoading(true)
+// Tasks Hook with Pagination Support
+
+export function useTasksNewPaginated(params?: TasksPaginationParams) {
+  const [state, setState] = useState<TasksPaginationState>({
+    tasks: [],
+    currentPage: params?.page || 1,
+    pageSize: params?.limit || 10,
+    totalItems: 0,
+    totalPages: 0,
+    loading: true,
+    error: null,
+  })
+
+  const fetchTasks = async (page: number = 1, limit: number = 10) => {
+    setState(prev => ({ ...prev, loading: true, error: null }))
+
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`)
-      if (!response.ok) throw new Error("Failed to fetch tasks")
-      const data = await response.json()
-      setTasks(data.data || [])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setLoading(false)
-    }
+      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`)
+      url.searchParams.set('page', page.toString())
+      url.searchParams.set('limit', limit.toString())
 
+      const response = await fetch(url.toString())
+      if (!response.ok) throw new Error("Failed to fetch tasks")
+
+      const data: TasksPaginationResponse = await response.json()
+
+      setState(prev => ({
+        ...prev,
+        tasks: data.data || [],
+        currentPage: data.pagination?.page || page,
+        pageSize: data.pagination?.limit || limit,
+        totalItems: data.pagination?.total || 0,
+        totalPages: data.pagination?.total_pages || 0,
+        loading: false,
+        error: null,
+      }))
+    } catch (err) {
+      setState(prev => ({
+        ...prev,
+        loading: false,
+        error: err instanceof Error ? err.message : "Unknown error",
+      }))
+    }
+  }
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= state.totalPages) {
+      fetchTasks(page, state.pageSize)
+    }
+  }
+
+  const changePageSize = (limit: number) => {
+    fetchTasks(1, limit) // Reset to first page when changing page size
+  }
+
+  const refreshTasks = () => {
+    fetchTasks(state.currentPage, state.pageSize)
   }
 
   useEffect(() => {
-    fetchTasks()
-  }, [])
+    fetchTasks(state.currentPage, state.pageSize)
+  }, []) // Only run on mount
 
-  return { tasks, loading, error, refreshTasks: fetchTasks }
+  return {
+    ...state,
+    fetchTasks,
+    goToPage,
+    changePageSize,
+    refreshTasks,
+  }
+}
+
+// Dropdown/Select hooks (optimized for getting all data)
+export function useBranchesForDropdown() {
+  const { branches, loading, error } = useBranches()
+  return { branches, loading, error }
+}
+
+export function useDepartmentsForDropdown() {
+  const { departments, loading, error } = useDepartmentsPaginated({ page: 1, limit: 1000 })
+  return { departments, loading, error }
+}
+
+export function useProgramsForDropdown() {
+  const { programs, loading, error } = useProgramsPaginated({ page: 1, limit: 1000 })
+  return { programs, loading, error }
+}
+
+export function useIPPhonesForDropdown() {
+  const { ipPhones, loading, error } = useIPPhonesPaginated({ page: 1, limit: 1000 })
+  return { ipPhones, loading, error }
 }
 
 export function useDashboard() {
@@ -284,20 +506,20 @@ export async function addTaskNew(task: { phone_id: number | null; system_id: num
       status: task.status,
       telegram: task.telegram
     };
-    
-    
+
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Create failed:', response.status, errorText);
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
-    
+
     return await response.json()
   } catch (error) {
     console.error('Error creating task:', error);
@@ -315,20 +537,20 @@ export async function updateTaskNew(id: number, task: { phone_id: number | null;
       status: task.status,
       telegram: task.telegram
     };
-    
-    
+
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/update/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     })
-    
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Update failed:', response.status, errorText);
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
-    
+
     return await response.json()
   } catch (error) {
     console.error('Error updating task:', error);

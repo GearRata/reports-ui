@@ -16,26 +16,41 @@ import { Badge } from "@/components/ui/badge";
 import { TasksNewTable } from "@/components/tables/tasks-new-table";
 import { TaskNewForm } from "@/components/entities-form";
 import {
-  usePrograms,
-  useTasksNew,
-  useIPPhones,
-  useBranches,
-  useDepartments,
+  useTasksNewPaginated,
+  useBranchesForDropdown,
+  useDepartmentsForDropdown,
+  useProgramsForDropdown,
+  useIPPhonesForDropdown,
   addTaskNew,
   updateTaskNew,
   deleteTaskNew,
 } from "@/api/route";
+import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
+import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { TaskWithPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 function Page() {
-  const { tasks, refreshTasks } = useTasksNew();
-  const { ipPhones } = useIPPhones();
-  const { programs } = usePrograms();
-  const { branches } = useBranches();
-  const { departments } = useDepartments();
+  const {
+    tasks,
+    currentPage,
+    pageSize,
+    totalItems,
+    totalPages,
+    loading,
+    error,
+    goToPage,
+    changePageSize,
+    refreshTasks,
+  } = useTasksNewPaginated({ page: 1, limit: 10 });
+  
+  // Use dropdown-specific hooks for filter options
+  const { ipPhones } = useIPPhonesForDropdown();
+  const { programs } = useProgramsForDropdown();
+  const { branches } = useBranchesForDropdown();
+  const { departments } = useDepartmentsForDropdown();
 
   // Helper function to get all possible search terms for status
   const getStatusSearchTerms = (status: number): string[] => {
@@ -157,7 +172,8 @@ function Page() {
         )
       : departments;
 
-  // Filter tasks based on all criteria
+  // Note: Server-side filtering will be implemented later
+  // For now, we'll use client-side filtering with paginated data
   const filteredTasks = tasks.filter((task) => {
     // Text search filter
     const matchesSearch =
@@ -463,11 +479,29 @@ function Page() {
 
                 {/* Content */}
                 <div className="space-y-4">
-                  <TasksNewTable
-                    tasks={filteredTasks}
-                    onEditTask={handleEditTask}
-                    onDeleteTask={handleDeleteTask}
-                  />
+                  <PaginationErrorBoundary onRetry={refreshTasks}>
+                    <TasksNewTable
+                      tasks={filteredTasks}
+                      onEditTask={handleEditTask}
+                      onDeleteTask={handleDeleteTask}
+                      loading={loading}
+                      error={error}
+                    />
+                    
+                    {!loading && !error && (
+                      <PaginationWrapper
+                        currentPage={currentPage}
+                        pageSize={pageSize}
+                        totalItems={totalItems}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                        onPageSizeChange={changePageSize}
+                        disabled={loading}
+                        itemName="งาน"
+                        pageSizeOptions={[10, 20, 50, 100]}
+                      />
+                    )}
+                  </PaginationErrorBoundary>
                 </div>
 
                 {/* Form */}
