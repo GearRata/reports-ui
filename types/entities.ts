@@ -1,5 +1,3 @@
-
-
 export interface Branch {
   id: number
   name: string
@@ -43,6 +41,7 @@ export interface Task {
 }
 
 export interface TaskWithPhone extends Task {
+  ticket_no: string
   branch_id: number
   department_id: number
   branch_name: string
@@ -51,6 +50,9 @@ export interface TaskWithPhone extends Task {
   phone_name: string
   system_id: number      // เปลี่ยนจาก program_id
   system_name: string    // เปลี่ยนจาก program_name
+  created_at: string
+  updated_at: string
+  telegram: boolean
 }
 
 export interface TaskStats {

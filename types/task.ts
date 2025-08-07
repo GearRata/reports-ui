@@ -12,5 +12,4 @@ export interface TaskStats {
   total: number
   pending: number
   solved: number
-
 }

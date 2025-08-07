@@ -204,8 +204,8 @@ export default function DialogForm() {
           <span className="animate-pulse bg-gray-200 rounded h-6 w-32 inline-block"></span>
         ) : (
           department?.name || "Loading..."
-        )}{" "}
-        /{" "}
+        )}
+        
         {loadingBranch ? (
           <span className="animate-pulse bg-gray-200 rounded h-6 w-24 inline-block"></span>
         ) : (

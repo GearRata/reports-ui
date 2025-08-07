@@ -30,7 +30,6 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-
 function Page() {
   const { tasks, refreshTasks } = useTasksNew();
   const { ipPhones } = useIPPhones();
@@ -75,8 +74,6 @@ function Page() {
   const [selectedProgram, setSelectedProgram] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [showFilters, setShowFilters] = useState(false);
-  
-
 
   // Form states
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
@@ -93,19 +90,22 @@ function Page() {
   };
 
   const handleTaskSubmit = async (data: {
-    phone_id: number;
+    phone_id: number | null;
     system_id: number;
     text: string;
     status: number;
     id?: number;
   }) => {
     try {
+      console.log("Submitting task data:", data);
+
       if (data.id) {
         await updateTaskNew(data.id, {
           phone_id: data.phone_id,
           system_id: data.system_id,
           text: data.text,
           status: data.status,
+          telegram: true,
         });
       } else {
         await addTaskNew({
@@ -113,9 +113,11 @@ function Page() {
           system_id: data.system_id,
           text: data.text,
           status: data.status,
+          telegram: true,
         });
       }
       refreshTasks();
+      setIsTaskFormOpen(false);
     } catch (error) {
       console.error("Error saving task:", error);
     }
@@ -228,9 +230,13 @@ function Page() {
                         onClick={() => setShowFilters(!showFilters)}
                         className="h-8"
                       >
-                        <Filter className="h-4 w-4 mr-2"/>
+                        <Filter className="h-4 w-4 mr-2" />
                         ตัวกรอง
-                        {showFilters === false ? (<ChevronDown />) : ( <CircleX className="text-red-500"/> )}
+                        {showFilters === false ? (
+                          <ChevronDown />
+                        ) : (
+                          <CircleX className="text-red-500" />
+                        )}
                       </Button>
                       {hasActiveFilters && (
                         <Button
@@ -356,70 +362,98 @@ function Page() {
                   {hasActiveFilters && (
                     <div className="flex flex-wrap gap-2">
                       {searchQuery && (
-                        <Badge variant="secondary" className="flex justify-between items-center gap-2 w-[15%] h-10">
-                          <div>
-                          ค้นหา: {searchQuery}
-                          </div>
-                          <Button className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700 " onClick={() => setSearchQuery("")}>
-                          <X/>
+                        <Badge
+                          variant="secondary"
+                          className="flex justify-between items-center gap-2 w-[15%] h-10"
+                        >
+                          <div>ค้นหา: {searchQuery}</div>
+                          <Button
+                            className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700 "
+                            onClick={() => setSearchQuery("")}
+                          >
+                            <X />
                           </Button>
-                         
-                         
                         </Badge>
                       )}
                       {selectedBranch !== "all" && (
-                        <Badge variant="secondary" className="flex justify-between items-center gap-2 w-[18%] h-10">
+                        <Badge
+                          variant="secondary"
+                          className="flex justify-between items-center gap-2 w-[18%] h-10"
+                        >
                           <div>
-                          สาขา:{" "}
-                          {
-                            branches.find(
-                              (b) => b.id.toString() === selectedBranch
-                            )?.name
-                          }
+                            สาขา:{" "}
+                            {
+                              branches.find(
+                                (b) => b.id.toString() === selectedBranch
+                              )?.name
+                            }
                           </div>
-                          <Button className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"  onClick={() => setSelectedBranch("all")}>
-                          <X/>
+                          <Button
+                            className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"
+                            onClick={() => setSelectedBranch("all")}
+                          >
+                            <X />
                           </Button>
                         </Badge>
                       )}
                       {selectedDepartment !== "all" && (
-                        <Badge variant="secondary" className="flex justify-between items-center gap-2 w-[18%] h-10">
+                        <Badge
+                          variant="secondary"
+                          className="flex justify-between items-center gap-2 w-[18%] h-10"
+                        >
                           <div>
-                          แผนก:{" "}
-                          {
-                            departments.find(
-                              (d) => d.id.toString() === selectedDepartment
-                            )?.name
-                          }
+                            แผนก:{" "}
+                            {
+                              departments.find(
+                                (d) => d.id.toString() === selectedDepartment
+                              )?.name
+                            }
                           </div>
-                          <Button className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"  onClick={() => setSelectedDepartment("all")}>
-                          <X/>
+                          <Button
+                            className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"
+                            onClick={() => setSelectedDepartment("all")}
+                          >
+                            <X />
                           </Button>
                         </Badge>
                       )}
                       {selectedProgram !== "all" && (
-                        <Badge variant="secondary" className="flex justify-between items-center gap-2 w-[18%] h-10">
+                        <Badge
+                          variant="secondary"
+                          className="flex justify-between items-center gap-2 w-[18%] h-10"
+                        >
                           <div>
-                          โปรแกรม:{" "}
-                          {
-                            programs.find(
-                              (p) => p.id.toString() === selectedProgram
-                            )?.name
-                          }
+                            โปรแกรม:{" "}
+                            {
+                              programs.find(
+                                (p) => p.id.toString() === selectedProgram
+                              )?.name
+                            }
                           </div>
-                          <Button className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"  onClick={() => setSelectedProgram("all")}>
-                          <X/>
+                          <Button
+                            className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"
+                            onClick={() => setSelectedProgram("all")}
+                          >
+                            <X />
                           </Button>
                         </Badge>
                       )}
                       {selectedStatus !== "all" && (
-                        <Badge variant="secondary" className="flex justify-between items-center gap-2 w-[18%] h-10">
+                        <Badge
+                          variant="secondary"
+                          className="flex justify-between items-center gap-2 w-[18%] h-10"
+                        >
                           <div>
-                          สถานะ:{" "}
-                          {selectedStatus === "0" ? "รอดำเนินการ" : "เสร็จสิ้น"}
+                            สถานะ:{" "}
+                            {selectedStatus === "0"
+                              ? "รอดำเนินการ"
+                              : "เสร็จสิ้น"}
                           </div>
-                          <Button className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"  onClick={() => setSelectedStatus("all")}>
-                          <X/>
+                          <Button
+                            className="h-6 w-6 bg-red-500 rounded-full text-white cursor-pointer hover:bg-red-700"
+                            onClick={() => setSelectedStatus("all")}
+                          >
+                            <X />
                           </Button>
                         </Badge>
                       )}

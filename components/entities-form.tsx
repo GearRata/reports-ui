@@ -322,17 +322,17 @@ export function IPPhoneForm({
 }: IPPhoneFormProps) {
   const [branchId, setBranchId] = useState<string>("");
   const [departmentId, setDepartmentID] = useState<string>("");
-  const [number, setNumber] = useState(0);
+  const [number, setNumber] = useState<string>("");
   const [name, setName] = useState("");
 
   useEffect(() => {
     if (ipPhone) {
-      setNumber(ipPhone.number);
+      setNumber(ipPhone.number.toString());
       setName(ipPhone.name);
       setBranchId(ipPhone.branch_id.toString());
       setDepartmentID(ipPhone.department_id.toString());
     } else {
-      setNumber(0);
+      setNumber("");
       setName("");
       setBranchId("");
       setDepartmentID("");
@@ -342,7 +342,7 @@ export function IPPhoneForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      number,
+      number: Number(number),
       name,
       branch_id: Number(branchId),
       department_id: Number(departmentId),
@@ -374,9 +374,9 @@ export function IPPhoneForm({
                 id="number"
                 value={number}
                 type="number"
-                onChange={(e) => setNumber(Number(e.target.value))}
+                onChange={(e) => setNumber(e.target.value)}
                 className="col-span-3"
-                placeholder="Phone Number"
+                placeholder="Enter phone number"
                 required
               />
             </div>
@@ -466,7 +466,7 @@ interface TaskNewFormProps {
   onOpenChange: (open: boolean) => void;
   task?: TaskWithPhone | null;
   onSubmit: (data: {
-    phone_id: number;
+    phone_id: number | null;
     system_id: number;
     text: string;
     status: number;
@@ -491,7 +491,7 @@ export function TaskNewForm({
 
   useEffect(() => {
     if (task) {
-      setPhoneId(task.phone_id.toString());
+      setPhoneId(task.phone_id ? task.phone_id.toString() : "null");
       setProgramID(task.system_id.toString());
       setText(task.text);
       setStatus(task.status.toString());
@@ -506,7 +506,10 @@ export function TaskNewForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      phone_id: Number(phoneId),
+      phone_id:
+        phoneId && phoneId !== "" && phoneId !== "null"
+          ? Number(phoneId)
+          : null,
       system_id: Number(programID),
       text,
       status: Number(status),
@@ -540,6 +543,7 @@ export function TaskNewForm({
                   <SelectValue placeholder="Select IP phone" />
                 </SelectTrigger>
                 <SelectContent>
+                  {task && <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>}
                   {ipPhones.map((phone) => (
                     <SelectItem key={phone.id} value={phone.id.toString()}>
                       {phone.number} - {phone.name}
@@ -595,7 +599,7 @@ export function TaskNewForm({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="0">Pending</SelectItem>
-                    <SelectItem value="1">Solved</SelectItem>
+                    <SelectItem value="1">Done</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

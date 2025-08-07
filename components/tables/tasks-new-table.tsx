@@ -1,65 +1,152 @@
-"use client"
+"use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
-import type { TaskWithPhone } from "@/types/entities"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import type { TaskWithPhone } from "@/types/entities";
+import { MdDone } from "react-icons/md";
+import { LuClock } from "react-icons/lu";
+import moment from "moment";
+import "moment/locale/th"; // Import Thai locale
 
 interface TasksNewTableProps {
-  tasks: TaskWithPhone[]
-  onEditTask: (task: TaskWithPhone) => void
-  onDeleteTask: (taskId: number) => void
+  tasks: TaskWithPhone[];
+  onEditTask: (task: TaskWithPhone) => void;
+  onDeleteTask: (taskId: number) => void;
+  loading?: boolean;
 }
 
 const statusColors: Record<number, string> = {
-  1: "bg-orange-100 text-orange-800",
-  0: "bg-green-100 text-green-800",
-}
+  1: "bg-orange-400 rounded-full font-medium text-white flex items-center gap-2",
+  0: "bg-green-400 rounded-full font-medium text-white flex items-center gap-2",
+};
 
 const statusLabels: Record<number, string> = {
   1: "Pending",
-  0: "Solved",
-}
+  0: "Done",
+};
 
-export function TasksNewTable({ tasks, onEditTask, onDeleteTask }: TasksNewTableProps) {
+export function TasksNewTable({
+  tasks,
+  onEditTask,
+  onDeleteTask,
+}: TasksNewTableProps) {
+  // Set Thai locale for moment
+  moment.locale("th");
+
+  // Function to format time in Thai
+  const formatTimeAgo = (dateString: string) => {
+    const now = moment();
+    const taskTime = moment(dateString);
+    const diffInMinutes = now.diff(taskTime, "minutes");
+    const diffInHours = now.diff(taskTime, "hours");
+    const diffInDays = now.diff(taskTime, "days");
+    const diffInMonth = now.diff(taskTime, "months");
+    const diffInYear = now.diff(taskTime, "years");
+
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} minutes ago`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hours ago`;
+    } else if (diffInDays < 7) {
+      return `${diffInDays} days ago`;
+    } else if (diffInDays < 30) {
+      return `${Math.floor(diffInDays / 7)} weeks ago`;
+    } else if (diffInMonth < 12) {
+      return `${diffInMonth} months ago`;
+    } else {
+      return `${diffInYear} years ago`;
+    }
+  };
+
+  // Function to format fixed time (for completed tasks)
+  const formatFixedTime = (dateString: string) => {
+    return moment(dateString).format("DD/MM/YYYY HH:mm");
+  };
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Phone Number</TableHead>
+            <TableHead>Ticket ID</TableHead>
+            {/* <TableHead>Phone Number</TableHead> */}
             <TableHead>Phone Name</TableHead>
             <TableHead>Department</TableHead>
             <TableHead>Program</TableHead>
             <TableHead>Branch</TableHead>
             <TableHead>Text</TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Time</TableHead>
             <TableHead className="w-[70px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {tasks.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="h-24 text-center">
+              <TableCell colSpan={10} className="h-24 text-center">
                 No tasks found.
               </TableCell>
             </TableRow>
           ) : (
-            tasks.map((task, index) => (
+            tasks.map((task) => (
               <TableRow key={task.id}>
-                <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell>{task.number}</TableCell>
+                {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
+                <TableCell className="font-medium">{task.ticket_no}</TableCell>
+                {/* <TableCell>{task.number}</TableCell> */}
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>
                 <TableCell>{task.system_name || "-"}</TableCell>
                 <TableCell>{task.branch_name || "-"}</TableCell>
-                <TableCell className="max-w-[200px] truncate">{task.text}</TableCell>
+                <TableCell className="max-w-[200px] truncate">
+                  {task.text}
+                </TableCell>
                 <TableCell>
-                  <Badge className={statusColors[task.status? 0 : 1 || "pending"]}>
-                   {statusLabels[task.status? 0 : 1 || "pending"]}
+                  <Badge
+                    className={statusColors[task.status ? 0 : 1 || "pending"]}
+                  >
+                    <div className="flex items-center gap-1">
+                      {task.status ? (
+                        <MdDone className="w-3 h-3" />
+                      ) : (
+                        <LuClock className="w-3 h-3" />
+                      )}
+                      {statusLabels[task.status ? 0 : 1 || "pending"]}
+                    </div>
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    className={`rounded-full font-medium text-white flex items-center gap-2 ${
+                      task.status ? "bg-green-400" : "bg-orange-400"
+                    }`}
+                  >
+                    {task.status ? (
+                      <MdDone className="w-4 h-4" />
+                    ) : (
+                      <LuClock className="w-3 h-3" />
+                    )}
+                    {task.status
+                      ? task.updated_at
+                        ? formatFixedTime(task.updated_at)
+                        : "-"
+                      : task.created_at
+                      ? formatTimeAgo(task.created_at)
+                      : "-"}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -75,7 +162,10 @@ export function TasksNewTable({ tasks, onEditTask, onDeleteTask }: TasksNewTable
                         <Pencil className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDeleteTask(task.id)} className="text-red-600">
+                      <DropdownMenuItem
+                        onClick={() => onDeleteTask(task.id)}
+                        className="text-red-600"
+                      >
                         <Trash className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>
@@ -88,5 +178,5 @@ export function TasksNewTable({ tasks, onEditTask, onDeleteTask }: TasksNewTable
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }
