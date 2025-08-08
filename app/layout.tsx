@@ -9,7 +9,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  icons: "/LOGO-NOPADOL.png",
+  icons: "nopadol_logo.ico",
   title: "Helpdesk",
   description: "Problem Reporting and Management System",
 };

@@ -524,7 +524,7 @@ export function YearlyBranchChart({
               />
               <Area
                 dataKey="สาขาสันกำแพง"
-                type="natural"
+                type="monotone"
                 fill="url(#fillสาขาสันกำแพง)"
                 stroke="var(--color-สาขาสันกำแพง)"
                 strokeWidth={2}

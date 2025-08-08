@@ -55,7 +55,7 @@ export function ProgramsTable({
             </TableRow>
           ) : (
             programs.map((program, index) => (
-              <TableRow key={program.id}>
+              <TableRow key={program.id}  onClick={() => onEditProgram(program)} className="cursor-pointer">
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{program.name}</TableCell>
                 <TableCell>

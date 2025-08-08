@@ -58,7 +58,7 @@ export function IPPhonesTable({
             </TableRow>
           ) : (
             ipPhones.map((ipPhone, index) => (
-              <TableRow key={ipPhone.id}>
+              <TableRow key={ipPhone.id}  onClick={() => onEditIPPhone(ipPhone)} className="cursor-pointer">
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{ipPhone.number}</TableCell>
                 <TableCell>{ipPhone.name}</TableCell>

@@ -55,7 +55,7 @@ export function DepartmentsTable({
             </TableRow>
           ) : (
             departments.map((department, index) => (
-              <TableRow key={department.id}>
+              <TableRow key={department.id} onClick={() => onEditDepartment(department)} className="cursor-pointer">
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{department.name}</TableCell>
                 <TableCell>{department.branch_name}</TableCell>

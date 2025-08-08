@@ -3,11 +3,11 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { PaginationState } from "@/types/pagination"
-import { 
-  validatePaginationParams, 
-  retryWithBackoff, 
+import {
+  validatePaginationParams,
+  retryWithBackoff,
   getErrorMessage,
-  debounce 
+  debounce
 } from "@/lib/pagination-utils"
 
 interface PaginationConfig {
@@ -31,7 +31,7 @@ interface PaginationActions {
 export function usePagination(config: PaginationConfig): UsePaginationState & PaginationActions {
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   const {
     apiEndpoint,
     initialPage = 1,
@@ -73,7 +73,7 @@ export function usePagination(config: PaginationConfig): UsePaginationState & Pa
     const params = new URLSearchParams(searchParams.toString())
     params.set('page', page.toString())
     params.set('limit', pageSize.toString())
-    
+
     router.push(`?${params.toString()}`, { scroll: false })
   }, [enableUrlSync, router, searchParams])
 
@@ -94,14 +94,14 @@ export function usePagination(config: PaginationConfig): UsePaginationState & Pa
         url.searchParams.set('limit', pageSize.toString())
 
         const response = await fetch(url.toString())
-        
+
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`)
         }
 
         return await response.json()
       }, 3, 1000)
-      
+
       setState(prev => ({
         ...prev,
         data: result.data || [],
@@ -164,7 +164,7 @@ export function usePagination(config: PaginationConfig): UsePaginationState & Pa
 
     const pageFromUrl = searchParams.get('page')
     const pageSizeFromUrl = searchParams.get('limit')
-    
+
     const newPage = pageFromUrl ? parseInt(pageFromUrl, 10) : initialPage
     const newPageSize = pageSizeFromUrl ? parseInt(pageSizeFromUrl, 10) : initialPageSize
 
