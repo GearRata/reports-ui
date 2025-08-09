@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, CalendarIcon } from "lucide-react";
+import React from "react";
 import {
   Bar,
   BarChart,
@@ -8,67 +8,55 @@ import {
   LabelList,
   XAxis,
   YAxis,
+  Cell,
+  ResponsiveContainer,
 } from "recharts";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
-import { DashboardData } from "@/types/entities";
-import { Calendar } from "@/components/ui/calendar";
-import React from "react";
-
 interface BarChartProps {
-  data: DashboardData | null;
+  filteredTasks: Array<{
+    branch_name: string;
+    [key: string]: unknown;
+  }>;
+  selectedDate?: Date;
+  selectedBranch: string;
   loading?: boolean;
   error?: string | null;
 }
 
-interface ChartDataPoint {
-  month: string;
-  branch_name: string;
-  total_problems: number;
-}
-
-export function ChartBar({ data, error, loading }: BarChartProps) {
-  // All hooks must be called at the top level, before any early returns
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
-    new Date()
+export const BarChartComponents = React.memo(function BarChartSimple({
+  filteredTasks,
+  selectedDate,
+  selectedBranch,
+  loading,
+  error,
+}: BarChartProps) {
+  // Memoize branch colors
+  const branchColors = React.useMemo(
+    () =>
+      ({
+        สำนักงานใหญ่: "#3B82F6", // สีน้ำเงิน
+        สาขาสันกำแพง: "#10B981", // สีเขียว
+        ไม่ระบุสาขา: "#6B7280", // สีเทา
+      } as Record<string, string>),
+    []
   );
 
-  // Filter data by selected date (month/year) - moved before early returns
-  const filteredTasks = React.useMemo(() => {
-    if (!data?.tasks || !selectedDate) return data?.tasks || [];
-
-    const selectedMonth = selectedDate.getMonth() + 1; // getMonth() returns 0-11
-    const selectedYear = selectedDate.getFullYear();
-
-    return data.tasks.filter((task) => {
-      const taskDate = new Date(task.created_at);
-      return (
-        taskDate.getMonth() + 1 === selectedMonth &&
-        taskDate.getFullYear() === selectedYear
-      );
-    });
-  }, [data?.tasks, selectedDate]);
-
-  // Transform filtered data for chart - moved before early returns
+  // Transform filtered data for chart
   const chartData = React.useMemo(() => {
     const groupedData: { [key: string]: number } = {};
 
@@ -77,28 +65,37 @@ export function ChartBar({ data, error, loading }: BarChartProps) {
       groupedData[branchName] = (groupedData[branchName] || 0) + 1;
     });
 
-    return Object.entries(groupedData).map(([branch_name, total_problems]) => ({
-      branch_name,
-      total_problems,
-    }));
-  }, [filteredTasks]);
+    const result = Object.entries(groupedData).map(
+      ([branch_name, total_problems]) => ({
+        branch_name,
+        total_problems,
+        fill: branchColors[branch_name] || "#F59E0B",
+      })
+    );
 
-  // Create chart config dynamically - moved before early returns
+    return result;
+  }, [filteredTasks, branchColors]);
+
+  // Chart config for ChartContainer
   const chartConfig = React.useMemo(() => {
-    const config: ChartConfig = {
-      total_problems: {
-        label: "จำนวนปัญหา",
-        color: "hsl(var(--chart-1))",
-      },
-    };
+    const config: ChartConfig = {};
+    chartData.forEach((item) => {
+      config[item.branch_name] = {
+        label: item.branch_name,
+        color: item.fill,
+      };
+    });
     return config;
-  }, []);
+  }, [chartData]);
 
-  const selectedMonthYear = selectedDate
-    ? format(selectedDate, "MMMM yyyy", { locale: th })
-    : "เลือกเดือน";
+  // Display text for selected date
+  const selectedDateDisplay = React.useMemo(() => {
+    return selectedDate
+      ? format(selectedDate, "d MMMM yyyy", { locale: th })
+      : "ทุกวันที่";
+  }, [selectedDate]);
 
-  // Handle loading state - moved after all hooks
+  // Handle loading state
   if (loading) {
     return (
       <Card>
@@ -109,7 +106,7 @@ export function ChartBar({ data, error, loading }: BarChartProps) {
     );
   }
 
-  // Handle error state - moved after all hooks
+  // Handle error state
   if (error) {
     return (
       <Card>
@@ -122,120 +119,101 @@ export function ChartBar({ data, error, loading }: BarChartProps) {
     );
   }
 
-  // Handle no data - moved after all hooks
-  if (!data || !data.success || !data.tasks || data.tasks.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="p-4 border border-blue-200 bg-blue-50 rounded-md">
-            <p className="text-blue-800">ไม่มีข้อมูลสำหรับแสดงกราฟ</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      {/* Calendar Filter */}
-      <div className="flex items-center gap-4">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "w-[280px] justify-start text-left font-normal",
-                !selectedDate && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {selectedDate ? (
-                format(selectedDate, "PPP", { locale: th })
-              ) : (
-                <span>เลือกวันที่</span>
-              )}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="w-auto p-4">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              
-              initialFocus
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      {/* Chart */}
-      <Card>
-        <CardHeader>
-          <CardTitle>สถิติปัญหาตามสาขา</CardTitle>
-          <CardDescription>
-            ข้อมูลสำหรับ {selectedMonthYear} (จำนวน {filteredTasks.length}{" "}
-            รายการ)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {chartData.length === 0 ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-md">
-                <p className="text-yellow-800">
-                  ไม่มีข้อมูลสำหรับเดือนที่เลือก
-                </p>
-              </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>สถิติปัญหาตามสาขา</CardTitle>
+        <CardDescription>
+          ข้อมูลสำหรับวันที่ {selectedDateDisplay} -{" "}
+          {selectedBranch === "all" ? "ทุกสาขา" : selectedBranch} (จำนวน{" "}
+          {chartData.reduce((sum, item) => sum + item.total_problems, 0)}{" "}
+          รายการ)
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        {chartData.length === 0 ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="p-4 border border-yellow-200 bg-yellow-50 rounded-md">
+              <p className="text-yellow-800">
+                {selectedDate
+                  ? `ไม่มีข้อมูลสำหรับวันที่ ${selectedDateDisplay}`
+                  : "ไม่มีข้อมูลสำหรับแสดงผล"}
+              </p>
             </div>
-          ) : (
-            <ChartContainer config={chartConfig}>
-              <BarChart
-                accessibilityLayer
-                data={chartData}
-                layout="vertical"
-                margin={{
-                  right: 16,
-                }}
-              >
-                <CartesianGrid horizontal={false} />
-                <YAxis
-                  dataKey="branch_name"
-                  type="category"
-                  tickLine={false}
-                  tickMargin={10}
-                  axisLine={false}
-                  width={120}
-                />
-                <XAxis dataKey="total_problems" type="number" />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="line" />}
-                />
-                <Bar
-                  dataKey="total_problems"
-                  fill="var(--color-total_problems)"
-                  radius={4}
+          </div>
+        ) : (
+          <div className="w-full h-[15rem]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer config={chartConfig}>
+                <BarChart
+                  data={chartData}
+                  layout="vertical"
+                  margin={{
+                    top: 20,
+                    right: 30,
+                    left: 0,
+                    bottom: 5,
+                  }}
+                  barCategoryGap="20%"
                 >
-                  <LabelList
-                    dataKey="total_problems"
-                    position="right"
-                    offset={8}
-                    className="fill-foreground"
-                    fontSize={12}
+                  <CartesianGrid strokeOpacity={0.08} />
+                  <XAxis
+                    type="number"
+                    tickFormatter={(value) => Math.floor(value).toString()}
+                    domain={[0, (dataMax: number) => Math.max(dataMax + 2, 5)]}
+                    allowDecimals={false}
+                    interval={0}
                   />
-                </Bar>
-              </BarChart>
-            </ChartContainer>
-          )}
-        </CardContent>
-        <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex gap-2 leading-none font-medium">
-            แสดงข้อมูลปัญหาทั้งหมด <TrendingUp className="h-4 w-4" />
+                  <YAxis
+                    dataKey="branch_name"
+                    type="category"
+                    width={100}
+                    tick={{ fontSize: 14, fill: "#fff" }}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={
+                      <ChartTooltipContent
+                        labelFormatter={(label) => `สาขา: ${label}`}
+                        formatter={(...args: unknown[]) => {
+                          const [value] = args;
+                          return [
+                            `${value} รายการ` as React.ReactNode,
+                            "จำนวนปัญหา" as React.ReactNode,
+                          ];
+                        }}
+                      />
+                    }
+                  />
+                  <Bar
+                    dataKey="total_problems"
+                    radius={[0, 4, 4, 0]}
+                    maxBarSize={50}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={entry.fill}
+                        stroke={entry.fill}
+                        strokeWidth={1}
+                      />
+                    ))}
+                    <LabelList
+                      dataKey="total_problems"
+                      position="right"
+                      offset={8}
+                      style={{
+                        fill: "#374151",
+                        fontSize: "12px",
+                      }}
+                    />
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </ResponsiveContainer>
           </div>
-          <div className="text-muted-foreground leading-none">
-            กรองข้อมูลตามวันที่ที่เลือก
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+        )}
+      </CardContent>
+    </Card>
   );
-}
+});

@@ -120,10 +120,6 @@ export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
   }
 }
 
-// Programs Hook - DEPRECATED: Use useProgramsPaginated or useProgramsForDropdown instead
-// Keeping for backward compatibility, but not recommended for new usage
-
-// Programs Hook with Pagination Support
 export function useProgramsPaginated(params?: ProgramsPaginationParams) {
   const [state, setState] = useState<ProgramsPaginationState>({
     programs: [],
@@ -350,19 +346,24 @@ export function useBranchesForDropdown() {
 }
 
 export function useDepartmentsForDropdown() {
-  const { departments, loading, error } = useDepartmentsPaginated({ page: 1, limit: 1000 })
+  const { departments, loading, error } = useDepartmentsPaginated({ page: 1, limit: 500 })
   return { departments, loading, error }
 }
 
 export function useProgramsForDropdown() {
-  const { programs, loading, error } = useProgramsPaginated({ page: 1, limit: 1000 })
+  const { programs, loading, error } = useProgramsPaginated({ page: 1, limit: 500 })
   return { programs, loading, error }
 }
 
 export function useIPPhonesForDropdown() {
-  const { ipPhones, loading, error } = useIPPhonesPaginated({ page: 1, limit: 1000 })
+  const { ipPhones, loading, error } = useIPPhonesPaginated({ page: 1, limit: 500 })
   return { ipPhones, loading, error }
 }
+
+// export function useTasksForDropdown() {
+//   const { ipPhones, loading, error } = useIPPhonesPaginated({ page: 1, limit: 1000 })
+//   return { ipPhones, loading, error }
+// }
 
 export function useDashboard() {
   const [data, setData] = useState<DashboardData | null>(null)
