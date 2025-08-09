@@ -22,13 +22,8 @@
 
 "use client";
 import type React from "react";
-// import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-// import { BranchAreaChart } from "@/components/charts/branch-area-chart";
-import { YearlyBranchChart } from "@/components/charts/yearly-branch-chart";
-import { BranchAreaChart } from "@/components/charts/branch-area-chart";
-import { ChartLineInteractive } from "@/components/charts/line-chart";
-import { PieChartSummary } from "@/components/charts/pie-chart";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { ChartBar } from "@/components/charts/bar-chart";
 import { SiteHeader } from "@/components/layout/site-header";
 import { TaskStatsCards } from "@/components/task/task-stats";
 import  { TaskStats } from "@/types/entities";
@@ -71,11 +66,7 @@ function Page() {
                 className="grid grid-cols-1 gap-4 px-3 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-1
                  @xl/main:grid-cols-1 "
               >
-                {/* <ChartAreaInteractive data={data} loading={loading} error={error} /> */}
-                <ChartLineInteractive data={data} loading={loading} error={error} />
-                <BranchAreaChart data={data} loading={loading} error={error} />
-                <YearlyBranchChart data={data} loading={loading} error={error} />
-                <PieChartSummary data={data} loading={loading} error={error} />
+                <ChartBar data={data} loading={loading} error={error}/>
               </div>
             </div>
           </div>
