@@ -58,6 +58,7 @@ export function useAssign() {
       if (!response.ok) throw new Error("Failed to fetch assigning to")
       const data = await response.json()
       setAssigningTo(data.data || [])
+      console.log(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error")
     } finally {
@@ -377,107 +378,13 @@ export function useDepartmentsForDropdown() {
 }
 
 export function useProgramsForDropdown() {
-  const { programs, loading, error, refreshPrograms } = useProgramsPaginated({ page: 1, limit: 500 })
-  const [refreshError, setRefreshError] = useState<string | null>(null)
-  const [cachedPrograms, setCachedPrograms] = useState<any[]>([])
-
-  // Cache programs when successfully loaded
-  useEffect(() => {
-    if (programs.length > 0 && !error) {
-      setCachedPrograms(programs)
-    }
-  }, [programs, error])
-
-  const refresh = async () => {
-    try {
-      setRefreshError(null)
-      
-      // Directly call the fetch function to get proper error handling
-      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/list`)
-      url.searchParams.set('page', '1')
-      url.searchParams.set('limit', '500')
-
-      const response = await fetch(url.toString())
-      if (!response.ok) throw new Error("Failed to fetch programs")
-
-      const data = await response.json()
-      
-      // If successful, trigger the normal refresh to update state
-      refreshPrograms()
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh programs'
-      setRefreshError(errorMessage)
-      console.error('Error refreshing programs:', err)
-      
-      // Don't throw error - let component handle gracefully
-      // Return cached data if available
-    }
-  }
-
-  // Return cached data if refresh failed but we have cached data
-  const finalPrograms = error && cachedPrograms.length > 0 ? cachedPrograms : programs
-  const finalError = refreshError || error
-
-  return { 
-    programs: finalPrograms, 
-    loading, 
-    error: finalError, 
-    refreshError,
-    refresh,
-    hasCachedData: cachedPrograms.length > 0
-  }
+  const { programs, loading, error } = useProgramsPaginated({ page: 1, limit: 500 })
+  return { programs, loading, error }
 }
 
 export function useIPPhonesForDropdown() {
-  const { ipPhones, loading, error, refreshIPPhones } = useIPPhonesPaginated({ page: 1, limit: 500 })
-  const [refreshError, setRefreshError] = useState<string | null>(null)
-  const [cachedIPPhones, setCachedIPPhones] = useState<any[]>([])
-
-  // Cache IP phones when successfully loaded
-  useEffect(() => {
-    if (ipPhones.length > 0 && !error) {
-      setCachedIPPhones(ipPhones)
-    }
-  }, [ipPhones, error])
-
-  const refresh = async () => {
-    try {
-      setRefreshError(null)
-      
-      // Directly call the fetch function to get proper error handling
-      const url = new URL(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`)
-      url.searchParams.set('page', '1')
-      url.searchParams.set('limit', '500')
-
-      const response = await fetch(url.toString())
-      if (!response.ok) throw new Error("Failed to fetch IP phones")
-
-      const data = await response.json()
-      
-      // If successful, trigger the normal refresh to update state
-      refreshIPPhones()
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to refresh IP phones'
-      setRefreshError(errorMessage)
-      console.error('Error refreshing IP phones:', err)
-      
-      // Don't throw error - let component handle gracefully
-      // Return cached data if available
-    }
-  }
-
-  // Return cached data if refresh failed but we have cached data
-  const finalIPPhones = error && cachedIPPhones.length > 0 ? cachedIPPhones : ipPhones
-  const finalError = refreshError || error
-
-  return { 
-    ipPhones: finalIPPhones, 
-    loading, 
-    error: finalError, 
-    refreshError,
-    refresh,
-    hasCachedData: cachedIPPhones.length > 0
-  }
+  const { ipPhones, loading, error } = useIPPhonesPaginated({ page: 1, limit: 500 })
+  return { ipPhones, loading, error }
 }
 
 // export function useTasksForDropdown() {

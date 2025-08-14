@@ -6,7 +6,7 @@ import { useState } from "react";
 import { BranchesTable } from "@/components/tables/branches-table";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
-import { BranchForm } from "@/components/entities-form";
+import { BranchForm } from "@/components/form/BranchForm";
 import {
   useBranches,
   addBranch,

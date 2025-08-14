@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { IPPhonesTable } from "@/components/tables/ip-phones-table";
-import { IPPhoneForm } from "@/components/entities-form";
+import { IPPhoneForm } from "@/components/form/PhoneForm";
 import {
   useIPPhonesPaginated,
   addIPPhone,

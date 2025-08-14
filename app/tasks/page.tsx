@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { TasksNewTable } from "@/components/tables/tasks-new-table";
-import { TaskNewForm } from "@/components/entities-form";
+import { TaskNewForm } from "@/components/form/TaskForm";
 import {
   useAssign,
   useTasksNewPaginated,
@@ -45,33 +45,14 @@ function Page() {
     goToPage,
     changePageSize,
     refreshTasks,
-  } = useTasksNewPaginated({ page: 1, limit: 100 });
+  } = useTasksNewPaginated({ page: 1, limit: 10 });
 
   // Use dropdown-specific hooks for filter options
+
+  const { ipPhones } = useIPPhonesForDropdown();
+  const { programs } = useProgramsForDropdown();
   const { branches } = useBranchesForDropdown();
   const { departments } = useDepartmentsForDropdown();
-
-  // Filter-specific hooks (unchanged)
-  const { programs: filterPrograms } = useProgramsForDropdown();
-
-  // Form-specific hooks with refresh capability
-  const {
-    ipPhones: formIPPhones,
-    loading: ipPhonesLoading,
-    error: ipPhonesError,
-    refreshError: ipPhonesRefreshError,
-    refresh: refreshIPPhones,
-    hasCachedData: hasIPPhonesCachedData,
-  } = useIPPhonesForDropdown();
-
-  const {
-    programs: formPrograms,
-    loading: programsLoading,
-    error: programsError,
-    refreshError: programsRefreshError,
-    refresh: refreshPrograms,
-    hasCachedData: hasProgramsCachedData,
-  } = useProgramsForDropdown();
 
   // Helper function to get all possible search terms for status
   const getStatusSearchTerms = (status: number): string[] => {
@@ -104,7 +85,9 @@ function Page() {
   };
 
   // Search and filter states
-  const { assingTo: assignTo } = useAssign();
+  const {
+    assingTo: assignTo,
+  } = useAssign();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
@@ -116,22 +99,14 @@ function Page() {
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskWithPhone | null>(null);
 
-  const handleAddTask = async () => {
-    try {
-      // Trigger API refresh for form data (don't await - let them run in background)
-      refreshIPPhones();
-      refreshPrograms();
 
-      // Open form immediately (don't wait for refresh)
-      setEditingTask(null);
-      setIsTaskFormOpen(true);
-    } catch (error) {
-      console.error("Error during form data refresh:", error);
 
-      // Still open form even if refresh fails - form will use cached data
-      setEditingTask(null);
-      setIsTaskFormOpen(true);
-    }
+  console.log("Assign:", assignTo);
+  console.log("Tasks:", tasks);
+
+  const handleAddTask = () => {
+    setEditingTask(null);
+    setIsTaskFormOpen(true);
   };
 
   const handleEditTask = (task: TaskWithPhone) => {
@@ -150,41 +125,39 @@ function Page() {
     try {
       console.log("Submitting task data:", data);
       console.log("assign_id being sent:", data.assign_id);
-      const assignPerson = data.assign_id
-        ? assignTo.find((p) => p.id === data.assign_id)
-        : null;
+      const assignPerson = data.assign_id ? assignTo.find(p => p.id === data.assign_id) : null;
       console.log("assign_name being sent:", assignPerson?.name);
 
       if (data.id) {
         // หาชื่อจาก assign_id
-        const assignPerson = data.assign_id
-          ? assignTo.find((p) => p.id === data.assign_id)
-          : null;
+        const assignPerson = data.assign_id ? assignTo.find(p => p.id === data.assign_id) : null;
         const assignName = assignPerson ? assignPerson.name : null;
-
+        
         await updateTaskNew(data.id, {
           phone_id: data.phone_id,
           system_id: data.system_id,
           text: data.text,
           status: data.status,
-          assign_to: assignName, // ส่งชื่อแทน id
+          assign_to: assignName,  // ส่งชื่อแทน id
           telegram: true,
         });
+
+
       } else {
         // หาชื่อจาก assign_id สำหรับ task ใหม่
-        const assignPerson = data.assign_id
-          ? assignTo.find((p) => p.id === data.assign_id)
-          : null;
+        const assignPerson = data.assign_id ? assignTo.find(p => p.id === data.assign_id) : null;
         const assignName = assignPerson ? assignPerson.name : null;
-
+        
         await addTaskNew({
           phone_id: data.phone_id,
           system_id: data.system_id,
           text: data.text,
           status: data.status,
-          assign_to: assignName, // ส่งชื่อแทน id
+          assign_to: assignName,  // ส่งชื่อแทน id
           telegram: true,
         });
+
+
       }
       refreshTasks();
       setIsTaskFormOpen(false);
@@ -398,7 +371,7 @@ function Page() {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">ทุกโปรแกรม</SelectItem>
-                            {filterPrograms.map((program) => (
+                            {programs.map((program) => (
                               <SelectItem
                                 key={program.id}
                                 value={program.id.toString()}
@@ -496,7 +469,7 @@ function Page() {
                           <div>
                             โปรแกรม:{" "}
                             {
-                              filterPrograms.find(
+                              programs.find(
                                 (p) => p.id.toString() === selectedProgram
                               )?.name
                             }
@@ -565,15 +538,9 @@ function Page() {
                   onOpenChange={setIsTaskFormOpen}
                   task={editingTask}
                   onSubmit={handleTaskSubmit}
-                  ipPhones={formIPPhones}
-                  programs={formPrograms}
+                  ipPhones={ipPhones}
+                  programs={programs}
                   assignTo={assignTo}
-                  ipPhonesLoading={ipPhonesLoading}
-                  programsLoading={programsLoading}
-                  ipPhonesError={ipPhonesRefreshError || ipPhonesError}
-                  programsError={programsRefreshError || programsError}
-                  hasIPPhonesCachedData={hasIPPhonesCachedData}
-                  hasProgramsCachedData={hasProgramsCachedData}
                 />
               </div>
             </div>
