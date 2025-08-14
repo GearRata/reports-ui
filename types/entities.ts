@@ -41,6 +41,9 @@ export interface Task {
 }
 
 export interface TaskWithPhone extends Task {
+  assign_to: string
+  assign_name?: string
+  assignId?: string
   ticket_no: string
   branch_id: number
   department_id: number

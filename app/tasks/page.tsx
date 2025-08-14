@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { TasksNewTable } from "@/components/tables/tasks-new-table";
 import { TaskNewForm } from "@/components/entities-form";
 import {
+  useAssign,
   useTasksNewPaginated,
   useBranchesForDropdown,
   useDepartmentsForDropdown,
@@ -45,8 +46,9 @@ function Page() {
     changePageSize,
     refreshTasks,
   } = useTasksNewPaginated({ page: 1, limit: 10 });
-  
+
   // Use dropdown-specific hooks for filter options
+
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
   const { branches } = useBranchesForDropdown();
@@ -83,6 +85,9 @@ function Page() {
   };
 
   // Search and filter states
+  const {
+    assingTo: assignTo,
+  } = useAssign();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
@@ -93,6 +98,11 @@ function Page() {
   // Form states
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<TaskWithPhone | null>(null);
+
+
+
+  console.log("Assign:", assignTo);
+  console.log("Tasks:", tasks);
 
   const handleAddTask = () => {
     setEditingTask(null);
@@ -109,27 +119,45 @@ function Page() {
     system_id: number;
     text: string;
     status: number;
+    assign_id?: number | null;
     id?: number;
   }) => {
     try {
       console.log("Submitting task data:", data);
+      console.log("assign_id being sent:", data.assign_id);
+      const assignPerson = data.assign_id ? assignTo.find(p => p.id === data.assign_id) : null;
+      console.log("assign_name being sent:", assignPerson?.name);
 
       if (data.id) {
+        // หาชื่อจาก assign_id
+        const assignPerson = data.assign_id ? assignTo.find(p => p.id === data.assign_id) : null;
+        const assignName = assignPerson ? assignPerson.name : null;
+        
         await updateTaskNew(data.id, {
           phone_id: data.phone_id,
           system_id: data.system_id,
           text: data.text,
           status: data.status,
+          assign_to: assignName,  // ส่งชื่อแทน id
           telegram: true,
         });
+
+
       } else {
+        // หาชื่อจาก assign_id สำหรับ task ใหม่
+        const assignPerson = data.assign_id ? assignTo.find(p => p.id === data.assign_id) : null;
+        const assignName = assignPerson ? assignPerson.name : null;
+        
         await addTaskNew({
           phone_id: data.phone_id,
           system_id: data.system_id,
           text: data.text,
           status: data.status,
+          assign_to: assignName,  // ส่งชื่อแทน id
           telegram: true,
         });
+
+
       }
       refreshTasks();
       setIsTaskFormOpen(false);
@@ -487,7 +515,7 @@ function Page() {
                       loading={loading}
                       error={error}
                     />
-                    
+
                     {!loading && !error && (
                       <PaginationWrapper
                         currentPage={currentPage}
@@ -512,6 +540,7 @@ function Page() {
                   onSubmit={handleTaskSubmit}
                   ipPhones={ipPhones}
                   programs={programs}
+                  assignTo={assignTo}
                 />
               </div>
             </div>

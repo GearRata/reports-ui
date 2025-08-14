@@ -46,6 +46,33 @@ export function useBranches() {
   return { branches, loading, error, refreshBranches: fetchBranches }
 }
 
+export function useAssign() {
+  const [assingTo, setAssigningTo] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchAssigningTo = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/respons/list`)
+      if (!response.ok) throw new Error("Failed to fetch assigning to")
+      const data = await response.json()
+      setAssigningTo(data.data || [])
+      console.log(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchAssigningTo();
+  }, [])
+
+  return { assingTo, loading, error, refreshAssigningTo: fetchAssigningTo }
+}
+
 // Departments Hook - DEPRECATED: Use useDepartmentsPaginated or useDepartmentsForDropdown instead
 // Keeping for backward compatibility, but not recommended for new usage
 
@@ -497,7 +524,7 @@ export async function deleteIPPhone(id: number) {
   return response.ok
 }
 
-export async function addTaskNew(task: { phone_id: number | null; system_id: number; text: string; status: number; telegram?: boolean }) {
+export async function addTaskNew(task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean }) {
   try {
     // สร้าง payload โดยเปลี่ยนเฉพาะ phone_id เป็น null ถ้าไม่ถูกต้อง
     const payload = {
@@ -505,9 +532,11 @@ export async function addTaskNew(task: { phone_id: number | null; system_id: num
       system_id: task.system_id,
       text: task.text,
       status: task.status,
+      assignto: task.assign_to,     // ส่งชื่อตาม database column
       telegram: task.telegram
     };
 
+    console.log("API Payload being sent:", payload);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
       method: "POST",
@@ -521,14 +550,16 @@ export async function addTaskNew(task: { phone_id: number | null; system_id: num
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
-    return await response.json()
+    const result = await response.json();
+    console.log("Create API Response:", result);
+    return result;
   } catch (error) {
     console.error('Error creating task:', error);
     throw error;
   }
 }
 
-export async function updateTaskNew(id: number, task: { phone_id: number | null; system_id: number; text: string; status: number; telegram?: boolean }) {
+export async function updateTaskNew(id: number, task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean }) {
   try {
     // สร้าง payload โดยเปลี่ยนเฉพาะ phone_id เป็น null ถ้าไม่ถูกต้อง
     const payload = {
@@ -536,8 +567,11 @@ export async function updateTaskNew(id: number, task: { phone_id: number | null;
       system_id: task.system_id,
       text: task.text,
       status: task.status,
+      assign_to: task.assign_to,     // ส่งชื่อตาม database column
       telegram: task.telegram
     };
+
+    console.log("Update API Payload being sent:", payload);
 
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/update/${id}`, {
@@ -552,7 +586,9 @@ export async function updateTaskNew(id: number, task: { phone_id: number | null;
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
-    return await response.json()
+    const result = await response.json();
+    console.log("Update API Response:", result);
+    return result;
   } catch (error) {
     console.error('Error updating task:', error);
     throw error;

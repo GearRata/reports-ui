@@ -28,6 +28,7 @@ import type {
   IPPhone,
   TaskWithPhone,
 } from "@/types/entities";
+import type { AssignData } from "@/types/assignto/model";
 
 // Branch Form
 interface BranchFormProps {
@@ -470,10 +471,12 @@ interface TaskNewFormProps {
     system_id: number;
     text: string;
     status: number;
+    assign_id?: number | null;
     id?: number;
   }) => void;
   ipPhones: IPPhone[];
   programs: Program[];
+  assignTo: AssignData[];
 }
 
 export function TaskNewForm({
@@ -483,11 +486,13 @@ export function TaskNewForm({
   onSubmit,
   ipPhones,
   programs,
+  assignTo,
 }: TaskNewFormProps) {
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
   const [text, setText] = useState("");
   const [status, setStatus] = useState<string>("");
+  const [assignId, setAssignId] = useState<string>("");
 
   useEffect(() => {
     if (task) {
@@ -495,11 +500,13 @@ export function TaskNewForm({
       setProgramID(task.system_id.toString());
       setText(task.text);
       setStatus(task.status.toString());
+      setAssignId(task.assignId ? task.assignId.toString() : "");
     } else {
       setPhoneId("");
       setProgramID("");
       setText("");
       setStatus("");
+      setAssignId("");
     }
   }, [task, open]);
 
@@ -513,6 +520,7 @@ export function TaskNewForm({
       system_id: Number(programID),
       text,
       status: Number(status),
+      assign_id: assignId ? Number(assignId) : null,
       ...(task && { id: task.id }),
     });
     onOpenChange(false);
@@ -600,6 +608,28 @@ export function TaskNewForm({
                   <SelectContent>
                     <SelectItem value="0">Pending</SelectItem>
                     <SelectItem value="1">Done</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {task && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Assign To
+                </Label>
+                <Select
+                  value={assignId}
+                  onValueChange={(value) => setAssignId(value)}
+                >
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select AssignTo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assignTo.map((assing) => (
+                      <SelectItem key={assing.id} value={assing.id.toString()}>
+                        {assing.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>

@@ -1,35 +1,46 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuth } from "@/hooks/use-auth"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const { login } = useAuth()
-  const router = useRouter()
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
+  const passwordRef = useRef<HTMLInputElement>(null);
 
   function setUserCookie(user: { username: string; role: string }) {
     // Set cookie for middleware (expires in 1 day)
-    document.cookie = `user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=86400`
+    document.cookie = `user=${encodeURIComponent(
+      JSON.stringify(user)
+    )}; path=/; max-age=86400`;
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const user = await login(username, password)
+    e.preventDefault();
+    const password = passwordRef.current?.value || "";
+    const user = await login(username, password);
     if (user) {
-      setError("")
-      setUserCookie(user)
-      router.push("/dashboard")
+      setError("");
+      setUserCookie(user);
+      // Clear password field for security
+      if (passwordRef.current) {
+        passwordRef.current.value = "";
+      }
+      router.push("/dashboard");
     } else {
-      setError("Invalid username or password")
+      setError("Invalid username or password");
+      // Clear password field on error for security
+      if (passwordRef.current) {
+        passwordRef.current.value = "";
+      }
     }
   }
 
@@ -62,8 +73,19 @@ export function LoginForm({
             id="password"
             type="password"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            ref={passwordRef}
+            autoComplete="current-password"
+            onPaste={(e) => e.preventDefault()}
+            onCopy={(e) => e.preventDefault()}
+            onCut={(e) => e.preventDefault()}
+            onDragStart={(e) => e.preventDefault()}
+            onDrop={(e) => e.preventDefault()}
+            style={
+              {
+                WebkitTextSecurity: "disc",
+                textSecurity: "disc",
+              } as React.CSSProperties
+            }
           />
         </div>
         <Button type="submit" className="w-full cursor-pointer text-white">
@@ -71,5 +93,5 @@ export function LoginForm({
         </Button>
       </div>
     </form>
-  )
+  );
 }
