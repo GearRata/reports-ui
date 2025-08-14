@@ -477,6 +477,12 @@ interface TaskNewFormProps {
   ipPhones: IPPhone[];
   programs: Program[];
   assignTo: AssignData[];
+  ipPhonesLoading?: boolean;
+  programsLoading?: boolean;
+  ipPhonesError?: string | null;
+  programsError?: string | null;
+  hasIPPhonesCachedData?: boolean;
+  hasProgramsCachedData?: boolean;
 }
 
 export function TaskNewForm({
@@ -487,6 +493,12 @@ export function TaskNewForm({
   ipPhones,
   programs,
   assignTo,
+  ipPhonesLoading = false,
+  programsLoading = false,
+  ipPhonesError = null,
+  programsError = null,
+  hasIPPhonesCachedData = false,
+  hasProgramsCachedData = false,
 }: TaskNewFormProps) {
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
@@ -512,6 +524,23 @@ export function TaskNewForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent submission if data is still loading
+    if (ipPhonesLoading || programsLoading) {
+      return;
+    }
+
+    // Prevent submission if required data failed to load and no cached data available
+    if (!!programsError && !hasProgramsCachedData && programs.length === 0) {
+      alert(
+        "Cannot submit: Programs data failed to load and no cached data available. Please try refreshing the page."
+      );
+      return;
+    }
+
+    // Allow submission even if IP phones failed to load (it's optional)
+    // Allow submission with cached data even if refresh failed
+
     onSubmit({
       phone_id:
         phoneId && phoneId !== "" && phoneId !== "null"
@@ -528,13 +557,49 @@ export function TaskNewForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[525px] relative">
+        {ipPhonesLoading && programsLoading && (
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+            <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-lg shadow-lg border">
+              <div className="animate-spin h-5 w-5 border-2 border-gray-300 border-t-blue-600 rounded-full"></div>
+              <span className="text-sm font-medium text-gray-700">
+                Refreshing form data...
+              </span>
+            </div>
+          </div>
+        )}
         <DialogHeader>
-          <DialogTitle>{task ? "Edit Task" : "Add New Task"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {task ? "Edit Task" : "Add New Task"}
+            {(ipPhonesLoading || programsLoading) && (
+              <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></div>
+            )}
+          </DialogTitle>
           <DialogDescription>
             {task
               ? "Update the task details below."
               : "Fill in the details to create a new task."}
+            {(ipPhonesLoading || programsLoading) && (
+              <span className="text-sm text-blue-600 mt-1 block">
+                Refreshing form data...
+              </span>
+            )}
+            {(ipPhonesError || programsError) && (
+              <span className="text-sm text-amber-600 mt-1 space-y-1 block">
+                {ipPhonesError && hasIPPhonesCachedData && (
+                  <span className="block">⚠️ IP phones refresh failed - showing cached data</span>
+                )}
+                {programsError && hasProgramsCachedData && (
+                  <span className="block">⚠️ Programs refresh failed - showing cached data</span>
+                )}
+                {ipPhonesError && !hasIPPhonesCachedData && (
+                  <span className="block">❌ Failed to load IP phones: {ipPhonesError}</span>
+                )}
+                {programsError && !hasProgramsCachedData && (
+                  <span className="block">❌ Failed to load programs: {programsError}</span>
+                )}
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -546,17 +611,73 @@ export function TaskNewForm({
               <Select
                 value={phoneId}
                 onValueChange={(value) => setPhoneId(value)}
+                disabled={ipPhonesLoading}
               >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select IP phone" />
+                <SelectTrigger
+                  className={`col-span-3 ${
+                    !!ipPhonesError && !hasIPPhonesCachedData
+                      ? "border-red-300"
+                      : ""
+                  }`}
+                >
+                  <SelectValue
+                    placeholder={
+                      ipPhonesLoading
+                        ? "Loading IP phones..."
+                        : !!ipPhonesError && !hasIPPhonesCachedData
+                        ? "Error loading IP phones"
+                        : !!ipPhonesError && hasIPPhonesCachedData
+                        ? "Select IP phone (cached data)"
+                        : "Select IP phone"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {task && <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>}
-                  {ipPhones.map((phone) => (
-                    <SelectItem key={phone.id} value={phone.id.toString()}>
-                      {phone.number} - {phone.name}
+                  {ipPhonesLoading ? (
+                    <SelectItem value="loading-ipphones" disabled>
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></span>
+                        Loading IP phones...
+                      </span>
                     </SelectItem>
-                  ))}
+                  ) : !!ipPhonesError && !hasIPPhonesCachedData ? (
+                    <SelectItem value="error-no-data" disabled>
+                      <span className="flex items-center gap-2 text-red-600">
+                        <span>❌</span>
+                        Failed to load IP phones
+                      </span>
+                    </SelectItem>
+                  ) : (
+                    <>
+                      {task && (
+                        <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>
+                      )}
+                      {ipPhones.length === 0 ? (
+                        <SelectItem value="no-data" disabled>
+                          No IP phones available
+                        </SelectItem>
+                      ) : (
+                        <>
+                          {!!ipPhonesError && hasIPPhonesCachedData && (
+                            <SelectItem value="cached-data-warning" disabled>
+                              <span className="flex items-center gap-2 text-amber-600 text-xs">
+                                <span>⚠️</span>
+                                Using cached data
+                              </span>
+                            </SelectItem>
+                          )}
+                          {ipPhones.map((phone) => (
+                            <SelectItem
+                              key={phone.id}
+                              value={phone.id.toString()}
+                            >
+                              {phone.number} - {phone.name}
+                            </SelectItem>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -567,16 +688,73 @@ export function TaskNewForm({
               <Select
                 value={programID}
                 onValueChange={(value) => setProgramID(value)}
+                disabled={programsLoading}
               >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select Program" />
+                <SelectTrigger
+                  className={`col-span-3 ${
+                    !!programsError && !hasProgramsCachedData
+                      ? "border-red-300"
+                      : ""
+                  }`}
+                >
+                  <SelectValue
+                    placeholder={
+                      programsLoading
+                        ? "Loading programs..."
+                        : !!programsError && !hasProgramsCachedData
+                        ? "Error loading programs"
+                        : !!programsError && hasProgramsCachedData
+                        ? "Select program (cached data)"
+                        : "Select Program"
+                    }
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  {programs.map((program) => (
-                    <SelectItem key={program.id} value={program.id.toString()}>
-                      {program.name}
+                  {programsLoading ? (
+                    <SelectItem value="loading-programs" disabled>
+                      <span className="flex items-center gap-2">
+                        <span className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-gray-600 rounded-full"></span>
+                        Loading programs...
+                      </span>
                     </SelectItem>
-                  ))}
+                  ) : !!programsError && !hasProgramsCachedData ? (
+                    <SelectItem value="error-no-programs" disabled>
+                      <span className="flex items-center gap-2 text-red-600">
+                        <span>❌</span>
+                        Failed to load programs
+                      </span>
+                    </SelectItem>
+                  ) : (
+                    <>
+                      {programs.length === 0 ? (
+                        <SelectItem value="no-programs" disabled>
+                          No programs available
+                        </SelectItem>
+                      ) : (
+                        <>
+                          {!!programsError && hasProgramsCachedData && (
+                            <SelectItem
+                              value="cached-programs-warning"
+                              disabled
+                            >
+                              <span className="flex items-center gap-2 text-amber-600 text-xs">
+                                <span>⚠️</span>
+                                Using cached data
+                              </span>
+                            </SelectItem>
+                          )}
+                          {programs.map((program) => (
+                            <SelectItem
+                              key={program.id}
+                              value={program.id.toString()}
+                            >
+                              {program.name}
+                            </SelectItem>
+                          ))}
+                        </>
+                      )}
+                    </>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -644,8 +822,31 @@ export function TaskNewForm({
             >
               Cancel
             </Button>
-            <Button type="submit" className="text-white hover:scale-105">
-              {task ? "Update Task" : "Create Task"}
+            <Button
+              type="submit"
+              className="text-white hover:scale-105"
+              disabled={
+                ipPhonesLoading ||
+                programsLoading ||
+                (!!programsError &&
+                  !hasProgramsCachedData &&
+                  programs.length === 0)
+              }
+            >
+              {ipPhonesLoading || programsLoading ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                  Loading...
+                </span>
+              ) : !!programsError &&
+                !hasProgramsCachedData &&
+                programs.length === 0 ? (
+                "Cannot Submit - Missing Data"
+              ) : task ? (
+                "Update Task"
+              ) : (
+                "Create Task"
+              )}
             </Button>
           </DialogFooter>
         </form>

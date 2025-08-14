@@ -39,7 +39,7 @@ export default function UserLayout({
       <div className="absolute top-6">
         <BlurFade delay={0.3} inView>
           <div className="flex items-center justify-center gap-2">
-            <Image src="/LOGO-NOPADOL.png" alt="logo" width={50} height={0} />
+            <Image src="/LOGO-NOPADOL.png" alt="logo" width={50} height={50} style={{ width: "50px", height: "auto" }} />
             <TypingAnimation className="text-shadow-lg/20">
               นพดลพานิช
             </TypingAnimation>

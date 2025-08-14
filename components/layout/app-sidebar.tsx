@@ -1,12 +1,19 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Building2, Users, Code, Phone, CheckSquare, BarChart3 } from "lucide-react"
-import Image from 'next/image'
-import Link from 'next/link'
+import * as React from "react";
+import {
+  Building2,
+  Users,
+  Code,
+  Phone,
+  CheckSquare,
+  BarChart3,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-import { NavMain } from "@/components/nav/nav-main"
-import { NavUser } from "@/components/nav/nav-user"
+import { NavMain } from "@/components/nav/nav-main";
+import { NavUser } from "@/components/nav/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -15,15 +22,13 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-
+} from "@/components/ui/sidebar";
 
 const data = {
-  user: { 
-      name: "Admin",
-      avatar: "https://github.com/shadcn.png",
-
-    },
+  user: {
+    name: "Admin",
+    avatar: "https://github.com/shadcn.png",
+  },
 
   navMain: [
     {
@@ -31,7 +36,7 @@ const data = {
       url: "/dashboard",
       icon: BarChart3,
     },
-     {
+    {
       title: "Tasks",
       url: "/tasks",
       icon: CheckSquare,
@@ -41,7 +46,7 @@ const data = {
       url: "/branches",
       icon: Building2,
     },
-       {
+    {
       title: "IP Phones",
       url: "/phone",
       icon: Phone,
@@ -56,9 +61,8 @@ const data = {
       url: "/program",
       icon: Code,
     },
-    
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -66,10 +70,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5 my-2 w-full ">
+            <SidebarMenuButton
+              asChild
+              className="data-[slot=sidebar-menu-button]:!p-1.5 my-2 w-full "
+            >
               <Link href="/dashboard" className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
-                  <Image src="/LOGO-NOPADOL.png" alt="" width={30} height={30}/>
+                  <Image
+                    src="/LOGO-NOPADOL.png"
+                    alt=""
+                    width={25}
+                    height={25}
+                    style={{ width: "auto", height: "auto" }}
+                  />
                   <span className="text-base font-semibold">NOPADOL</span>
                 </div>
               </Link>
@@ -84,5 +97,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

@@ -177,11 +177,9 @@ export function TasksNewTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="flex items-center justify-center ">
-                 <div className="flex items-center justify-center gap-2 bg-blue-500 rounded-2xl w-10 p-1 text-white">
-                 {task.assign_to || <BsFillPeopleFill />}
-                 </div>
-                    
-                  
+                  <div className="flex items-center justify-center gap-2 bg-blue-500 rounded-2xl w-10 p-1 text-white">
+                    {task.assign_to || <BsFillPeopleFill />}
+                  </div>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
