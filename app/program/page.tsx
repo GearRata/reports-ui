@@ -7,16 +7,18 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Plus } from "lucide-react"
 import { ProgramsTable } from "@/components/tables/programs-table"
-import { ProgramFormNew } from "@/components/form/ProgramForm"
-import { useProgramsPaginated, addProgram, updateProgram, deleteProgram } from "@/api/route"
+// ProgramFormNew removed - using separate pages for create/edit
+import { useProgramsPaginated, deleteProgram } from "@/lib/api/programs"
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper"
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary"
 import type { Program } from "@/types/entities"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { useRouter } from "next/navigation"
 
 function Page() {
+  const router = useRouter();
   const {
     programs,
     currentPage,
@@ -31,31 +33,17 @@ function Page() {
   } = useProgramsPaginated({ page: 1, limit: 10 })
   
   const [searchQuery, setSearchQuery] = useState("")
-  const [isProgramFormOpen, setIsProgramFormOpen] = useState(false)
-  const [editingProgram, setEditingProgram] = useState<Program | null>(null)
+  // Form states removed - using separate pages for create/edit
   
    const handleAddProgram = () => {
-    setEditingProgram(null)
-    setIsProgramFormOpen(true)
+    router.push('/program/create')
   }
 
   const handleEditProgram = (program: Program) => {
-    setEditingProgram(program)
-    setIsProgramFormOpen(true)
+    router.push(`/program/edit/${program.id}`)
   }
 
-  const handleProgramSubmit = async (data: { name: string; id?: number }) => {
-    try {
-      if (data.id) {
-        await updateProgram(data.id, { name: data.name })
-      } else {
-        await addProgram({ name: data.name })
-      }
-      refreshPrograms()
-    } catch (error) {
-      console.error("Error saving program:", error)
-    }
-  }
+  // handleProgramSubmit removed - using separate pages for create/edit
 
   const handleDeleteProgram = async (id: number) => {
     try {
@@ -133,13 +121,7 @@ function Page() {
                 </PaginationErrorBoundary>
               </div>
 
-              {/* Form */}
-              <ProgramFormNew
-                open={isProgramFormOpen}
-                onOpenChange={setIsProgramFormOpen}
-                program={editingProgram}
-                onSubmit={handleProgramSubmit}
-              />
+              {/* Form removed - using separate pages for create/edit */}
             </div>
           </div>
         </div>

@@ -6,47 +6,35 @@ import { useState } from "react";
 import { BranchesTable } from "@/components/tables/branches-table";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
-import { BranchForm } from "@/components/form/BranchForm";
+// BranchForm removed - using separate pages for create/edit
 import {
   useBranches,
-  addBranch,
-  updateBranch,
   deleteBranch,
-} from "@/api/route";
+} from "@/lib/api/branches";
 import type { Branch } from "@/types/entities";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 
 function Page() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const { branches, refreshBranches } = useBranches();
-  const [isBranchFormOpen, setIsBranchFormOpen] = useState(false);
-  const [editingBranch, setEditingBranch] = useState<Branch | null>(null);
+  // Form states removed - using separate pages for create/edit
 
   const handleAddBranch = () => {
-    setEditingBranch(null);
-    setIsBranchFormOpen(true);
+    router.push("/branches/create")
   };
 
   const handleEditBranch = (branch: Branch) => {
-    setEditingBranch(branch);
-    setIsBranchFormOpen(true);
+    // Navigate to edit page with branch ID
+    router.push(`/branches/edit/${branch.id}`);
   };
 
-  const handleBranchSubmit = async (data: { name: string; id?: number }) => {
-    try {
-      if (data.id) {
-        await updateBranch(data.id, { name: data.name });
-      } else {
-        await addBranch({ name: data.name });
-      }
-      refreshBranches();
-    } catch (error) {
-      console.error("Error saving branch:", error);
-    }
-  };
+  // handleBranchSubmit removed - using separate pages for create/edit
 
   const handleDeleteBranch = async (id: number) => {
     try {
@@ -106,13 +94,7 @@ function Page() {
                           />
                         </div>
 
-                        {/* Form */}
-                        <BranchForm
-                          open={isBranchFormOpen}
-                          onOpenChange={setIsBranchFormOpen}
-                          branch={editingBranch}
-                          onSubmit={handleBranchSubmit}
-                        />
+                     
                       </div>
                     </div>
                   </div>

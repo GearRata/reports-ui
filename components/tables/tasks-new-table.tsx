@@ -133,7 +133,7 @@ export function TasksNewTable({
                 className="cursor-pointer"
               >
                 {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
-                <TableCell className="font-medium">{task.ticket_no}</TableCell>
+                <TableCell className="font-medium">{task.ticket_no || `#${task.id}`}</TableCell>
                 {/* <TableCell>{task.number}</TableCell> */}
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>

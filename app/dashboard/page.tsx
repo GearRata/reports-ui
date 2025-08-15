@@ -29,7 +29,7 @@ import { ChartPieProgram } from "@/components/charts/pie-chart-program";
 import { SiteHeader } from "@/components/layout/site-header";
 import { TaskStatsCards } from "@/components/task/task-stats";
 import { TaskStats } from "@/types/entities";
-import { useDashboard } from "@/api/route";
+import { useDashboard } from "@/lib/api/dashboard";
 import { useMemo, useState, useCallback } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {

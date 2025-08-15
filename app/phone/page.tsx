@@ -1,30 +1,22 @@
-"use client"
+"use client";
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { IPPhonesTable } from "@/components/tables/ip-phones-table";
-import { IPPhoneForm } from "@/components/form/PhoneForm";
-import {
-  useIPPhonesPaginated,
-  addIPPhone,
-  updateIPPhone,
-  deleteIPPhone,
-  useBranchesForDropdown,
-  useDepartmentsForDropdown,
-} from "@/api/route";
+// IPPhoneForm removed - using separate pages for create/edit
+import { useIPPhonesPaginated, deleteIPPhone } from "@/lib/api/phones";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { IPPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-
+import { useRouter } from "next/navigation";
 
 function Page() {
-  const { branches } = useBranchesForDropdown()
-  const { departments } = useDepartmentsForDropdown()
+  const router = useRouter();
   const {
     ipPhones,
     currentPage,
@@ -36,43 +28,20 @@ function Page() {
     goToPage,
     changePageSize,
     refreshIPPhones,
-  } = useIPPhonesPaginated({ page: 1, limit: 10 })
-  
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isIPPhoneFormOpen, setIsIPPhoneFormOpen] = useState(false);
-  const [editingIPPhone, setEditingIPPhone] = useState<IPPhone | null>(null);
+  } = useIPPhonesPaginated({ page: 1, limit: 10 });
 
+  const [searchQuery, setSearchQuery] = useState("");
+  // Form states removed - using separate pages for create/edit
 
   const handleAddIPPhone = () => {
-    setEditingIPPhone(null);
-    setIsIPPhoneFormOpen(true);
+    router.push("/phone/create");
   };
 
   const handleEditIPPhone = (ipPhone: IPPhone) => {
-    setEditingIPPhone(ipPhone);
-    setIsIPPhoneFormOpen(true);
+    router.push(`/phone/edit/${ipPhone.id}`);
   };
 
-
-  const handleIPPhoneSubmit = async (data: {
-    number: number;
-    name: string;
-    id?: number;
-    branch_id: number;
-    department_id: number;
-  }) => {
-    try {
-      if (data.id) {
-        await updateIPPhone(data.id, { number: data.number, name: data.name, department_id: data.department_id, branch_id: data.branch_id });
-      } else {
-        console.log("data", data)
-        await addIPPhone({ number: data.number, name: data.name, department_id: data.department_id, branch_id: data.branch_id });
-      }
-      refreshIPPhones();
-    } catch (error) {
-      console.error("Error saving IP phone:", error);
-    }
-  };
+  // handleIPPhoneSubmit removed - using separate pages for create/edit
 
   const handleDeleteIPPhone = async (id: number) => {
     try {
@@ -88,7 +57,6 @@ function Page() {
   const filteredIPPhones = ipPhones.filter((ipPhone) =>
     (ipPhone.number + "").toLowerCase().includes(searchQuery.toLowerCase())
   );
-
 
   return (
     <SidebarProvider
@@ -136,7 +104,7 @@ function Page() {
                       loading={loading}
                       error={error}
                     />
-                    
+
                     {!loading && !error && (
                       <PaginationWrapper
                         currentPage={currentPage}
@@ -153,16 +121,7 @@ function Page() {
                   </PaginationErrorBoundary>
                 </div>
 
-                {/* Form */}
-                <IPPhoneForm
-                  open={isIPPhoneFormOpen}
-                  onOpenChange={setIsIPPhoneFormOpen}
-                  ipPhone={editingIPPhone}
-                  onSubmit={handleIPPhoneSubmit}
-                  branches={branches}
-                  departments={departments}
-                  loading={loading}
-                />
+                {/* Form removed - using separate pages for create/edit */}
               </div>
             </div>
           </div>
