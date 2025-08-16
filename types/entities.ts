@@ -41,6 +41,7 @@ export interface Task {
 }
 
 export interface TaskWithPhone extends Task {
+  file_paths(file_paths: any): unknown
   assign_to: string
   assign_name?: string
   assignId?: string

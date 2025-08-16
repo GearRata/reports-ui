@@ -80,24 +80,45 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
 }
 
 // API Functions
-export async function addTaskNew(task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean }) {
+export async function addTaskNew(task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean; file_paths?: string[]; images?: File[] }) {
   try {
-    // สร้าง payload โดยเปลี่ยนเฉพาะ phone_id เป็น null ถ้าไม่ถูกต้อง
-    const payload = {
-      phone_id: task.phone_id && task.phone_id > 0 ? task.phone_id : null,
-      system_id: task.system_id,
-      text: task.text,
-      status: task.status,
-      assignto: task.assign_to,     // ส่งชื่อตาม database column
-      telegram: task.telegram
-    };
+    // สร้าง payload แบบ JSON (ขนาดเล็กกว่า FormData)
+    const formData = new FormData();
 
-    console.log("API Payload being sent:", payload);
+    // เพิ่มข้อมูล task
+    formData.append('phone_id', task.phone_id ? task.phone_id.toString() : '');
+    formData.append('system_id', task.system_id.toString());
+    formData.append('text', task.text);
+    formData.append('status', task.status.toString());
+    formData.append('telegram', task.telegram ? 'true' : 'false');
+
+    // เพิ่มรูปภาพ (ถ้ามี)
+    if (task.images && task.images.length > 0) {
+      task.images.forEach((image, index) => {
+        formData.append(`image_${index}`, image);
+      });
+    }
+
+    // เพิ่ม base64 images (ถ้ามี)
+    if (task.file_paths && task.file_paths.length > 0) {
+      task.file_paths.forEach((base64, index) => {
+        // แปลง base64 เป็น Blob
+        const byteCharacters = atob(base64.split(',')[1]);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'image/jpeg' });
+        formData.append('images', blob, `image_${index}.jpg`);
+      });
+    }
+
+    console.log("API FormData being sent");
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: formData, // ไม่ต้องใส่ Content-Type header เพราะ browser จะใส่ให้อัตโนมัติ
     });
 
     if (!response.ok) {
@@ -115,7 +136,7 @@ export async function addTaskNew(task: { phone_id: number | null; system_id: num
   }
 }
 
-export async function updateTaskNew(id: number, task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean }) {
+export async function updateTaskNew(id: number, task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean; file_paths?: string[] }) {
   try {
     // สร้าง payload โดยเปลี่ยนเฉพาะ phone_id เป็น null ถ้าไม่ถูกต้อง
     const payload = {
@@ -124,7 +145,8 @@ export async function updateTaskNew(id: number, task: { phone_id: number | null;
       text: task.text,
       status: task.status,
       assign_to: task.assign_to,     // ส่งชื่อตาม database column
-      telegram: task.telegram
+      telegram: task.telegram,
+      file_paths: task.file_paths || []      // เพิ่มรูปภาพใน payload
     };
 
     console.log("Update API Payload being sent:", payload);
@@ -158,7 +180,7 @@ export async function deleteTaskNew(id: number) {
 }
 
 export async function getTaskNewById(id: number) {
-  const response = await fetch (`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/${id}`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/${id}`);
   if (!response.ok) throw new Error("Failed to fetch task");
   const data = await response.json();
   return data.data;

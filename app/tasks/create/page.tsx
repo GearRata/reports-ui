@@ -12,18 +12,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import {
-  addTaskNew,
-} from "@/lib/api/tasks";
+import { addTaskNew } from "@/lib/api/tasks";
 import { useAssign } from "@/lib/api/auth";
 import { useProgramsForDropdown } from "@/lib/api/programs";
 import { useIPPhonesForDropdown } from "@/lib/api/phones";
+import CameraPicker from "@/components/camera";
 
 function CreateTaskPage() {
   const router = useRouter();
@@ -35,26 +40,31 @@ function CreateTaskPage() {
   const [programID, setProgramID] = useState<string>("");
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [capturedImages, setCapturedImages] = useState<string[]>([]);
+  const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const assignPerson = assignTo.find(p => p.id === 1); // Default assign to first person or adjust as needed
+      const assignPerson = assignTo.find((p) => p.id === 1); // Default assign to first person or adjust as needed
       const assignName = assignPerson ? assignPerson.name : null;
 
       await addTaskNew({
-        phone_id: phoneId && phoneId !== "" && phoneId !== "null" ? Number(phoneId) : null,
+        phone_id:
+          phoneId && phoneId !== "" && phoneId !== "null"
+            ? Number(phoneId)
+            : null,
         system_id: Number(programID),
         text,
         status: 0, // Default to pending
-        assign_to: assignName,
         telegram: true,
+        images: capturedFiles, // ส่งไฟล์รูปภาพ
       });
 
       // Navigate back to tasks page
-      router.push('/tasks');
+      router.push("/tasks");
     } catch (error) {
       console.error("Error creating task:", error);
     } finally {
@@ -63,8 +73,17 @@ function CreateTaskPage() {
   };
 
   const handleCancel = () => {
-    router.push('/tasks');
+    router.push("/tasks");
   };
+
+  const handleImagesCapture = (images: string[]) => {
+    setCapturedImages(images);
+  };
+
+  const handleFilesCapture = (files: File[]) => {
+    setCapturedFiles(files);
+  };
+
 
   return (
     <SidebarProvider
@@ -80,7 +99,7 @@ function CreateTaskPage() {
         <SiteHeader title="Create New Task" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
                 {/* Back Button */}
                 <div className="mb-6">
@@ -97,7 +116,9 @@ function CreateTaskPage() {
                 {/* Create Task Form */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Create New Task</CardTitle>
+                    <div className="flex items-center justify-between gap-2">
+                      <CardTitle>Create New Task</CardTitle>
+                    </div>
                     <CardDescription>
                       Fill in the details to create a new task.
                     </CardDescription>
@@ -106,18 +127,21 @@ function CreateTaskPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                       {/* IP Phone Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="phone_id">IP Phone (Optional)</Label>
+                        <Label htmlFor="phone_id">IP Phone</Label>
                         <Select
                           value={phoneId}
                           onValueChange={(value) => setPhoneId(value)}
                         >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select IP phone (optional)" />
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select IP phone" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>
                             {ipPhones.map((phone) => (
-                              <SelectItem key={phone.id} value={phone.id.toString()}>
+                              <SelectItem
+                                key={phone.id}
+                                value={phone.id.toString()}
+                              >
                                 {phone.number} - {phone.name}
                               </SelectItem>
                             ))}
@@ -127,18 +151,21 @@ function CreateTaskPage() {
 
                       {/* Program Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="program_id">Program *</Label>
+                        <Label htmlFor="program_id">Program</Label>
                         <Select
                           value={programID}
                           onValueChange={(value) => setProgramID(value)}
                           required
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Program" />
                           </SelectTrigger>
                           <SelectContent>
                             {programs.map((program) => (
-                              <SelectItem key={program.id} value={program.id.toString()}>
+                              <SelectItem
+                                key={program.id}
+                                value={program.id.toString()}
+                              >
                                 {program.name}
                               </SelectItem>
                             ))}
@@ -148,7 +175,7 @@ function CreateTaskPage() {
 
                       {/* Task Description */}
                       <div className="space-y-2">
-                        <Label htmlFor="text">Task Description *</Label>
+                        <Label htmlFor="text">Task Description</Label>
                         <Textarea
                           id="text"
                           value={text}
@@ -156,6 +183,15 @@ function CreateTaskPage() {
                           placeholder="Describe the task in detail..."
                           required
                           rows={4}
+                        />
+                      </div>
+
+                      {/* Camera Section */}
+                      <div className="space-y-2">
+                        <Label>Add image</Label>
+                        <CameraPicker 
+                          onImagesCapture={handleImagesCapture}
+                          onFilesCapture={handleFilesCapture}
                         />
                       </div>
 

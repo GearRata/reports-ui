@@ -47,7 +47,6 @@ function EditTaskPage() {
   const [assignId, setAssignId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-
   // Load the specific task data
   useEffect(() => {
     const loadTask = async () => {
@@ -302,6 +301,38 @@ function EditTaskPage() {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {/* แสดงรูปภาพที่มีอยู่ */}
+                      {task.file_paths &&
+                        Object.keys(task.file_paths).length > 0 && (
+                          <div className="space-y-2">
+                            <Label>รูปภาพที่แนบมา</Label>
+                            <div className="grid grid-cols-3 gap-2 max-w-md">
+                              {Object.entries(task.file_paths).map(
+                                ([key, url]) => (
+                                  <div
+                                    key={key}
+                                    className="relative aspect-square"
+                                  >
+                                    <img
+                                      src={url}
+                                      alt={`Task image ${key}`}
+                                      className="w-full h-full object-cover rounded-md border"
+                                      onError={(e) => {
+                                        console.error(
+                                          "Image failed to load:",
+                                          url
+                                        );
+                                        e.currentTarget.src =
+                                          "/placeholder-image.png";
+                                      }}
+                                    />
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </div>
+                        )}
 
                       {/* Form Actions */}
                       <div className="flex justify-end gap-4">

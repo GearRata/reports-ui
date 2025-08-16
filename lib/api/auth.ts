@@ -16,7 +16,6 @@ export function useAssign() {
       if (!response.ok) throw new Error("Failed to fetch assigning to");
       const data = await response.json();
       setAssigningTo(data.data || []);
-      console.log(data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
