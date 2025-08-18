@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import type React from "react";
@@ -37,7 +38,7 @@ function EditTaskPage() {
 
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
-  const { assingTo: assignTo } = useAssign();
+  const { assignTo: assignTo } = useAssign();
 
   const [task, setTask] = useState<TaskWithPhone | null>(null);
   const [phoneId, setPhoneId] = useState<string>("");
@@ -47,6 +48,10 @@ function EditTaskPage() {
   const [assignId, setAssignId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  console.log("Task", task)
+  console.log("Assign To", assignTo)
+  console.log("assignId", assignId)
   // Load the specific task data
   useEffect(() => {
     const loadTask = async () => {
@@ -314,7 +319,7 @@ function EditTaskPage() {
                                     key={key}
                                     className="relative aspect-square"
                                   >
-                                    <img
+                                      <img
                                       src={url}
                                       alt={`Task image ${key}`}
                                       className="w-full h-full object-cover rounded-md border"

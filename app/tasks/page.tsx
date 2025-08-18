@@ -43,6 +43,10 @@ function Page() {
     router.push(`/tasks/edit/${task.id}`);
   };
 
+  const handleShow = (task: TaskWithPhone) => {
+    router.push(`/tasks/show/${task.id}`);
+  }
+
   const handleDeleteTask = async (id: number) => {
     try {
       await deleteTaskNew(id);
@@ -108,6 +112,7 @@ function Page() {
                       tasks={filteredTasks}
                       onEditTask={handleEditTask}
                       onDeleteTask={handleDeleteTask}
+                      onShowTask={handleShow}
                       loading={loading}
                       error={error}
                     />

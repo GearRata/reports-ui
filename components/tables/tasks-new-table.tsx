@@ -10,24 +10,20 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import type { TaskWithPhone } from "@/types/entities";
 import { MdDone } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
 import { BsFillPeopleFill } from "react-icons/bs";
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
+// import { useRouter } from "next/navigation";
 
 interface TasksNewTableProps {
   tasks: TaskWithPhone[];
   onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
+  onShowTask: (task: TaskWithPhone) => void;
   loading?: boolean;
   error?: string | null;
 }
@@ -46,11 +42,14 @@ export function TasksNewTable({
   tasks,
   onEditTask,
   onDeleteTask,
+  onShowTask,
   loading = false,
   error = null,
 }: TasksNewTableProps) {
   // Set Thai locale for moment
   moment.locale("th");
+
+  // const router = useRouter();
 
   // Function to format time in Thai
   const formatTimeAgo = (dateString: string) => {
@@ -129,11 +128,13 @@ export function TasksNewTable({
             tasks.map((task) => (
               <TableRow
                 key={task.id}
-                onClick={() => onEditTask(task)}
+                onClick={() => onShowTask(task)}
                 className="cursor-pointer"
               >
                 {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
-                <TableCell className="font-medium">{task.ticket_no || `#${task.id}`}</TableCell>
+                <TableCell className="font-medium">
+                  {task.ticket_no || `#${task.id}`}
+                </TableCell>
                 {/* <TableCell>{task.number}</TableCell> */}
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>
@@ -177,42 +178,25 @@ export function TasksNewTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="flex items-center justify-center ">
-                 <div className="flex items-center justify-center gap-2 bg-blue-500 rounded-2xl w-10 p-1 text-white">
-                 {task.assign_to || <BsFillPeopleFill />}
-                 </div>
-                    
-                  
+                  <div className="flex items-center justify-center gap-2 bg-blue-500 rounded-2xl w-10 p-1 text-white">
+                    {task.assign_to || <BsFillPeopleFill />}
+                  </div>
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        className="h-8 w-8 p-0"
-                        disabled={loading}
-                      >
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => onEditTask(task)}
-                        disabled={loading}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        แก้ไข
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => onDeleteTask(task.id)}
-                        className="text-red-600"
-                        disabled={loading}
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        ลบ
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button
+                    onClick={(e) => {e.stopPropagation(); onEditTask(task);}}
+                    disabled={loading}
+                    className="cursor-pointer mr-2 bg-(--accent) text-white hover:bg-(--popover) hover:scale-105 "
+                  >
+                    <Pencil className=" h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => {e.stopPropagation(); onDeleteTask(task.id);}}
+                    disabled={loading}
+                    className="cursor-pointer mr-2 bg-red-500 text-white hover:bg-red-600 hover:scale-105 "
+                  >
+                    <Trash className=" h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))

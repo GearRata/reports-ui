@@ -34,12 +34,13 @@ function CreateTaskPage() {
   const router = useRouter();
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
-  const { assingTo: assignTo } = useAssign();
+  const { assignTo: assignTo } = useAssign();
 
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
 
@@ -49,6 +50,7 @@ function CreateTaskPage() {
 
     try {
       const assignPerson = assignTo.find((p) => p.id === 1); // Default assign to first person or adjust as needed
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const assignName = assignPerson ? assignPerson.name : null;
 
       await addTaskNew({

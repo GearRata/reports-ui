@@ -5,7 +5,7 @@ import type { AssignData } from "@/types/assignto/model";
 
 // Assign Hook
 export function useAssign() {
-  const [assingTo, setAssigningTo] = useState<AssignData[]>([]);
+  const [assignTo, setAssigningTo] = useState<AssignData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,5 +27,5 @@ export function useAssign() {
     fetchAssigningTo();
   }, []);
 
-  return { assingTo, loading, error, refreshAssigningTo: fetchAssigningTo };
+  return { assignTo, loading, error, refreshAssigningTo: fetchAssigningTo };
 }
