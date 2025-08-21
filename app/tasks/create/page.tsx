@@ -35,14 +35,12 @@ function CreateTaskPage() {
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
   const { assignTo: assignTo } = useAssign();
-
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [capturedImages, setCapturedImages] = useState<string[]>([]);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
+  const [reportby, setReportBy] = useState<string>("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +52,7 @@ function CreateTaskPage() {
       const assignName = assignPerson ? assignPerson.name : null;
 
       await addTaskNew({
+        reported_by: reportby, // Use assignName or fallback
         phone_id:
           phoneId && phoneId !== "" && phoneId !== "null"
             ? Number(phoneId)
@@ -78,14 +77,11 @@ function CreateTaskPage() {
     router.push("/tasks");
   };
 
-  const handleImagesCapture = (images: string[]) => {
-    setCapturedImages(images);
-  };
-
   const handleFilesCapture = (files: File[]) => {
     setCapturedFiles(files);
   };
 
+  
 
   return (
     <SidebarProvider
@@ -127,6 +123,17 @@ function CreateTaskPage() {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
+                      {/* Report by Section */}
+                      <div className="space-y-2">
+                        <Label htmlFor="report_by">ชื่อผู้แจ้ง</Label>
+                        <input
+                          type="text"
+                          id="report_by"
+                          className="w-full border-1 rounded-md p-2"
+                          value={reportby}
+                          onChange={(e) => setReportBy(e.target.value)}
+                        />
+                      </div>
                       {/* IP Phone Selection */}
                       <div className="space-y-2">
                         <Label htmlFor="phone_id">IP Phone</Label>
@@ -173,7 +180,7 @@ function CreateTaskPage() {
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
+                      </div>u
 
                       {/* Task Description */}
                       <div className="space-y-2">
@@ -191,10 +198,7 @@ function CreateTaskPage() {
                       {/* Camera Section */}
                       <div className="space-y-2">
                         <Label>Add image</Label>
-                        <CameraPicker 
-                          onImagesCapture={handleImagesCapture}
-                          onFilesCapture={handleFilesCapture}
-                        />
+                        <CameraPicker onFilesCapture={handleFilesCapture} />
                       </div>
 
                       {/* Form Actions */}

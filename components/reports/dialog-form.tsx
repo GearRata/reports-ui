@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 
 export default function DialogForm() {
   const params = useParams();
+  const [reportby, setReportBy] = useState<string>("");
   const [branchID, setBranchID] = useState(0);
   const [departmentID, setDepartmentID] = useState(0);
   const [text, setText] = useState("");
@@ -121,6 +122,7 @@ export default function DialogForm() {
     e.preventDefault();
 
     const formData = {
+      reported_by: reportby,
       text,
       branch_id: branchID,
       department_id: departmentID,
@@ -128,26 +130,6 @@ export default function DialogForm() {
       telegram: true,
     };
 
-    // // Prepare Telegram message data
-    // const telegramData = {
-    //   branchName: `${branch?.name || "Unknown Branch"}`,
-    //   departmentName: `${department?.name || "Unknown Department"}`,
-    //   program: `${program?.name || "Unknown Program"}`,
-    //   reportmessage: `${text}`,
-    //   url: `https://www.youtube.com/watch?v=PCDYbzbYP4w&list=RDPCDYbzbYP4w&start_radio=1`,
-    // };
-
-    // try {
-    //   // Send to both endpoints simultaneously
-    //   const [problemResponse, telegramResponse] = await Promise.all([
-    //     // Send to problem/create API
-    //     fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`, {
-    //       method: "POST",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //       body: JSON.stringify(formData),
-    //     }),
     try {
       const [problemResponse] = await Promise.all([
         // Send to problem/create API
@@ -158,12 +140,6 @@ export default function DialogForm() {
           },
           body: JSON.stringify(formData),
         }),
-
-        //end to Telegram API
-        // axios.post(
-        //   `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/telegramMessage`,
-        //   telegramData
-        // ),
       ]);
 
       // Check if both requests succeeded
@@ -205,7 +181,7 @@ export default function DialogForm() {
         ) : (
           department?.name || "Loading..."
         )}
-        
+
         {loadingBranch ? (
           <span className="animate-pulse bg-gray-200 rounded h-6 w-24 inline-block"></span>
         ) : (
@@ -216,6 +192,16 @@ export default function DialogForm() {
       <form onSubmit={handleSubmit}>
         <div className="grid gap-4 py-4 text-black">
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="report_by" className="text-right text-md font-bold">
+              ชื่อผู้แจ้ง
+            </Label>
+            <input 
+            type="text" 
+            id="report_by"  
+            className="rounded-md col-span-3 bg-white border-1 border-gray-700 focus:outline-3 focus:outline-blue-500"
+            placeholder="ชื่อผู้แจ้ง"
+            value={reportby} 
+            onChange={(e) => setReportBy(e.target.value)}/>
             <Label htmlFor="program" className="text-right text-md font-bold">
               Program
             </Label>

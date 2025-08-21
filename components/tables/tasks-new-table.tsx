@@ -14,7 +14,7 @@ import { Pencil, Trash } from "lucide-react";
 import type { TaskWithPhone } from "@/types/entities";
 import { MdDone } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
-import { BsFillPeopleFill } from "react-icons/bs";
+import { MdAssignmentInd } from "react-icons/md";
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
 // import { useRouter } from "next/navigation";
@@ -81,13 +81,41 @@ export function TasksNewTable({
     return moment(dateString).format("DD/MM/YYYY HH:mm");
   };
 
+  const filterAlphabet = (str: string): string => {
+  const wantMap: Record<string, string[]> = {
+    hardware: ["H", "W"],
+    software: ["S", "W"],
+    request:  ["R", "Q"],
+  };
+
+  const key = str.toLowerCase();
+  const targets = wantMap[key] ?? [];
+  if (targets.length === 0) return "";
+
+  const need = new Set(targets.map(c => c.toUpperCase()));
+  const seen = new Set<string>();
+  const out: string[] = [];
+
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i].toUpperCase();
+    if (need.has(ch) && !seen.has(ch)) {
+      seen.add(ch);
+      out.push(ch);
+      if (out.length === need.size) break; // เจอครบแล้วหยุด
+    }
+  }
+  return out.join("");
+};
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Type</TableHead>
             <TableHead>Ticket ID</TableHead>
             {/* <TableHead>Phone Number</TableHead> */}
+            <TableHead>ชื่อผู้แจ้ง</TableHead>
             <TableHead>Phone Name</TableHead>
             <TableHead>Department</TableHead>
             <TableHead>Program</TableHead>
@@ -96,7 +124,7 @@ export function TasksNewTable({
             <TableHead>Status</TableHead>
             <TableHead>Time</TableHead>
             <TableHead>Assign To</TableHead>
-            <TableHead className="w-[70px]"></TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -132,10 +160,16 @@ export function TasksNewTable({
                 className="cursor-pointer"
               >
                 {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
+                <TableCell className="font-medium ">
+                  <Badge className="rounded-full font-medium text-white text-center w-8">
+                    {filterAlphabet(task.system_type)}
+                  </Badge>
+                  
+                  </TableCell>
                 <TableCell className="font-medium">
                   {task.ticket_no || `#${task.id}`}
                 </TableCell>
-                {/* <TableCell>{task.number}</TableCell> */}
+                <TableCell>{task.reported_by}</TableCell>
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>
                 <TableCell>{task.system_name || "-"}</TableCell>
@@ -177,11 +211,14 @@ export function TasksNewTable({
                       : "-"}
                   </Badge>
                 </TableCell>
-                <TableCell className="flex items-center justify-center ">
-                  <div className="flex items-center justify-center gap-2 bg-blue-500 rounded-2xl w-10 p-1 text-white">
-                    {task.assign_to || <BsFillPeopleFill />}
+
+                {/* Assign To */}
+                <TableCell >
+                  <div className=" bg-blue-500 rounded-2xl text-white flex p-1 items-center justify-center">
+                    {task.assign_to || <MdAssignmentInd className="w-4 h-4" />}
                   </div>
                 </TableCell>
+
                 <TableCell>
                   <Button
                     onClick={(e) => {e.stopPropagation(); onEditTask(task);}}
@@ -198,6 +235,7 @@ export function TasksNewTable({
                     <Trash className=" h-4 w-4" />
                   </Button>
                 </TableCell>
+
               </TableRow>
             ))
           )}

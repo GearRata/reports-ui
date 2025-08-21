@@ -178,7 +178,7 @@ export default function CameraPicker({
   return (
     <div className="flex flex-col gap-4">
       {/* พื้นที่แสดงรูปภาพและปุ่มเพิ่ม - ใช้ Grid Layout */}
-      <div className="grid lg:grid-cols-4 gap-2 max-w-md md:grid-cols-4 gap-2 max-w-md max-sm:grid-cols-4 gap-2 max-w-md">
+      <div className="grid grid-cols-4 gap-2  ">
         {/* พรีวิวรูปหลายรูป */}
         {previews.map((src, i) => (
           <div key={i} className="relative aspect-square">

@@ -42,6 +42,7 @@ export interface Task {
 
 export interface TaskWithPhone extends Task {
   file_paths(file_paths: any): unknown
+  reported_by: string
   assign_to: string
   assign_name?: string
   assignId?: string
@@ -54,6 +55,7 @@ export interface TaskWithPhone extends Task {
   phone_name: string
   system_id: number      // เปลี่ยนจาก program_id
   system_name: string    // เปลี่ยนจาก program_name
+  system_type: string
   created_at: string
   updated_at: string
   telegram: boolean

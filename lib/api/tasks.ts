@@ -80,12 +80,13 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
 }
 
 // API Functions
-export async function addTaskNew(task: { phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean; file_paths?: string[]; images?: File[] }) {
+export async function addTaskNew(task: { reported_by: string; phone_id: number | null; system_id: number; text: string; status: number; assign_to?: string | null; telegram?: boolean; file_paths?: string[]; images?: File[] }) {
   try {
     // สร้าง payload แบบ JSON (ขนาดเล็กกว่า FormData)
     const formData = new FormData();
 
     // เพิ่มข้อมูล task
+    formData.append('reported_by', task.reported_by);
     formData.append('phone_id', task.phone_id ? task.phone_id.toString() : '');
     formData.append('system_id', task.system_id.toString());
     formData.append('text', task.text);
@@ -126,7 +127,7 @@ export async function addTaskNew(task: { phone_id: number | null; system_id: num
       console.error('Create failed:', response.status, errorText);
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
-
+    console.log("Create Value:", task);
     const result = await response.json();
     console.log("Create API Response:", result);
     return result;

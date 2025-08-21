@@ -213,7 +213,7 @@ function EditTaskPage() {
                           value={phoneId}
                           onValueChange={(value) => setPhoneId(value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select IP phone" />
                           </SelectTrigger>
                           <SelectContent>
@@ -232,13 +232,13 @@ function EditTaskPage() {
 
                       {/* Program Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="program_id">Program *</Label>
+                        <Label htmlFor="program_id">Program</Label>
                         <Select
                           value={programID}
                           onValueChange={(value) => setProgramID(value)}
                           required
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Program" />
                           </SelectTrigger>
                           <SelectContent>

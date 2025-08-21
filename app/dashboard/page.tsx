@@ -138,115 +138,128 @@ function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
-              <TaskStatsCards stats={status} />
+              <div className="container mx-auto space-y-6">
+                <TaskStatsCards stats={status} />
 
-              {/* Dashboard Filters */}
-              <div className="flex items-start gap-6 p-4 bg-card rounded-lg border">
-                
+                {/* Dashboard Filters */}
+                <div className="grid grid-cols-2 gap-2 p-4 bg-card rounded-lg border max-md:grid-cols-1">
+                  {/* Date Filter */}
+                  <div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-medium">
+                        กรองตามวันที่:
+                      </span>
+                      <DropdownMenu open={open} onOpenChange={setOpen}>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              " justify-between font-normal",
+                              !selectedDate && "text-muted-foreground"
+                            )}
+                          >
+                            <div className="flex items-center">
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {selectedDate ? (
+                                format(selectedDate, "PPP", { locale: th })
+                              ) : (
+                                <span>เลือกวันที่เพื่อดูข้อมูล</span>
+                              )}
+                            </div>
+                            <ChevronDownIcon className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          className="w-auto overflow-hidden p-0"
+                          align="start"
+                        >
+                          <div className="p-3 border-b">
+                            <p className="text-sm text-muted-foreground text-center">
+                              เลือกวันที่เพื่อกรองข้อมูลตามวันที่เฉพาะ
+                            </p>
+                          </div>
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={handleDateSelect}
+                            captionLayout="dropdown"
+                          />
+                          <div className="p-3 border-t flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleSelectToday}
+                            >
+                              Today
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleClearFilter}
+                            >
+                              Clear Filter
+                            </Button>
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
 
-                {/* Date Filter */}
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">กรองตามวันที่:</span>
-                  <DropdownMenu open={open} onOpenChange={setOpen}>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-[280px] justify-between font-normal",
-                          !selectedDate && "text-muted-foreground"
-                        )}
+                  {/* Branch Filter */}
+                  {/* Branch Filter */}
+                  <div>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-sm font-medium">กรองตามสาขา:</span>
+                      <Select
+                        value={selectedBranch}
+                        onValueChange={handleBranchChange}
                       >
-                        <div className="flex items-center">
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {selectedDate ? (
-                            format(selectedDate, "PPP", { locale: th })
-                          ) : (
-                            <span>เลือกวันที่เพื่อดูข้อมูล</span>
-                          )}
-                        </div>
-                        <ChevronDownIcon className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="w-auto overflow-hidden p-0"
-                      align="start"
-                    >
-                      <div className="p-3 border-b">
-                        <p className="text-sm text-muted-foreground text-center">
-                          เลือกวันที่เพื่อกรองข้อมูลตามวันที่เฉพาะ
-                        </p>
-                      </div>
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={handleDateSelect}
-                        captionLayout="dropdown"
-                      />
-                      <div className="p-3 border-t flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleSelectToday}
+                        <SelectTrigger className="w-full justify-between">
+                          <SelectValue placeholder="เลือกสาขา" />
+                        </SelectTrigger>
+                        <SelectContent
+                          className="w-[--radix-select-trigger-width]"
+                          align="start"
                         >
-                          Today
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleClearFilter}
-                        >
-                          Clear Filter
-                        </Button>
-                      </div>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                          <SelectItem value="all">ทั้งหมด</SelectItem>
+                          <SelectItem value="สำนักงานใหญ่">
+                            สำนักงานใหญ่
+                          </SelectItem>
+                          <SelectItem value="สาขาสันกำแพง">
+                            สาขาสันกำแพง
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Branch Filter */}
-                <div className="flex flex-col gap-2">
-                  <span className="text-sm font-medium">กรองตามสาขา:</span>
-                  <Select
-                    value={selectedBranch}
-                    onValueChange={handleBranchChange}
-                  >
-                    <SelectTrigger className="w-[200px]">
-                      <SelectValue placeholder="เลือกสาขา" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">ทั้งหมด</SelectItem>
-                      <SelectItem value="สำนักงานใหญ่">สำนักงานใหญ่</SelectItem>
-                      <SelectItem value="สาขาสันกำแพง">สาขาสันกำแพง</SelectItem>
-                    </SelectContent>
-                  </Select>
+                {/* Charts Grid */}
+
+                <BarChartComponents
+                  filteredTasks={filteredTasks}
+                  selectedDate={selectedDate}
+                  selectedBranch={selectedBranch}
+                  loading={loading}
+                  error={error}
+                />
+                <div className="grid grid-cols-2 gap-6 max-md:grid-cols-1">
+                  <ChartPieDepartment
+                    filteredTasks={filteredTasks}
+                    selectedDate={selectedDate}
+                    selectedBranch={selectedBranch}
+                    loading={loading}
+                    error={error}
+                  />
+                  <ChartPieProgram
+                    filteredTasks={filteredTasks}
+                    selectedDate={selectedDate}
+                    selectedBranch={selectedBranch}
+                    loading={loading}
+                    error={error}
+                  />
                 </div>
               </div>
-
-              {/* Charts Grid */}
-
-              <BarChartComponents
-                filteredTasks={filteredTasks}
-                selectedDate={selectedDate}
-                selectedBranch={selectedBranch}
-                loading={loading}
-                error={error}
-              />
-              <div className="grid grid-cols-2 gap-6">
-              <ChartPieDepartment
-                filteredTasks={filteredTasks}
-                selectedDate={selectedDate}
-                selectedBranch={selectedBranch}
-                loading={loading}
-                error={error}
-              />
-              <ChartPieProgram 
-              filteredTasks={filteredTasks}
-              selectedDate={selectedDate}
-              selectedBranch={selectedBranch}
-              loading={loading}
-              error={error}
-              />
-              </div>
-              
             </div>
           </div>
         </div>

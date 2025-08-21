@@ -132,7 +132,7 @@ function ShowTaskPage() {
                   </Button>
                 </div>
 
-                {/* Edit Task Form */}
+                {/* Show Task Form */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Task #{task.ticket_no || task.id}</CardTitle>
@@ -142,6 +142,14 @@ function ShowTaskPage() {
                   </CardHeader>
                   <CardContent>
                     <form className="space-y-6">
+                      <div className="space-y-2">
+                        <Label className="font-bold text-[16px]">
+                          ชื่อผู้แจ้ง
+                        </Label>
+                        <p className="text-muted-foreground">
+                          {task.reported_by || "ไม่ได้ระบุชื่อผู้แจ้ง"}
+                        </p>
+                      </div>
                       {/* IP Phone Selection */}
                       <div className="space-y-2">
                         <Label className="font-bold text-[16px]">
