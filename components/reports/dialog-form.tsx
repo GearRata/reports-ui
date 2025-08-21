@@ -175,7 +175,7 @@ export default function DialogForm() {
 
   return (
     <div>
-      <h1 className="text-xl text-center font-extrabold mb-4 text-black">
+      <h1 className="text-xl text-center font-extrabold mb-4 text-black ">
         {loadingDepartment ? (
           <span className="animate-pulse bg-gray-200 rounded h-6 w-32 inline-block"></span>
         ) : (
@@ -198,12 +198,12 @@ export default function DialogForm() {
             <input 
             type="text" 
             id="report_by"  
-            className="rounded-md col-span-3 bg-white border-1 border-gray-700 focus:outline-3 focus:outline-blue-500"
-            placeholder="ชื่อผู้แจ้ง"
+            className="text-sm pl-3 rounded-md p-1 col-span-3 bg-white border-1 border-gray-700 focus:outline-3 focus:outline-blue-500"
+            placeholder="ชื่อผู้แจ้งปัญหา"
             value={reportby} 
             onChange={(e) => setReportBy(e.target.value)}/>
             <Label htmlFor="program" className="text-right text-md font-bold">
-              Program
+              โปรแกรม
             </Label>
             <Select
               value={program?.id?.toString() || ""}
@@ -215,10 +215,10 @@ export default function DialogForm() {
               }}
               disabled={loadingPrograms}
             >
-              <SelectTrigger className="col-span-3 border-gray-700">
+              <SelectTrigger className="w-full col-span-3 border-gray-700">
                 <SelectValue
                   placeholder={
-                    loadingPrograms ? "Loading..." : "Select Program"
+                    loadingPrograms ? "Loading..." : "เลือกโปรแกรม"
                   }
                 >
                   {loadingPrograms
@@ -247,14 +247,14 @@ export default function DialogForm() {
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="text" className="text-right text-md font-bold">
-              Text
+              ปัญหา
             </Label>
             <Textarea
               id="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
               className="col-span-3 bg-white border-1 border-gray-700 focus:outline-3 focus:outline-blue-500"
-              placeholder="อธิบายปัญหาที่พบเกี่ยวกับโปรแกรมนี้.."
+              placeholder="รายละเอียดของปัญหาที่พบ"
               required
             />
           </div>
