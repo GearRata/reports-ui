@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/GearRata/reports-ui/compare/v0.1.7...v0.1.8) (2025-08-22)
+
+
+### Features
+
+* add assign to ([691febf](https://github.com/GearRata/reports-ui/commit/691febf9fecf854193897e45ca39daa51af75a79))
+* add chart ([c0c68a2](https://github.com/GearRata/reports-ui/commit/c0c68a2aeaed640440f0128db83f9ed04bdaa86d))
+* dashboard page add  barchart and piechart ([cb98b13](https://github.com/GearRata/reports-ui/commit/cb98b13eacc0f8356f56426c0bafade15f6aaf75))
+* pagination ([5ac8174](https://github.com/GearRata/reports-ui/commit/5ac8174c051a9d0acb42712770411b497895cbae))
+* show information page and edit ui ([dac485d](https://github.com/GearRata/reports-ui/commit/dac485dc44142bfa0ea62e838d9bc538d9976775))
+* uploading multiple and take a photo ([c86c841](https://github.com/GearRata/reports-ui/commit/c86c841a795c38d007a4c3193cb14a4b5a9cf8eb))
+
+
+### Bug Fixes
+
+* api ([fc5c3d5](https://github.com/GearRata/reports-ui/commit/fc5c3d5c0f2978876ff3dacaab3274631f5d2f23))
+* api and route page to create and edit ([1e79105](https://github.com/GearRata/reports-ui/commit/1e7910515a54de0ea6c09874e898f82c6a251b64))
+* delete entites-form.tsx and create folder form to allocate components ([d943cad](https://github.com/GearRata/reports-ui/commit/d943cadc0ff5fb985260694eb4fed47ef13301ef))
+* gitignore ([8c97c1e](https://github.com/GearRata/reports-ui/commit/8c97c1e298ab55e0e855c64352c42630070e49e9))
+* layout input form ([04a2223](https://github.com/GearRata/reports-ui/commit/04a2223768f21bd2ecaa6db39e4b96d98e370f9e))
+
 ### [0.1.7](https://github.com/GearRata/reports-ui/compare/v0.1.6...v0.1.7) (2025-08-06)
 
 ### [0.1.6](https://github.com/GearRata/reports-ui/compare/v0.1.5...v0.1.6) (2025-08-05)
