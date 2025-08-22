@@ -13,6 +13,8 @@ export interface Department {
 export interface Program {
   id: number
   name: string
+  type_id: number
+  type_name?: string
 }
 
 export interface IPPhone {
@@ -147,4 +149,9 @@ export interface DashboardData {
     month: string
     year: string
   }>
+}
+
+export interface Type {
+    id: number;
+    name: string;
 }

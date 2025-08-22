@@ -1,19 +1,30 @@
-"use client"
+"use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
-import type { Branch } from "@/types/entities"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash } from "lucide-react";
+import type { Branch } from "@/types/entities";
 
 interface BranchesTableProps {
-  branches: Branch[]
-  onEditBranch: (branch: Branch) => void
-  onDeleteBranch: (branchId: number) => void
+  branches: Branch[];
+  loading?: boolean;
+  onEditBranch: (branch: Branch) => void;
+  onDeleteBranch: (branchId: number) => void;
 }
 
-
-export function BranchesTable({ branches, onEditBranch, onDeleteBranch }: BranchesTableProps) {
+export function BranchesTable({
+  branches,
+  loading = false,
+  onEditBranch,
+  onDeleteBranch,
+}: BranchesTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -33,28 +44,30 @@ export function BranchesTable({ branches, onEditBranch, onDeleteBranch }: Branch
             </TableRow>
           ) : (
             branches.map((branch, index) => (
-              <TableRow key={branch.id} onClick={() => onEditBranch(branch)} className="cursor-pointer">
+              <TableRow key={branch.id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{branch.name}</TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0">
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => onEditBranch(branch)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => onDeleteBranch(branch.id)} className="text-red-600">
-                        <Trash className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditBranch(branch);
+                    }}
+                    disabled={loading}
+                    className="cursor-pointer mr-2 bg-(--accent) text-white hover:bg-(--popover) hover:scale-105 "
+                  >
+                    <Pencil className=" h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteBranch(branch.id);
+                    }}
+                    disabled={loading}
+                    className="cursor-pointer mr-2 bg-red-500 text-white hover:bg-red-600 hover:scale-105 "
+                  >
+                    <Trash className=" h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
@@ -62,5 +75,5 @@ export function BranchesTable({ branches, onEditBranch, onDeleteBranch }: Branch
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

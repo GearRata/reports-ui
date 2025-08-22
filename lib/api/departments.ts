@@ -69,7 +69,7 @@ export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
   };
 
   useEffect(() => {
-    fetchDepartments(1, 10); // Initial fetch with default values
+    fetchDepartments(state.currentPage, state.pageSize); // Initial fetch with default values
   }, []); // Only run on mount
 
   return {

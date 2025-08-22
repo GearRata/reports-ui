@@ -9,6 +9,7 @@ import { Plus } from "lucide-react"
 import { ProgramsTable } from "@/components/tables/programs-table"
 // ProgramFormNew removed - using separate pages for create/edit
 import { useProgramsPaginated, deleteProgram } from "@/lib/api/programs"
+// import { useType } from "@/lib/api/type";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper"
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary"
 import type { Program } from "@/types/entities"
@@ -33,6 +34,7 @@ function Page() {
   } = useProgramsPaginated({ page: 1, limit: 10 })
   
   const [searchQuery, setSearchQuery] = useState("")
+  // const { Types } = useTypes();
   // Form states removed - using separate pages for create/edit
   
    const handleAddProgram = () => {
@@ -60,7 +62,6 @@ function Page() {
     program.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  
 
   return (
     <SidebarProvider
@@ -82,7 +83,7 @@ function Page() {
               <div className="flex items-center justify-between">
                 <div className="flex flex-1 items-center space-x-2">
                   <Input
-                    placeholder="Filter programs..."
+                    placeholder="Filter problem..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="h-8 w-[150px] lg:w-[450px]"
@@ -90,7 +91,7 @@ function Page() {
                 </div>
                 <Button onClick={handleAddProgram} size="sm" className="ml-auto h-8 text-white">
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Program
+                  Add Problem
                 </Button>
               </div>
 
@@ -99,6 +100,7 @@ function Page() {
                 <PaginationErrorBoundary onRetry={refreshPrograms}>
                   <ProgramsTable
                     programs={filteredPrograms}
+                    // types={Types}
                     onEditProgram={handleEditProgram}
                     onDeleteProgram={handleDeleteProgram}
                     loading={loading}

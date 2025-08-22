@@ -67,7 +67,7 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
   };
 
   useEffect(() => {
-    fetchTasks(1, 10); // Initial fetch with default values
+    fetchTasks(state.currentPage, state.pageSize); // Initial fetch with default values
   }, []); // Only run on mount
 
   return {

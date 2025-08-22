@@ -1,21 +1,37 @@
 "use client";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { addProgram } from "@/lib/api/programs";
+import { useTypesForDropdown } from "@/lib/api/type";
 
 function CreateProgramPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const { types, loading: typesLoading } = useTypesForDropdown();
+  const [typeId, setTypeId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,9 +39,12 @@ function CreateProgramPage() {
     setIsSubmitting(true);
 
     try {
-      await addProgram({ name });
+      await addProgram({
+        name,
+        type_id: Number(typeId),
+      });
       // Navigate back to programs page
-      router.push('/program');
+      router.push("/program");
     } catch (error) {
       console.error("Error creating program:", error);
     } finally {
@@ -61,30 +80,56 @@ function CreateProgramPage() {
                     className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to Programs
+                    Back
                   </Button>
                 </div>
 
                 {/* Create Program Form */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Create New Program</CardTitle>
+                    <CardTitle>Create New Problem</CardTitle>
                     <CardDescription>
-                      Fill in the details to create a new program.
+                      Fill in the details to create a new problem.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                       {/* Program Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="name">Program Name *</Label>
+                        <Label htmlFor="name">Problem</Label>
                         <Input
                           id="name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter program name"
+                          placeholder="Enter problem"
                           required
                         />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="branch">Type</Label>
+                        <Select
+                          value={typeId}
+                          onValueChange={(value) => setTypeId(value)}
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                typesLoading ? "Loading..." : "Select Type"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {types.map((type) => (
+                              <SelectItem
+                                key={type.id}
+                                value={type.id.toString()}
+                              >
+                                {type.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Form Actions */}
@@ -102,7 +147,7 @@ function CreateProgramPage() {
                           disabled={isSubmitting || !name.trim()}
                           className="text-white"
                         >
-                          {isSubmitting ? "Creating..." : "Create Program"}
+                          {isSubmitting ? "Creating..." : "Create a problem"}
                         </Button>
                       </div>
                     </form>

@@ -67,7 +67,7 @@ export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {
   };
 
   useEffect(() => {
-    fetchIPPhones(1, 10); // Initial fetch with default values
+    fetchIPPhones(state.currentPage, state.pageSize); // Initial fetch with default values
   }, []); // Only run on mount
 
   return {

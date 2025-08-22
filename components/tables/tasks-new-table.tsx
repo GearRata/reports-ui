@@ -161,7 +161,7 @@ export function TasksNewTable({
               >
                 {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
                 <TableCell className="font-medium ">
-                  <Badge className="rounded-full font-medium text-white text-center w-8">
+                  <Badge className="rounded-full font-medium text-white text-center w-8 bg-indigo-500">
                     {filterAlphabet(task.system_type)}
                   </Badge>
                   
@@ -214,7 +214,7 @@ export function TasksNewTable({
 
                 {/* Assign To */}
                 <TableCell >
-                  <div className=" bg-blue-500 rounded-2xl text-white flex p-1 items-center justify-center">
+                  <div className=" bg-(--chart-5) rounded-2xl text-white flex p-1 items-center justify-center">
                     {task.assign_to || <MdAssignmentInd className="w-4 h-4" />}
                   </div>
                 </TableCell>

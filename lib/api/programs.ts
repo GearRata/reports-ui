@@ -67,7 +67,7 @@ export function useProgramsPaginated(params?: ProgramsPaginationParams) {
   };
 
   useEffect(() => {
-    fetchPrograms(1, 10); // Initial fetch with default values
+    fetchPrograms(state.currentPage, state.pageSize); // Initial fetch with default values
   }, []); // Only run on mount
 
   return {
@@ -86,7 +86,7 @@ export function useProgramsForDropdown() {
 }
 
 // API Functions
-export async function addProgram(program: { name: string }) {
+export async function addProgram(program: { name: string | null, type_id: number }) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -95,7 +95,7 @@ export async function addProgram(program: { name: string }) {
   return await response.json();
 }
 
-export async function updateProgram(id: number, program: { name: string }) {
+export async function updateProgram(id: number, program: { name: string | null, type_id: number }) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

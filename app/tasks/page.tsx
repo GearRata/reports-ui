@@ -66,7 +66,8 @@ function Page() {
     (task.department_name && task.department_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (task.system_name && task.system_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (task.branch_name && task.branch_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (task.assign_to && task.assign_to.toLowerCase().includes(searchQuery.toLowerCase()))
+    (task.assign_to && task.assign_to.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (task.system_type && task.system_type.toLowerCase().includes(searchQuery.toLowerCase())) 
   );
 
   return (

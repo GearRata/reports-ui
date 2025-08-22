@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Building2, Users, Code, Phone, CheckSquare, BarChart3 } from "lucide-react"
+import { Building2, Users, Phone, FolderCheck , BarChart3, BadgeAlert  } from "lucide-react"
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -34,7 +34,7 @@ const data = {
      {
       title: "Tasks",
       url: "/tasks",
-      icon: CheckSquare,
+      icon: FolderCheck,
     },
     {
       title: "Branch Offices",
@@ -52,9 +52,9 @@ const data = {
       icon: Users,
     },
     {
-      title: "Program",
+      title: "Problem",
       url: "/program",
-      icon: Code,
+      icon: BadgeAlert,
     },
     
   ],

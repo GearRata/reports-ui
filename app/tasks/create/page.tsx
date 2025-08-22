@@ -180,7 +180,7 @@ function CreateTaskPage() {
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>u
+                      </div>
 
                       {/* Task Description */}
                       <div className="space-y-2">

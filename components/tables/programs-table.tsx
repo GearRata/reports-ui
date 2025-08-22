@@ -1,25 +1,31 @@
-"use client"
+"use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MoreHorizontal, Pencil, Trash } from "lucide-react"
-import type { Program } from "@/types/entities"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash } from "lucide-react";
+import type { Program } from "@/types/entities";
 
 interface ProgramsTableProps {
-  programs: Program[]
-  onEditProgram: (program: Program) => void
-  onDeleteProgram: (programId: number) => void
-  loading?: boolean
-  error?: string | null
+  programs: Program[];
+  onEditProgram: (program: Program) => void;
+  onDeleteProgram: (programId: number) => void;
+  loading?: boolean;
+  error?: string | null;
 }
 
-export function ProgramsTable({ 
-  programs, 
-  onEditProgram, 
+export function ProgramsTable({
+  programs,
+  onEditProgram,
   onDeleteProgram,
   loading = false,
-  error = null 
+  error = null,
 }: ProgramsTableProps) {
   return (
     <div className="rounded-md border">
@@ -28,6 +34,7 @@ export function ProgramsTable({
           <TableRow>
             <TableHead>ID</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>Type</TableHead>
             <TableHead className="w-[70px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -49,45 +56,40 @@ export function ProgramsTable({
             </TableRow>
           ) : programs.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={3} className="h-24 text-center text-muted-foreground">
+              <TableCell
+                colSpan={3}
+                className="h-24 text-center text-muted-foreground"
+              >
                 ไม่พบข้อมูลโปรแกรม
               </TableCell>
             </TableRow>
           ) : (
             programs.map((program, index) => (
-              <TableRow key={program.id}  onClick={() => onEditProgram(program)} className="cursor-pointer">
+              <TableRow key={program.id}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
                 <TableCell>{program.name}</TableCell>
+                <TableCell>{program.type_name}</TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        className="h-8 w-8 p-0"
-                        disabled={loading}
-                      >
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
-                        onClick={() => onEditProgram(program)}
-                        disabled={loading}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        แก้ไข
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => onDeleteProgram(program.id)} 
-                        className="text-red-600"
-                        disabled={loading}
-                      >
-                        <Trash className="mr-2 h-4 w-4" />
-                        ลบ
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditProgram(program);
+                    }}
+                    disabled={loading}
+                    className="cursor-pointer mr-2 bg-(--accent) text-white hover:bg-(--popover) hover:scale-105 "
+                  >
+                    <Pencil className=" h-4 w-4" />
+                  </Button>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteProgram(program.id);
+                    }}
+                    disabled={loading}
+                    className="cursor-pointer mr-2 bg-red-500 text-white hover:bg-red-600 hover:scale-105 "
+                  >
+                    <Trash className=" h-4 w-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))
@@ -95,5 +97,5 @@ export function ProgramsTable({
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

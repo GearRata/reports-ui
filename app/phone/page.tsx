@@ -55,7 +55,10 @@ function Page() {
   // Note: Server-side filtering will be implemented later
   // For now, we'll use client-side filtering with paginated data
   const filteredIPPhones = ipPhones.filter((ipPhone) =>
-    (ipPhone.number + "").toLowerCase().includes(searchQuery.toLowerCase())
+    (ipPhone.number + "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (ipPhone.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (ipPhone.department_name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (ipPhone.branch_name || "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (

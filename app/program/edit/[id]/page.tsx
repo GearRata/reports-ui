@@ -1,27 +1,39 @@
 "use client";
 
 import type React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import {
-  getProgramById,
-  updateProgram,
-} from "@/lib/api/programs";
+import { getProgramById, updateProgram } from "@/lib/api/programs";
 import type { Program } from "@/types/entities";
+import { useTypesForDropdown } from "@/lib/api/type";
 
 function EditProgramPage() {
   const router = useRouter();
   const params = useParams();
   const programId = params.id as string;
-
+  const { types, loading: typesLoading } = useTypesForDropdown();
+  const [typeId, setTypeId] = useState<string>("");
   const [program, setProgram] = useState<Program | null>(null);
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,6 +47,7 @@ function EditProgramPage() {
           const programData = await getProgramById(Number(programId));
           setProgram(programData);
           setName(programData.name);
+          setTypeId(programData.type_id.toString());
           setLoading(false);
         } catch (error) {
           console.error("Error loading program:", error);
@@ -49,13 +62,13 @@ function EditProgramPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!program) return;
-    
+
     setIsSubmitting(true);
 
     try {
-      await updateProgram(program.id, { name });
+      await updateProgram(program.id, { name, type_id: Number(typeId) });
       // Navigate back to programs page
-      router.push('/program');
+      router.push("/program");
     } catch (error) {
       console.error("Error updating program:", error);
     } finally {
@@ -64,7 +77,7 @@ function EditProgramPage() {
   };
 
   const handleCancel = () => {
-    router.push('/program');
+    router.push("/program");
   };
 
   if (loading) {
@@ -139,7 +152,7 @@ function EditProgramPage() {
                     className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to Programs
+                    Back
                   </Button>
                 </div>
 
@@ -163,6 +176,32 @@ function EditProgramPage() {
                           placeholder="Enter program name"
                           required
                         />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="branch">Type</Label>
+                        <Select
+                          value={typeId}
+                          onValueChange={(value) => setTypeId(value)}
+                          required
+                        >
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                typesLoading ? "Loading..." : "Select Type"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {types.map((type) => (
+                              <SelectItem
+                                key={type.id}
+                                value={type.id.toString()}
+                              >
+                                {type.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* Form Actions */}

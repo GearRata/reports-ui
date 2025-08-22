@@ -59,7 +59,8 @@ function Page() {
   // Note: Server-side filtering will be implemented later
   // For now, we'll use client-side filtering with paginated data
   const filteredDepartments = departments.filter((department) =>
-    department.name.toLowerCase().includes(searchQuery.toLowerCase())
+    department.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    department.branch_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
