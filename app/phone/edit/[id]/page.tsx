@@ -152,7 +152,7 @@ function EditPhonePage() {
         <SiteHeader title="Edit IP Phone" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
                 {/* Back Button */}
                 <div className="mb-6">
@@ -162,7 +162,7 @@ function EditPhonePage() {
                     className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to IP Phones
+                    Back
                   </Button>
                 </div>
 
@@ -178,7 +178,7 @@ function EditPhonePage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                       {/* Phone Number */}
                       <div className="space-y-2">
-                        <Label htmlFor="number">Phone Number *</Label>
+                        <Label htmlFor="number">Phone Number</Label>
                         <Input
                           id="number"
                           type="number"
@@ -191,7 +191,7 @@ function EditPhonePage() {
 
                       {/* Phone Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="name">Phone Name *</Label>
+                        <Label htmlFor="name">Phone Name</Label>
                         <Input
                           id="name"
                           value={name}
@@ -203,13 +203,13 @@ function EditPhonePage() {
 
                       {/* Branch Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="branch">Branch *</Label>
+                        <Label htmlFor="branch">Branch</Label>
                         <Select
                           value={branchId}
                           onValueChange={(value) => setBranchId(value)}
                           required
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue 
                               placeholder={branchesLoading ? "Loading..." : "Select Branch"} 
                             />
@@ -226,13 +226,13 @@ function EditPhonePage() {
 
                       {/* Department Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="department">Department *</Label>
+                        <Label htmlFor="department">Department</Label>
                         <Select
                           value={departmentId}
                           onValueChange={(value) => setDepartmentId(value)}
                           required
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue 
                               placeholder={departmentsLoading ? "Loading..." : "Select Department"} 
                             />

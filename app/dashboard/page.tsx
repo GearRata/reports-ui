@@ -137,7 +137,7 @@ function Page() {
         <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto space-y-6">
                 <TaskStatsCards stats={status} />
 
@@ -205,7 +205,6 @@ function Page() {
                     </div>
                   </div>
 
-                  {/* Branch Filter */}
                   {/* Branch Filter */}
                   <div>
                     <div className="flex flex-col gap-2">

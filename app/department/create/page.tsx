@@ -65,7 +65,7 @@ function CreateDepartmentPage() {
         <SiteHeader title="Create New Department" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
                 {/* Back Button */}
                 <div className="mb-6">
@@ -75,7 +75,7 @@ function CreateDepartmentPage() {
                     className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to Departments
+                    Back
                   </Button>
                 </div>
 
@@ -91,7 +91,7 @@ function CreateDepartmentPage() {
                     <form onSubmit={handleSubmit} className="space-y-6">
                       {/* Department Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="name">Department Name *</Label>
+                        <Label htmlFor="name">Department Name</Label>
                         <Input
                           id="name"
                           value={name}
@@ -103,13 +103,13 @@ function CreateDepartmentPage() {
 
                       {/* Branch Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="branch">Branch *</Label>
+                        <Label htmlFor="branch">Branch</Label>
                         <Select
                           value={branchId}
                           onValueChange={(value) => setBranchId(value)}
                           required
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue 
                               placeholder={branchesLoading ? "Loading..." : "Select Branch"} 
                             />

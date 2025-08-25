@@ -41,7 +41,7 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-6 px-4 lg:px-1 @xl/main:grid-cols-3 @5xl/main:grid-cols-3">
+    <div className="grid grid-cols-1 gap-6 px-1 lg:px-1 @xl/main:grid-cols-3 @5xl/main:grid-cols-3">
       {statCards.map((card) => {
         const IconComponent = card.icon
         return (

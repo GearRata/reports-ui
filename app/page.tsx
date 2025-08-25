@@ -37,7 +37,10 @@ export default function LoginPage() {
 
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-center">
-          <a href="" className="flex items-center gap-2 font-medium">
+          <a
+            href=""
+            className="flex items-center gap-2 font-medium"
+          >
             <div className="text-primary-foreground flex items-center justify-center gap-2">
               <Image
                 src="/LOGO-NOPADOL.png"
@@ -52,14 +55,14 @@ export default function LoginPage() {
             </div>
           </a>
         </div>
-        <div className="flex flex-1 items-center justify-center">
+        {/* Login Form user and password */}
+        <div className="flex flex-1 flex-col items-center justify-center">
           <div className="w-full max-w-xs">
             <LoginForm />
           </div>
-        </div>
-
-        <div className="text-gray-400 font-light text-sm absolute bottom-23 right-75 ">
-          <Version />
+          <div className="flex flex-col mt-3 text-gray-500">
+            <Version />
+          </div>
         </div>
       </div>
     </div>

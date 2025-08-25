@@ -127,7 +127,6 @@ export async function addTaskNew(task: { reported_by: string; phone_id: number |
       console.error('Create failed:', response.status, errorText);
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
-    console.log("Create Value:", task);
     const result = await response.json();
     console.log("Create API Response:", result);
     return result;

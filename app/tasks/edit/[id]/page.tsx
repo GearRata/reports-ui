@@ -274,7 +274,7 @@ function EditTaskPage() {
                           value={status}
                           onValueChange={(value) => setStatus(value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                           <SelectContent>
@@ -291,7 +291,7 @@ function EditTaskPage() {
                           value={assignId}
                           onValueChange={(value) => setAssignId(value)}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select AssignTo" />
                           </SelectTrigger>
                           <SelectContent>
