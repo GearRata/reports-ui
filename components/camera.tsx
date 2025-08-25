@@ -189,7 +189,7 @@ export default function CameraPicker({
   return (
     <div className="flex flex-col gap-6">
       {/* Enhanced Grid Layout for Images */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-3 xs:grid-cols-4 lg:grid-cols-5 gap-3">
         {/* Enhanced Image Previews */}
         {previews.map((src, i) => (
           <div key={i} className="relative aspect-square group animate-fadeIn">

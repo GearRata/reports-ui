@@ -128,7 +128,7 @@ function ShowTaskPage() {
                     className="flex items-center gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Back to Tasks
+                    Back
                   </Button>
                 </div>
 
@@ -218,7 +218,7 @@ function ShowTaskPage() {
                             <Label className="font-bold text-[16px]">
                               รูปภาพที่แนบมา
                             </Label>
-                            <div className="grid grid-cols-3 gap-2 max-w-md">
+                            <div className="grid grid-cols-4 gap-2">
                               {Object.entries(task.file_paths).map(
                                 ([key, url]) => (
                                   <div

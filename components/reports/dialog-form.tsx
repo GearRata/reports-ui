@@ -206,10 +206,10 @@ export default function DialogForm() {
         setReportBy("");
         setCapturedFiles([]);
         setIsSuccess(false);
-      }, 2000);
+      }, 500);
 
       // optionally refresh page or navigate
-      setTimeout(() => window.location.reload(), 3000);
+      setTimeout(() => window.location.reload(), 500);
       return result;
     } catch (err) {
       console.error("Error creating task:", err);
@@ -593,7 +593,7 @@ export default function DialogForm() {
             </div>
 
             {/* Enhanced Submit Button */}
-            <div className="pt sm:pt-8">
+            <div className="pt-14 sm:pt-8">
               <div className="relative">
                 <Button
                   type="submit"
