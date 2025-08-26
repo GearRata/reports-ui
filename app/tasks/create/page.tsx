@@ -23,7 +23,6 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { addTaskNew } from "@/lib/api/tasks";
 import { useAssign } from "@/lib/api/auth";
 import { useProgramsForDropdown } from "@/lib/api/programs";
@@ -81,8 +80,6 @@ function CreateTaskPage() {
     setCapturedFiles(files);
   };
 
-  
-
   return (
     <SidebarProvider
       style={
@@ -99,17 +96,6 @@ function CreateTaskPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
-                {/* Back Button */}
-                <div className="mb-6">
-                  <Button
-                    variant="outline"
-                    onClick={handleCancel}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to Tasks
-                  </Button>
-                </div>
 
                 {/* Create Task Form */}
                 <Card>
@@ -159,27 +145,40 @@ function CreateTaskPage() {
                       </div>
 
                       {/* Program Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="program_id">Program</Label>
-                        <Select
-                          value={programID}
-                          onValueChange={(value) => setProgramID(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Program" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {programs.map((program) => (
-                              <SelectItem
-                                key={program.id}
-                                value={program.id.toString()}
-                              >
-                                {program.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="program_id">Problem</Label>
+                          <Select
+                            value={programID}
+                            onValueChange={(value) => setProgramID(value)}
+                            required
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select Program" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {programs.map((program) => (
+                                <SelectItem
+                                  key={program.id}
+                                  value={program.id.toString()}
+                                >
+                                  {program.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="report_by">Add Problem</Label>
+                          <input
+                            type="text"
+                            id="report_by"
+                            className="w-full border-1 rounded-md p-1.5"
+                            value={reportby}
+                            onChange={(e) => setReportBy(e.target.value)}
+                          />
+                        </div>
                       </div>
 
                       {/* Task Description */}

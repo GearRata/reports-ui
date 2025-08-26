@@ -367,7 +367,7 @@ export default function DialogForm() {
                   </p>
                 </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 grid grid-cols-2">
                 <Select
                   value={program?.id?.toString() || ""}
                   onValueChange={(value) => {
@@ -462,6 +462,16 @@ export default function DialogForm() {
                     </span>
                   </div>
                 )}
+                <div className="space-y-2">
+                  <Label htmlFor="report_by">Add Problem</Label>
+                  <input
+                    type="text"
+                    id="report_by"
+                    className="w-full border-1 rounded-md p-1.5"
+                    value={reportby}
+                    onChange={(e) => setReportBy(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 

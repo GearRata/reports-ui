@@ -42,7 +42,12 @@ export function useAuth() {
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
-      console.log("Login Susses:");
+      console.log("Login Response:", data);
+
+      if (!res.ok || !data.data) {
+        console.error("Login failed:", data);
+        return null;
+      }
 
       const userObj: User = {
         id: data.data.id || "",

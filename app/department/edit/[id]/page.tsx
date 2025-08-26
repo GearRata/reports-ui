@@ -17,7 +17,6 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import {
   getDepartmentById,
   updateDepartment,
@@ -146,17 +145,6 @@ function EditDepartmentPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
-                {/* Back Button */}
-                <div className="mb-6">
-                  <Button
-                    variant="outline"
-                    onClick={handleCancel}
-                    className="flex items-center gap-2"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                  </Button>
-                </div>
 
                 {/* Edit Department Form */}
                 <Card>

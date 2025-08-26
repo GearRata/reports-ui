@@ -14,16 +14,26 @@ import { Pencil, Trash } from "lucide-react";
 import type { TaskWithPhone } from "@/types/entities";
 import { MdDone } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
-import { MdAssignmentInd } from "react-icons/md";
+// import { MdAssignmentInd } from "react-icons/md"
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
 // import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useAssign } from "@/lib/api/auth";
+
 
 interface TasksNewTableProps {
   tasks: TaskWithPhone[];
   onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
   onShowTask: (task: TaskWithPhone) => void;
+  onAssignChange?: (taskId: number, assignTo: string) => void;
   loading?: boolean;
   error?: string | null;
 }
@@ -43,14 +53,16 @@ export function TasksNewTable({
   onEditTask,
   onDeleteTask,
   onShowTask,
+  onAssignChange,
   loading = false,
   error = null,
 }: TasksNewTableProps) {
   // Set Thai locale for moment
   moment.locale("th");
 
-  // const router = useRouter();
-
+  const { assignTo } = useAssign();
+  
+  
   // Function to format time in Thai
   const formatTimeAgo = (dateString: string) => {
     const now = moment();
@@ -82,30 +94,30 @@ export function TasksNewTable({
   };
 
   const filterAlphabet = (str: string): string => {
-  const wantMap: Record<string, string[]> = {
-    hardware: ["H", "W"],
-    software: ["S", "W"],
-    request:  ["R", "Q"],
-  };
+    const wantMap: Record<string, string[]> = {
+      hardware: ["H", "W"],
+      software: ["S", "W"],
+      request: ["R", "Q"],
+    };
 
-  const key = str.toLowerCase();
-  const targets = wantMap[key] ?? [];
-  if (targets.length === 0) return "";
+    const key = str.toLowerCase();
+    const targets = wantMap[key] ?? [];
+    if (targets.length === 0) return "";
 
-  const need = new Set(targets.map(c => c.toUpperCase()));
-  const seen = new Set<string>();
-  const out: string[] = [];
+    const need = new Set(targets.map((c) => c.toUpperCase()));
+    const seen = new Set<string>();
+    const out: string[] = [];
 
-  for (let i = 0; i < str.length; i++) {
-    const ch = str[i].toUpperCase();
-    if (need.has(ch) && !seen.has(ch)) {
-      seen.add(ch);
-      out.push(ch);
-      if (out.length === need.size) break; // เจอครบแล้วหยุด
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i].toUpperCase();
+      if (need.has(ch) && !seen.has(ch)) {
+        seen.add(ch);
+        out.push(ch);
+        if (out.length === need.size) break; // เจอครบแล้วหยุด
+      }
     }
-  }
-  return out.join("");
-};
+    return out.join("");
+  };
 
   return (
     <div className="rounded-md border">
@@ -124,13 +136,13 @@ export function TasksNewTable({
             <TableHead>Status</TableHead>
             <TableHead>Time</TableHead>
             <TableHead>Assign To</TableHead>
-            <TableHead></TableHead>
+            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {loading ? (
             <TableRow>
-              <TableCell colSpan={9} className="h-24 text-center">
+              <TableCell colSpan={12} className="h-24 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
                   กำลังโหลดข้อมูล...
@@ -139,14 +151,14 @@ export function TasksNewTable({
             </TableRow>
           ) : error ? (
             <TableRow>
-              <TableCell colSpan={9} className="h-24 text-center text-red-500">
+              <TableCell colSpan={12} className="h-24 text-center text-red-500">
                 เกิดข้อผิดพลาด: {error}
               </TableCell>
             </TableRow>
           ) : tasks.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={9}
+                colSpan={12}
                 className="h-24 text-center text-muted-foreground"
               >
                 ไม่พบข้อมูลงาน
@@ -164,8 +176,7 @@ export function TasksNewTable({
                   <Badge className="rounded-full font-medium text-white text-center w-8 bg-indigo-500">
                     {filterAlphabet(task.system_type)}
                   </Badge>
-                  
-                  </TableCell>
+                </TableCell>
                 <TableCell className="font-medium">
                   {task.ticket_no || `#${task.id}`}
                 </TableCell>
@@ -212,11 +223,33 @@ export function TasksNewTable({
                   </Badge>
                 </TableCell>
 
-                {/* Assign To */}
-                <TableCell >
-                  <div className=" bg-(--chart-5) rounded-2xl text-white flex p-1 items-center justify-center">
-                    {task.assign_to || <MdAssignmentInd className="w-4 h-4" />}
-                  </div>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <Select
+                    value={task.assign_to || "unassigned"}
+                    onValueChange={(value) => {
+                      if (onAssignChange) {
+                        onAssignChange(task.id, value === "unassigned" ? "" : value);
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="w-[150px]">
+                      <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="unassigned">ไม่ระบุ</SelectItem>
+                      {assignTo && assignTo.length > 0 ? (
+                        assignTo.map((assign) => (
+                          <SelectItem key={assign.id} value={assign.name}>
+                            {assign.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-data" disabled>
+                          ไม่มีข้อมูลผู้รับผิดชอบ
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
 
                 <TableCell>
@@ -235,7 +268,6 @@ export function TasksNewTable({
                     <Trash className=" h-4 w-4" />
                   </Button>
                 </TableCell>
-
               </TableRow>
             ))
           )}

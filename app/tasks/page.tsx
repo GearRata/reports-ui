@@ -9,6 +9,7 @@ import { TasksNewTable } from "@/components/tables/tasks-new-table";
 import {
   useTasksNewPaginated,
   deleteTaskNew,
+  updateTaskNew,
 } from "@/lib/api/tasks";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
@@ -34,6 +35,25 @@ function Page() {
   } = useTasksNewPaginated({ page: 1, limit: 10 });
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const handleAssignChange = async (taskId: number, assignTo: string) => {
+  try {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      await updateTaskNew(taskId, {
+        phone_id: task.phone_id,
+        system_id: task.system_id,
+        text: task.text,
+        status: task.status,
+        assign_to: assignTo || null,
+        telegram: task.telegram
+      });
+      refreshTasks();
+    }
+  } catch (error) {
+    console.error("Error updating assignment:", error);
+  }
+};
 
   const handleAddTask = () => {
     router.push("/tasks/create");
@@ -114,6 +134,7 @@ function Page() {
                       onEditTask={handleEditTask}
                       onDeleteTask={handleDeleteTask}
                       onShowTask={handleShow}
+                      onAssignChange={handleAssignChange}
                       loading={loading}
                       error={error}
                     />
