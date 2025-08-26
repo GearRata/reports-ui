@@ -9,8 +9,8 @@ import { TasksNewTable } from "@/components/tables/tasks-new-table";
 import {
   useTasksNewPaginated,
   deleteTaskNew,
-  updateTaskNew,
 } from "@/lib/api/tasks";
+import { updateTaskAssignTo } from "@/lib/api/tasks";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { TaskWithPhone } from "@/types/entities";
@@ -40,13 +40,8 @@ function Page() {
   try {
     const task = tasks.find(t => t.id === taskId);
     if (task) {
-      await updateTaskNew(taskId, {
-        phone_id: task.phone_id,
-        system_id: task.system_id,
-        text: task.text,
-        status: task.status,
+      await updateTaskAssignTo(taskId, {
         assign_to: assignTo || null,
-        telegram: task.telegram
       });
       refreshTasks();
     }

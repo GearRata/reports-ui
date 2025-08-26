@@ -183,7 +183,7 @@ export function TasksNewTable({
                 <TableCell>{task.reported_by}</TableCell>
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>
-                <TableCell>{task.system_name || "-"}</TableCell>
+                <TableCell>{task.system_name || "อื่นๆ"}</TableCell>
                 <TableCell>{task.branch_name || "-"}</TableCell>
                 <TableCell className="max-w-[200px] truncate">
                   {task.text}
@@ -225,7 +225,7 @@ export function TasksNewTable({
 
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
-                    value={task.assign_to || "unassigned"}
+                    value={task.assign_to}
                     onValueChange={(value) => {
                       if (onAssignChange) {
                         onAssignChange(task.id, value === "unassigned" ? "" : value);
@@ -233,10 +233,9 @@ export function TasksNewTable({
                     }}
                   >
                     <SelectTrigger className="w-[150px]">
-                      <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
+                      <SelectValue  placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unassigned">ไม่ระบุ</SelectItem>
+                    <SelectContent >
                       {assignTo && assignTo.length > 0 ? (
                         assignTo.map((assign) => (
                           <SelectItem key={assign.id} value={assign.name}>

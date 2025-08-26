@@ -48,9 +48,6 @@ function EditTaskPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  console.log("Task", task)
-  console.log("Assign To", assignTo)
-  console.log("assignId", assignId)
   // Load the specific task data
   useEffect(() => {
     const loadTask = async () => {
@@ -100,6 +97,7 @@ function EditTaskPage() {
         system_id: Number(programID),
         text,
         status: Number(status),
+        // assign_to: assignName,
         assign_to: assignName,
         telegram: true,
       });
@@ -181,7 +179,6 @@ function EditTaskPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
               <div className="container mx-auto max-w-2xl">
-
                 {/* Edit Task Form */}
                 <Card>
                   <CardHeader>
@@ -255,44 +252,47 @@ function EditTaskPage() {
                         />
                       </div>
 
-                      {/* Status Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="status">Status</Label>
-                        <Select
-                          value={status}
-                          onValueChange={(value) => setStatus(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="0">Pending</SelectItem>
-                            <SelectItem value="1">Done</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
                       {/* Assign To Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="assign_to">Assign To</Label>
-                        <Select
-                          value={assignId}
-                          onValueChange={(value) => setAssignId(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select AssignTo" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {assignTo.map((assign) => (
-                              <SelectItem
-                                key={assign.id}
-                                value={assign.id.toString()}
-                              >
-                                {assign.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Status Selection */}
+                        <div className="space-y-2">
+                          <Label htmlFor="status">Status</Label>
+                          <Select
+                            value={status}
+                            onValueChange={(value) => setStatus(value)}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="0">Pending</SelectItem>
+                              <SelectItem value="1">Done</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        {/* Assign To Selection */}
+                        <div className="space-y-2">
+                          <Label htmlFor="assign_to">Assign To</Label>
+                          <Select
+                            value={assignId}
+                            onValueChange={(value) => setAssignId(value)}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select AssignTo" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {assignTo.map((assign) => (
+                                <SelectItem
+                                  key={assign.id}
+                                  value={assign.id.toString()}
+                                >
+                                  {assign.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
 
                       {/* แสดงรูปภาพที่มีอยู่ */}
@@ -307,7 +307,7 @@ function EditTaskPage() {
                                     key={key}
                                     className="relative aspect-square"
                                   >
-                                      <img
+                                    <img
                                       src={url}
                                       alt={`Task image ${key}`}
                                       className="w-full h-full object-cover rounded-md border"
