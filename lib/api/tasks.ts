@@ -85,7 +85,7 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
 export async function addTaskNew(task: {
   reported_by: string;
   phone_id: number | null;
-  type_id: number;
+  issue_type: number;
   system_id: number;
   issue_else: string;
   text: string;
@@ -102,7 +102,7 @@ export async function addTaskNew(task: {
     // เพิ่มข้อมูล task
     formData.append("reported_by", task.reported_by);
     formData.append("phone_id", task.phone_id ? task.phone_id.toString() : "");
-    formData.append("type_id", task.type_id.toString());
+    formData.append("issue_type", task.issue_type.toString());
     formData.append("system_id", task.system_id.toString());
     formData.append("issue_else", task.issue_else);
     formData.append("text", task.text);

@@ -24,7 +24,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { addTaskNew } from "@/lib/api/tasks";
-import { useAssign } from "@/lib/api/assign";
+
 import { useType } from "@/lib/api/type";
 import { useProgramsForDropdown } from "@/lib/api/programs";
 import { useIPPhonesForDropdown } from "@/lib/api/phones";
@@ -35,7 +35,6 @@ function CreateTaskPage() {
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
   const { types } = useType();
-  const { assignTo: assignTo } = useAssign();
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
   const [issue, setIssue] = useState<string>("");
@@ -45,17 +44,14 @@ function CreateTaskPage() {
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [reportby, setReportBy] = useState<string>("");
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const assignPerson = assignTo.find((p) => p.id === 1); // Default assign to first person or adjust as needed
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const assignName = assignPerson ? assignPerson.name : null;
-
       await addTaskNew({
-        reported_by: reportby, // Use assignName or fallback
+        reported_by: reportby,
         phone_id:
           phoneId && phoneId !== "" && phoneId !== "null"
             ? Number(phoneId)
@@ -64,7 +60,7 @@ function CreateTaskPage() {
         system_id: Number(programID),
         text,
         status: 0, // Default to pending
-        type_id: Number(type),
+        issue_type: Number(type),
         issue_else: issue,
         telegram: true,
         images: capturedFiles, // ส่งไฟล์รูปภาพ
