@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +24,6 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { addTaskNew } from "@/lib/api/tasks";
-
 import { useType } from "@/lib/api/type";
 import { useProgramsForDropdown } from "@/lib/api/programs";
 import { useIPPhonesForDropdown } from "@/lib/api/phones";
@@ -44,6 +43,16 @@ function CreateTaskPage() {
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [reportby, setReportBy] = useState<string>("");
 
+  useEffect(() => {
+    setProgramID("");
+    setIssue("");
+  }, [type]);
+
+  // กรองโปรแกรมตาม type_id ที่เลือก
+  const filteredPrograms = useMemo(() => {
+    if (!type) return [];
+    return programs.filter((program) => program.type_id === Number(type));
+  }, [programs, type]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,6 +161,7 @@ function CreateTaskPage() {
                         <Select
                           value={type}
                           onValueChange={(value) => setType(value)}
+                          required
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Type" />
@@ -177,13 +187,18 @@ function CreateTaskPage() {
                             value={programID}
                             onValueChange={(value) => setProgramID(value)}
                             required
+                            disabled={!type} // ยังไม่เลือก Type ก็ปิดไว้ก่อน
                           >
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select Program" />
+                              <SelectValue
+                                placeholder={
+                                  type ? "Select Program" : "Select Type first"
+                                }
+                              />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="0">อื่นๆ</SelectItem>
-                              {programs.map((program) => (
+                              {filteredPrograms.map((program) => (
                                 <SelectItem
                                   key={program.id}
                                   value={program.id.toString()}

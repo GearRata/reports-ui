@@ -15,7 +15,6 @@ export function useType() {
       if (!response.ok) throw new Error("Failed to fetch types");
       const data = await response.json();
       setTypes(data.data || []);
-      console.log("Fetched Types:", data.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
