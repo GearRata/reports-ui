@@ -24,7 +24,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { addTaskNew } from "@/lib/api/tasks";
-import { useAssign } from "@/lib/api/auth";
+import { useAssign } from "@/lib/api/assign";
 import { useType } from "@/lib/api/type";
 import { useProgramsForDropdown } from "@/lib/api/programs";
 import { useIPPhonesForDropdown } from "@/lib/api/phones";
@@ -156,7 +156,6 @@ function CreateTaskPage() {
                         <Select
                           value={type}
                           onValueChange={(value) => setType(value)}
-                          required
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select Type" />

@@ -18,7 +18,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getTaskNewById } from "@/lib/api/tasks";
-import { useAssign } from "@/lib/api/auth";
+import { useAssign } from "@/lib/api/assign";
 import type { TaskWithPhone } from "@/types/entities";
 
 function ShowTaskPage() {

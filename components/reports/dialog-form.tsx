@@ -13,7 +13,7 @@ import { Input } from "../ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { useParams } from "next/navigation";
-import { Branch, Department, Program } from "@/types/entities";
+import { Branch, Department, Program, Type } from "@/types/entities";
 import toast from "react-hot-toast";
 import CameraPicker from "@/components/camera";
 import {
@@ -26,6 +26,8 @@ import {
   Loader2,
   MapPin,
   CheckCircle2,
+  CircuitBoard,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -37,14 +39,18 @@ export default function DialogForm() {
   const [text, setText] = useState("");
   const [department, setDepartment] = useState<Department | undefined>();
   const [branch, setBranch] = useState<Branch | undefined>();
-  const [program, setProgram] = useState<Program | undefined>();
+  const [programID, setProgramID] = useState<Program | undefined>();
   const [programs, setPrograms] = useState<Program[]>([]);
+  const [typeID, setTypeID] = useState<Type | undefined>();
+  const [types, setTypes] = useState<Type[]>([]);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
+  const [loadingType, setLoadingType] = useState(false);
   const [loadingBranch, setLoadingBranch] = useState(false);
   const [loadingDepartment, setLoadingDepartment] = useState(false);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [issue, setIssue] = useState<string>("");
 
   const handleFilesCapture = (files: File[]) => {
     setCapturedFiles(files);
@@ -61,17 +67,40 @@ export default function DialogForm() {
       if (data.data && data.data.length > 0) {
         setPrograms(data.data);
         // เลือกข้อมูลชุดแรกโดยอัตโนมัติ
-        setProgram(data.data[0]);
+        setProgramID(data.data[0]);
       } else {
         setPrograms([]);
-        setProgram(undefined);
+        setProgramID(undefined);
       }
     } catch (error) {
       console.error("Error loading programs:", error);
       setPrograms([]);
-      setProgram(undefined);
+      setProgramID(undefined);
     } finally {
       setLoadingPrograms(false);
+    }
+  }, []);
+
+  const loadType = useCallback(async () => {
+    setLoadingType(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/type/list`
+      );
+      const data = await response.json();
+      if (data.data && data.data.length > 0) {
+        setTypes(data.data);
+        setTypeID(data.data[0]);
+      } else {
+        setTypes([]);
+        setTypeID(undefined);
+      }
+    } catch (error) {
+      console.error("Error loading type:", error);
+      setTypes([]);
+      setTypeID(undefined);
+    } finally {
+      setLoadingType(false);
     }
   }, []);
 
@@ -129,6 +158,11 @@ export default function DialogForm() {
     loadProgram();
   }, [loadProgram]);
 
+  // useEffect สำหรับโหลดข้อมูล Type (โหลดครั้งเดียวตอน mount)
+  useEffect(() => {
+    loadType();
+  }, [loadType]);
+
   // useEffect สำหรับโหลดข้อมูล branch เมื่อ branchID เปลี่ยน
   useEffect(() => {
     loadBranch();
@@ -152,7 +186,7 @@ export default function DialogForm() {
       return;
     }
 
-    if (!program) {
+    if (!programID) {
       toast.error("กรุณาเลือกโปรแกรม/ระบบ");
       return;
     }
@@ -166,9 +200,22 @@ export default function DialogForm() {
       fd.append("text", text || "");
       fd.append("branch_id", String(branchID || ""));
       fd.append("department_id", String(departmentID || ""));
-      if (program && program.id != null)
-        fd.append("system_id", String(program.id));
+      if (programID && programID.id != null)
+        fd.append("system_id", String(programID.id));
+      if (typeID && typeID.id != null)
+        fd.append("issue_type", String(typeID.id));
+      if (programID?.id === 0 && issue.trim())
+        fd.append("issue_else", issue.trim());
       fd.append("telegram", String(true));
+
+      // // Debug FormData
+      // console.log("FormData entries:");
+      // for (let [key, value] of fd.entries()) {
+      //   console.log(key, value);
+      // }
+      // console.log("typeID:", typeID);
+      // console.log("programID:", programID);
+      // console.log("issue:", issue);
 
       // Attach captured files (images)
       if (capturedFiles && capturedFiles.length > 0) {
@@ -177,7 +224,6 @@ export default function DialogForm() {
           fd.append(`image_${index}`, image);
         });
       }
-
       console.log("Sending problem create request with FormData");
 
       const response = await fetch(
@@ -209,7 +255,7 @@ export default function DialogForm() {
       }, 500);
 
       // optionally refresh page or navigate
-      setTimeout(() => window.location.reload(), 500);
+      // setTimeout(() => window.location.reload(), 500);
       return result;
     } catch (err) {
       console.error("Error creating task:", err);
@@ -346,13 +392,13 @@ export default function DialogForm() {
               </div>
             </div>
 
-            {/* Enhanced System Selection */}
+            {/* Enhanced Type Selection */}
             <div className="space-y-5 group">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="absolute inset-0 bg-purple-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
-                  <div className="relative p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
-                    <Monitor className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  <div className="relative p-3 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                    <CircuitBoard  className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
                 </div>
                 <div>
@@ -360,29 +406,29 @@ export default function DialogForm() {
                     htmlFor="program"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    ปัญหา <span className="text-red-400 animate-pulse">*</span>
+                    Type <span className="text-red-400 animate-pulse">*</span>
                   </Label>
                   <p className="text-xs sm:text-sm text-slate-400 mt-1">
                     เลือกระบบที่เกิดปัญหา
                   </p>
                 </div>
               </div>
-              <div className="space-y-3 grid grid-cols-2">
+              <div className="space-y-3">
                 <Select
-                  value={program?.id?.toString() || ""}
+                  value={typeID?.id?.toString() || ""}
                   onValueChange={(value) => {
-                    const selectedProgram = programs.find(
+                    const selectedType = types.find(
                       (p) => p.id.toString() === value
                     );
-                    setProgram(selectedProgram);
+                    setTypeID(selectedType);
                   }}
-                  disabled={loadingPrograms}
+                  disabled={loadingType}
                 >
                   <SelectTrigger
                     className={cn(
                       "h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
                       "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
-                      program
+                      typeID
                         ? "border-green-400/60 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
                         : "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
                       "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
@@ -390,9 +436,7 @@ export default function DialogForm() {
                   >
                     <SelectValue
                       placeholder={
-                        loadingPrograms
-                          ? "กำลังโหลด..."
-                          : "เลือกระบบที่เกิดปัญหา"
+                        loadingType ? "กำลังโหลด..." : "เลือกชนิดปัญหา"
                       }
                     >
                       {loadingPrograms ? (
@@ -404,13 +448,13 @@ export default function DialogForm() {
                         <span
                           className={cn(
                             "flex items-center gap-3",
-                            program ? "text-slate-100" : "text-slate-400"
+                            typeID ? "text-slate-100" : "text-slate-400"
                           )}
                         >
-                          {program && (
+                          {typeID && (
                             <Monitor className="h-4 w-4 text-purple-400" />
                           )}
-                          {program?.name || "เลือกโปรแกรม"}
+                          {typeID?.name || "เลือกโปรแกรม"}
                         </span>
                       )}
                     </SelectValue>
@@ -439,40 +483,200 @@ export default function DialogForm() {
                         </div>
                       </SelectItem>
                     ) : (
-                      programs.map((program) => (
+                      types.map((type) => (
                         <SelectItem
-                          key={program.id}
-                          value={program.id.toString()}
+                          key={type.id}
+                          value={type.id.toString()}
                           className="text-slate-100 focus:bg-slate-700/70 py-4 rounded-xl m-1 transition-all duration-200 hover:bg-slate-700/50"
                         >
                           <div className="flex items-center gap-3">
                             <Monitor className="h-4 w-4 text-purple-400" />
-                            <span className="font-medium">{program.name}</span>
+                            <span className="font-medium">{type.name}</span>
                           </div>
                         </SelectItem>
                       ))
                     )}
                   </SelectContent>
                 </Select>
-                {program && (
+                {typeID && (
                   <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
                     <CheckCircle2 className="h-4 w-4 animate-bounce" />
                     <span className="font-medium">
-                      เลือกโปรแกรมแล้ว: {program.name}
+                      เลือกชนิด: {typeID.name}
                     </span>
                   </div>
                 )}
-                <div className="space-y-2">
-                  <Label htmlFor="report_by">Add Problem</Label>
-                  <input
-                    type="text"
-                    id="report_by"
-                    className="w-full border-1 rounded-md p-1.5"
-                    value={reportby}
-                    onChange={(e) => setReportBy(e.target.value)}
-                  />
+              </div>
+            </div>
+
+            {/* ==================== dropdown เลือกปัญหา ====================*/}
+            <div className="grid grid-cols-2">
+              <div>
+                <div className="flex items-center gap-4 ">
+                 
+                    <div className="relative p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                      <Monitor className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                    </div>
+                  
+                  <div>
+                    <Label
+                      htmlFor="program"
+                      className="text-base sm:text-lg font-bold text-slate-100 block"
+                    >
+                      ปัญหา{" "}
+                      <span className="text-red-400 animate-pulse">*</span>
+                    </Label>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                      เลือกระบบที่เกิดปัญหา
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-5">
+                  <Select
+                    value={programID?.id?.toString() || ""}
+                    onValueChange={(value) => {
+                      if (value === "0") {
+                        setProgramID({ id: 0, name: "อื่นๆ", type_id: 0 });
+                      } else {
+                        const selectedProgram = programs.find(
+                          (p) => p.id.toString() === value
+                        );
+                        setProgramID(selectedProgram);
+                      }
+                    }}
+                    disabled={loadingPrograms}
+                  >
+                    <SelectTrigger
+                      className={cn(
+                        "h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
+                        "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
+                        programID
+                          ? "border-green-400/60 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
+                          : "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
+                        "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                      )}
+                    >
+                      <SelectValue
+                        placeholder={
+                          loadingPrograms
+                            ? "กำลังโหลด..."
+                            : "เลือกระบบที่เกิดปัญหา"
+                        }
+                      >
+                        {loadingPrograms ? (
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            <span>กำลังโหลด...</span>
+                          </div>
+                        ) : (
+                          <span
+                            className={cn(
+                              "flex items-center gap-3",
+                              programID ? "text-slate-100" : "text-slate-400"
+                            )}
+                          >
+                            {programID && (
+                              <Monitor className="h-4 w-4 text-purple-400" />
+                            )}
+                            {programID?.name || "เลือกโปรแกรม"}
+                          </span>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl bg-slate-800/95 backdrop-blur-xl border-slate-600/50 shadow-2xl">
+                      <SelectItem
+                        value="0"
+                        className="text-slate-100 focus:bg-slate-700/70 py-4 rounded-xl m-1 transition-all duration-200 hover:bg-slate-700/50"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Monitor className="h-4 w-4 text-purple-400" />
+                          <span className="font-medium">อื่นๆ</span>
+                        </div>
+                      </SelectItem>
+                      {loadingPrograms ? (
+                        <SelectItem
+                          value="loading"
+                          disabled
+                          className="text-slate-400 py-4"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>กำลังโหลดโปรแกรม...</span>
+                          </div>
+                        </SelectItem>
+                      ) : programs.length === 0 ? (
+                        <SelectItem
+                          value="empty"
+                          disabled
+                          className="text-slate-400 py-4"
+                        >
+                          <div className="flex items-center gap-3">
+                            <AlertCircle className="h-4 w-4" />
+                            <span>ไม่พบโปรแกรมที่ใช้งานได้</span>
+                          </div>
+                        </SelectItem>
+                      ) : (
+                        programs.map((program) => (
+                          <SelectItem
+                            key={program.id}
+                            value={program.id.toString()}
+                            className="text-slate-100 focus:bg-slate-700/70 py-4 rounded-xl m-1 transition-all duration-200 hover:bg-slate-700/50"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Monitor className="h-4 w-4 text-purple-400" />
+                              <span className="font-medium">
+                                {program.name}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
+              <div className="">
+                {programID?.id === 0 && (
+                  <>
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-purple-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                        <div className="relative p-3 bg-gradient-to-br from-lime-500 to-lime-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor="issue_else"
+                          className="text-base sm:text-lg font-bold text-slate-100 block"
+                        >
+                          ระบุปัญหาเพิ่มเติม{" "}
+                          <span className="text-red-400 animate-pulse">*</span>
+                        </Label>
+                        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                          กรอกรายละเอียดปัญหาที่ไม่อยู่ในรายการ
+                        </p>
+                      </div>
+                    </div>
+                    <input
+                      type="text"
+                      id="issue_else"
+                      className="mt-5 w-full h-10 sm:h-9 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500 bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30 px-4"
+                      placeholder="ระบุปัญหาที่พบ..."
+                      value={issue}
+                      onChange={(e) => setIssue(e.target.value)}
+                    />
+                  </>
+                )} 
+              </div>
+              {programID && (
+                <div className="mt-3 flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
+                  <CheckCircle2 className="h-4 w-4 animate-bounce" />
+                  <span className="font-medium">
+                    เลือกปัญหา: {programID.name}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Enhanced Problem Description */}
@@ -512,7 +716,7 @@ export default function DialogForm() {
                         : "border-slate-600/40 focus:border-orange-400 hover:border-slate-500/60 focus:ring-2 focus:ring-orange-400/30",
                       "transform hover:scale-[1.01] focus:scale-[1.01] transition-transform duration-300"
                     )}
-                    placeholder="📝 อธิบายปัญหาที่พบ เช่น:&#10;• ข้อความ error ที่ปรากฏ&#10;• ขั้นตอนที่ทำก่อนเกิดปัญหา&#10;• ผลกระทบที่เกิดขึ้น&#10;• เวลาที่เกิดปัญหา"
+                    placeholder="📝 อธิบายปัญหาที่พบ"
                     maxLength={500}
                     required
                   />
@@ -611,7 +815,7 @@ export default function DialogForm() {
                     isSubmitting ||
                     !reportby.trim() ||
                     !text.trim() ||
-                    !program ||
+                    !programID ||
                     isSuccess
                   }
                   className={cn(

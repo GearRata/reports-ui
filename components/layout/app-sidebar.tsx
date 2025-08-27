@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Building2, Users, Phone, FolderCheck , BarChart3, BadgeAlert  } from "lucide-react"
+import { Building2, Users, Phone, FolderCheck , BarChart3, BadgeAlert, Network,  } from "lucide-react"
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -16,6 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+
 
 
 const data = {
@@ -49,12 +50,17 @@ const data = {
     {
       title: "Departments",
       url: "/department",
-      icon: Users,
+      icon: Network,
     },
     {
       title: "Problem",
       url: "/program",
       icon: BadgeAlert,
+    },
+    {
+      title: "Add Supervisor",
+      url: "/supervisor",
+      icon: Users,
     },
     
   ],

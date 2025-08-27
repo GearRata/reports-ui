@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAssign } from "@/lib/api/auth";
+import { useAssign } from "@/lib/api/assign";
 
 
 interface TasksNewTableProps {
