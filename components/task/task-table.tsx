@@ -21,12 +21,12 @@ interface TaskTableProps {
 
 const statusColors: Record<string, string> = {
   pending: "bg-orange-100 text-orange-800",
-  solved: "bg-green-100 text-green-800",
+  done: "bg-green-100 text-green-800",
 };
 
 const statusLabels: Record<string, string> = {
   pending: "Pending",
-  solved: "Solved",
+  done: "Done",
 }
 
 export function TaskTable({

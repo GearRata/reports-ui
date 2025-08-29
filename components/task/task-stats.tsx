@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Clock, ListTodo } from "lucide-react"
-import type { TaskStats } from "@/types/entities"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Clock, ListTodo } from "lucide-react";
+import type { TaskStats } from "@/types/entities";
+import Link from "next/link";
 
 interface TaskStatsProps {
-  stats: TaskStats
+  stats: TaskStats;
 }
 
 export function TaskStatsCards({ stats }: TaskStatsProps) {
@@ -29,8 +30,8 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
       bgHover: "hover:from-orange-500/30",
     },
     {
-      title: "Solved",
-      value: stats.solved,
+      title: "Done",
+      value: stats.done,
       icon: CheckCircle,
       gradient: "from-green-500/20 via-green-400/10 to-transparent",
       border: "border-green-500/50",
@@ -40,14 +41,26 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
     },
   ];
 
+  const hrefMap: Record<string, string> = {
+    "Total Tasks": "/tasks",
+    "Pending": "/tasks?status=pending",
+    "Done": "/tasks?status=done", // หรือ =done ถ้าฝั่ง /tasks รองรับแค่นี้
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 px-1 lg:px-1 @xl/main:grid-cols-3 @5xl/main:grid-cols-3">
       {statCards.map((card) => {
-        const IconComponent = card.icon
+        const IconComponent = card.icon;
+        const href = hrefMap[card.title] ?? "/tasks";
         return (
-          <Card
+          <Link
             key={card.title}
-            className={`
+            href={href}
+            className="block"
+            aria-label={`Go to ${card.title} tasks`}
+          >
+            <Card
+              className={`
               relative overflow-hidden border-l-4 ${card.border}
               bg-gradient-to-br ${card.gradient} ${card.bgHover}
               backdrop-blur-sm transition-all duration-300 ease-in-out
@@ -55,72 +68,78 @@ export function TaskStatsCards({ stats }: TaskStatsProps) {
               dark:bg-gradient-to-br dark:from-gray-800/50 dark:to-gray-900/30
               group cursor-pointer
             `}
-          >
-            {/* Subtle background pattern */}
-            <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
+            >
+              {/* Subtle background pattern */}
+              <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
 
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                {card.title}
-              </CardTitle>
-              <div
-                className={`
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                  {card.title}
+                </CardTitle>
+                <div
+                  className={`
                 p-2 rounded-full bg-white/10 dark:bg-black/10 
                 group-hover:scale-110 transition-transform duration-200
                 ${card.iconColor}
               `}
-              >
-                <IconComponent className="h-4 w-4" />
-              </div>
-            </CardHeader>
+                >
+                  <IconComponent className="h-4 w-4" />
+                </div>
+              </CardHeader>
 
-            <CardContent className="pb-4">
-              <div
-                className={`
+              <CardContent className="pb-4">
+                <div
+                  className={`
                 text-3xl font-bold tracking-tight ${card.valueColor}
                 group-hover:scale-105 transition-transform duration-200
               `}
-              >
-                {card.value}
-              </div>
-
-              {/* Progress indicator bar */}
-              <div className="mt-3 h-1 w-full bg-muted rounded-full overflow-hidden">
-                <div
-                  className={`h-full bg-gradient-to-r ${card.gradient.replace("to-transparent", `to-${card.iconColor.split("-")[1]}-400`)} transition-all duration-500`}
-                  style={{
-                    width:
-                      card.title === "Total Tasks"
-                        ? "100%"
-                        : card.title === "Pending"
-                          ? `${(stats.pending / stats.total) * 100}%`
-                          : `${(stats.solved / stats.total) * 100}%`,
-                  }}
-                />
-              </div>
-
-              {/* Percentage text */}
-              {card.title !== "Total Tasks" && (
-                <div className="mt-2 text-xs text-muted-foreground">
-                  {card.title === "Pending"
-                    ? `${Math.round((stats.pending / stats.total) * 100)}% pending`
-                    : `${Math.round((stats.solved / stats.total) * 100)}% solved`}
+                >
+                  {card.value}
                 </div>
-              )}
-            </CardContent>
 
-            {/* Decorative corner accent */}
-            <div
-              className={`
+                {/* Progress indicator bar */}
+                <div className="mt-3 h-1 w-full bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full bg-gradient-to-r ${card.gradient.replace(
+                      "to-transparent",
+                      `to-${card.iconColor.split("-")[1]}-400`
+                    )} transition-all duration-500`}
+                    style={{
+                      width:
+                        card.title === "Total Tasks"
+                          ? "100%"
+                          : card.title === "Pending"
+                          ? `${(stats.pending / stats.total) * 100}%`
+                          : `${(stats.done / stats.total) * 100}%`,
+                    }}
+                  />
+                </div>
+
+                {/* Percentage text */}
+                {card.title !== "Total Tasks" && (
+                  <div className="mt-2 text-xs text-muted-foreground">
+                    {card.title === "Pending"
+                      ? `${Math.round(
+                          (stats.pending / stats.total) * 100
+                        )}% pending`
+                      : `${Math.round((stats.done / stats.total) * 100)}% done`}
+                  </div>
+                )}
+              </CardContent>
+
+              {/* Decorative corner accent */}
+              <div
+                className={`
               absolute top-0 right-0 w-20 h-20 
               bg-gradient-to-bl ${card.gradient} 
               opacity-30 rounded-bl-full
               group-hover:opacity-50 transition-opacity duration-300
             `}
-            />
-          </Card>
-        )
+              />
+            </Card>
+          </Link>
+        );
       })}
     </div>
-  )
+  );
 }

@@ -2,7 +2,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,6 +26,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getTaskNewById, updateTaskNew } from "@/lib/api/tasks";
 import { useAssign } from "@/lib/api/assign";
+import { useType } from "@/lib/api/type";
 import { useProgramsForDropdown } from "@/lib/api/programs";
 import { useIPPhonesForDropdown } from "@/lib/api/phones";
 import type { TaskWithPhone } from "@/types/entities";
@@ -37,11 +38,15 @@ function EditTaskPage() {
 
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
+  const { types } = useType();
   const { assignTo: assignTo } = useAssign();
 
   const [task, setTask] = useState<TaskWithPhone | null>(null);
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
+  const [reportBy, setReportBy] = useState<string>("");
+  const [type, setType] = useState<string>("");
+  const [issue, setIssue] = useState<string>("");
   const [text, setText] = useState("");
   const [status, setStatus] = useState<string>("");
   const [assignId, setAssignId] = useState<string>("");
@@ -55,8 +60,19 @@ function EditTaskPage() {
         try {
           const taskData = await getTaskNewById(Number(taskId));
           setTask(taskData);
+          setReportBy(taskData.reported_by);
           setPhoneId(taskData.phone_id ? taskData.phone_id.toString() : "null");
-          setProgramID(taskData.system_id.toString());
+          setProgramID(
+            taskData.system_id !== null && taskData.system_id !== undefined
+              ? taskData.system_id.toString()
+              : "null"
+          );
+          setType(
+            taskData.issue_type ? taskData.issue_type.toString() : "null"
+          );
+          setIssue(
+            taskData.issue_else ? taskData.issue_else.toString() : "null"
+          );
           setText(taskData.text);
           setStatus(taskData.status.toString());
 
@@ -77,6 +93,11 @@ function EditTaskPage() {
     loadTask();
   }, [taskId, assignTo]);
 
+  const filteredPrograms = useMemo(() => {
+    if (!type) return [];
+    return programs.filter((program) => program.type_id === Number(type));
+  }, [programs, type]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!task) return;
@@ -95,9 +116,11 @@ function EditTaskPage() {
             ? Number(phoneId)
             : null,
         system_id: Number(programID),
+        issue_type: Number(type),
+        issue_else: issue,
+        reported_by: reportBy,
         text,
         status: Number(status),
-        // assign_to: assignName,
         assign_to: assignName,
         telegram: true,
       });
@@ -191,6 +214,18 @@ function EditTaskPage() {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
+                      {/* Report By Section */}
+                      <div className="space-y-2">
+                        <Label htmlFor="reportby">ชื่อผู้แจ้ง</Label>
+                        <input
+                          type="text"
+                          id="reportby"
+                          className="w-full border-1 rounded-md p-1.5"
+                          value={reportBy}
+                          onChange={(e) => setReportBy(e.target.value)}
+                          placeholder="ไม่ได้ระบุชื่อผู้รายงาน"
+                        />
+                      </div>
                       {/* IP Phone Selection */}
                       <div className="space-y-2">
                         <Label htmlFor="phone_id">IP Phone</Label>
@@ -215,33 +250,74 @@ function EditTaskPage() {
                         </Select>
                       </div>
 
-                      {/* Program Selection */}
+                      {/* Type Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="program_id">Program</Label>
+                        <Label htmlFor="type">Type</Label>
                         <Select
-                          value={programID}
-                          onValueChange={(value) => setProgramID(value)}
-                          required
+                          value={type}
+                          onValueChange={(value) => setType(value)}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Program" />
+                            <SelectValue placeholder="Select Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            {programs.map((program) => (
+                            {types.map((type) => (
                               <SelectItem
-                                key={program.id}
-                                value={program.id.toString()}
+                                key={type.id}
+                                value={type.id.toString()}
                               >
-                                {program.name}
+                                {type.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
 
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="program_id">Problem</Label>
+                          <Select
+                            value={programID}
+                            onValueChange={(value) => setProgramID(value)}
+                            required
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select Program" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="0">อื่นๆ</SelectItem>
+                              {filteredPrograms.map((program) => (
+                                <SelectItem
+                                  key={program.id}
+                                  value={program.id.toString()}
+                                >
+                                  {program.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          {programID === "0" && (
+                            <div className="space-y-2">
+                              <Label htmlFor="type">ปัญหาอื่นๆ</Label>
+                              <input
+                                type="text"
+                                id="type"
+                                className="w-full border-1 rounded-md p-1.5"
+                                value={issue}
+                                onChange={(e) => setIssue(e.target.value)}
+                                placeholder="ไม่ได้ระบุปัญหาที่พบ"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
                       {/* Task Description */}
                       <div className="space-y-2">
-                        <Label htmlFor="text">Task Description *</Label>
+                        <Label htmlFor="text">Task Description</Label>
                         <Textarea
                           id="text"
                           value={text}
@@ -270,7 +346,7 @@ function EditTaskPage() {
                             </SelectContent>
                           </Select>
                         </div>
-                        
+
                         {/* Assign To Selection */}
                         <div className="space-y-2">
                           <Label htmlFor="assign_to">Assign To</Label>

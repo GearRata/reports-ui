@@ -35,15 +35,13 @@ export interface RequestIpPhone {
 }
 
 
-export interface Task {
+
+export interface TaskWithPhone {
+  file_paths(file_paths: any): unknown
   id: number
   phone_id: number
   text: string
-  status: number  // เปลี่ยนจาก string เป็น number
-}
-
-export interface TaskWithPhone extends Task {
-  file_paths(file_paths: any): unknown
+  status: number  // เปลี่
   reported_by: string
   assign_to: string
   assign_name?: string
@@ -66,7 +64,7 @@ export interface TaskWithPhone extends Task {
 export interface TaskStats {
   total: number
   pending: number
-  solved: number
+  done: number
 }
 
 export interface DashboardData {

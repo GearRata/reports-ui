@@ -38,7 +38,7 @@ export interface Task {
   id: number
   phone_id: number
   text: string
-  status: "pending" | "solved"
+  status: "pending" | "done"
 }
 
 export interface TaskWithPhone extends Task {

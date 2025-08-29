@@ -5,11 +5,11 @@ export interface Task {
   program: string
   problem: string
   solution: string
-  status: "pending" | "solved" 
+  status: "pending" | "done" 
 }
 
 export interface TaskStats {
   total: number
   pending: number
-  solved: number
+  done: number
 }

@@ -1,12 +1,12 @@
 "use client";
 
 import type React from "react";
-import { BranchesTable } from "@/components/tables/branches-table";
+import { AssignToTable } from "@/components/tables/supervisor-table";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 // BranchForm removed - using separate pages for create/edit
-import { useBranches, deleteBranch } from "@/lib/api/branches";
-import type { Branch } from "@/types/entities";
+import { useAssign, deleteAssignTo } from "@/lib/api/assign";
+import type { AssignData } from "@/types/assignto/model";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -14,29 +14,27 @@ import { useRouter } from "next/navigation";
 
 function Page() {
   const router = useRouter();
-  const { branches, refreshBranches } = useBranches();
-  // Form states removed - using separate pages for create/edit
+  const { assignTo, refreshAssigningTo} = useAssign();
 
-  const handleAddBranch = () => {
-    router.push("/branches/create");
+  const handleAddAssignTo = () => {
+    router.push("/supervisor/create");
   };
 
-  const handleEditBranch = (branch: Branch) => {
+  const handleEditAssignTo = (assign: AssignData) => {
     // Navigate to edit page with branch ID
-    router.push(`/branches/edit/${branch.id}`);
+    router.push(`/supervisor/edit/${assign.id}`);
   };
 
   // handleBranchSubmit removed - using separate pages for create/edit
 
-  const handleDeleteBranch = async (id: number) => {
+  const handleDeleteAssignTo = async (id: number) => {
     try {
-      await deleteBranch(id);
-      refreshBranches();
+      await deleteAssignTo(id);
+      refreshAssigningTo();
     } catch (error) {
-      console.error("Error deleting branch:", error);
+      console.error("Error deleting assign:", error);
     }
   };
-
 
   return (
     <SidebarProvider
@@ -57,7 +55,7 @@ function Page() {
                 {/* Header with search and add button */}
                 <div className="flex items-center justify-between">
                   <Button
-                    onClick={handleAddBranch}
+                    onClick={handleAddAssignTo}
                     size="sm"
                     className="ml-auto h-8 text-white"
                   >
@@ -68,10 +66,10 @@ function Page() {
 
                 {/* Content */}
                 <div className="space-y-4">
-                  <BranchesTable
-                    branches={branches}
-                    onEditBranch={handleEditBranch}
-                    onDeleteBranch={handleDeleteBranch}
+                  <AssignToTable
+                    assignto={assignTo}
+                    handleEditAssignTo={handleEditAssignTo}
+                    handleDeleteAssignTo={handleDeleteAssignTo}
                   />
                 </div>
               </div>

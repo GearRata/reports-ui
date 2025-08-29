@@ -16,7 +16,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { addBranch } from "@/lib/api/branches";
+import { addAssignTo } from "@/lib/api/assign";
 
 function CreateBranchPage() {
   const router = useRouter();
@@ -28,18 +28,18 @@ function CreateBranchPage() {
     setIsSubmitting(true);
 
     try {
-      await addBranch({ name });
+      await addAssignTo({ name });
       // Navigate back to branches page
-      router.push("/branches");
+      router.push("/supervisor");
     } catch (error) {
-      console.error("Error creating branch:", error);
+      console.error("Error creating supervisor:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    router.push("/branches");
+    router.push("/supervisor");
   };
 
   return (
@@ -64,19 +64,19 @@ function CreateBranchPage() {
                   <CardHeader>
                     <CardTitle>Add Supervisor</CardTitle>
                     <CardDescription>
-                      Fill in the details to create a new branch.
+                      Fill in the details to create a new supervisor.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                       {/* Branch Name */}
                       <div className="space-y-2">
-                        <Label htmlFor="name">Branch Name</Label>
+                        <Label htmlFor="name">Supervisor Name</Label>
                         <Input
                           id="name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter branch name"
+                          placeholder="Enter supervisor name"
                           required
                         />
                       </div>
@@ -96,7 +96,7 @@ function CreateBranchPage() {
                           disabled={isSubmitting || !name.trim()}
                           className="text-white"
                         >
-                          {isSubmitting ? "Creating..." : "Create Branch"}
+                          {isSubmitting ? "Creating..." : "Create Supervisor"}
                         </Button>
                       </div>
                     </form>

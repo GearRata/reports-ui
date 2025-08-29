@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Table,
   TableBody,
@@ -10,14 +9,12 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash} from "lucide-react";
 import type { TaskWithPhone } from "@/types/entities";
 import { MdDone } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
-// import { MdAssignmentInd } from "react-icons/md"
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
-// import { useRouter } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -26,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAssign } from "@/lib/api/assign";
-
+// import { useState } from "react";
 
 interface TasksNewTableProps {
   tasks: TaskWithPhone[];
@@ -34,13 +31,15 @@ interface TasksNewTableProps {
   onDeleteTask: (taskId: number) => void;
   onShowTask: (task: TaskWithPhone) => void;
   onAssignChange?: (taskId: number, assignTo: string) => void;
+  onStatusFilterChange?: (status: string) => void;
+  statusFilter?: string;
   loading?: boolean;
   error?: string | null;
 }
 
 const statusColors: Record<number, string> = {
-  1: "bg-orange-400 rounded-full font-medium text-white flex items-center gap-2",
   0: "bg-green-400 rounded-full font-medium text-white flex items-center gap-2",
+  1: "bg-orange-400 rounded-full font-medium text-white flex items-center gap-2",
 };
 
 const statusLabels: Record<number, string> = {
@@ -54,6 +53,8 @@ export function TasksNewTable({
   onDeleteTask,
   onShowTask,
   onAssignChange,
+  onStatusFilterChange,
+  statusFilter = "all",
   loading = false,
   error = null,
 }: TasksNewTableProps) {
@@ -61,8 +62,13 @@ export function TasksNewTable({
   moment.locale("th");
 
   const { assignTo } = useAssign();
-  
-  
+
+  const handleStatusChange = (value: string) => {
+    if (onStatusFilterChange) {
+      onStatusFilterChange(value);
+    }
+  };
+
   // Function to format time in Thai
   const formatTimeAgo = (dateString: string) => {
     const now = moment();
@@ -119,6 +125,8 @@ export function TasksNewTable({
     return out.join("");
   };
 
+  console.log("task", tasks[0]?.status);
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -133,10 +141,23 @@ export function TasksNewTable({
             <TableHead>Program</TableHead>
             <TableHead>Branch</TableHead>
             <TableHead>Text</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>
+              <div className="flex items-center gap-2">
+                <span>Status</span>
+                <Select value={statusFilter} onValueChange={handleStatusChange}>
+                  <SelectTrigger className="w-[40px] h-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="done">Done</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </TableHead>
             <TableHead>Time</TableHead>
             <TableHead>Assign To</TableHead>
-            <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -225,20 +246,33 @@ export function TasksNewTable({
 
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
-                    value={task.assign_to}
+                    value={
+                      assignTo
+                        .find((a) => a.name === task.assign_to)
+                        ?.id.toString() || ""
+                    }
                     onValueChange={(value) => {
                       if (onAssignChange) {
-                        onAssignChange(task.id, value === "unassigned" ? "" : value);
+                        const selectedAssign = assignTo.find(
+                          (a) => a.id.toString() === value
+                        );
+                        const assignName = selectedAssign
+                          ? selectedAssign.name
+                          : "";
+                        onAssignChange(task.id, assignName);
                       }
                     }}
                   >
                     <SelectTrigger className="w-[150px]">
-                      <SelectValue  placeholder="เลือกผู้รับผิดชอบ" />
+                      <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
-                    <SelectContent >
+                    <SelectContent>
                       {assignTo && assignTo.length > 0 ? (
                         assignTo.map((assign) => (
-                          <SelectItem key={assign.id} value={assign.name}>
+                          <SelectItem
+                            key={assign.id}
+                            value={assign.id.toString()}
+                          >
                             {assign.name}
                           </SelectItem>
                         ))
@@ -253,14 +287,20 @@ export function TasksNewTable({
 
                 <TableCell>
                   <Button
-                    onClick={(e) => {e.stopPropagation(); onEditTask(task);}}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditTask(task);
+                    }}
                     disabled={loading}
                     className="cursor-pointer mr-2 bg-(--accent) text-white hover:bg-(--popover) hover:scale-105 "
                   >
                     <Pencil className=" h-4 w-4" />
                   </Button>
                   <Button
-                    onClick={(e) => {e.stopPropagation(); onDeleteTask(task.id);}}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteTask(task.id);
+                    }}
                     disabled={loading}
                     className="cursor-pointer mr-2 bg-red-500 text-white hover:bg-red-600 hover:scale-105 "
                   >
@@ -270,6 +310,7 @@ export function TasksNewTable({
               </TableRow>
             ))
           )}
+         
         </TableBody>
       </Table>
     </div>

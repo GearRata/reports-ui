@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 // TaskWithPhone type is used in pagination state
 import {
   TasksPaginationParams,
@@ -9,7 +9,7 @@ import {
 } from "@/types/pagination";
 
 // Tasks Hook with Pagination Support
-export function useTasksNewPaginated(params?: TasksPaginationParams) {
+export function useTasksNewPaginated(params?: TasksPaginationParams & { search?: string; status?: string }) {
   const [state, setState] = useState<TasksPaginationState>({
     tasks: [],
     currentPage: params?.page || 1,
@@ -20,23 +20,32 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
     error: null,
   });
 
-  const fetchTasks = async (page: number = 1, limit: number = 10) => {
+  const [searchTerm, setSearchTerm] = useState(params?.search || "");
+  const [statusTerm, setStatusTerm] = useState(params?.status || "all");
+
+  const fetchTasks = useCallback(async (page: number, limit: number, search: string, status: string = "all") => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
-      const url = new URL(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`
-      );
-      url.searchParams.set("page", page.toString());
-      url.searchParams.set("limit", limit.toString());
+      const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`;
+      let url = search?.trim() 
+        ? `${baseUrl}/${encodeURIComponent(search.trim())}?page=${page}&limit=${limit}`
+        : `${baseUrl}?page=${page}&limit=${limit}`;
+      
+      // Add status filter if not "all"
+      if (status && status !== "all") {
+        const statusValue = status === "pending" ? "0" : status === "done" ? "1" : "";
+        if (statusValue) {
+          url += `&status=${statusValue}`;
+        }
+      }
 
-      const response = await fetch(url.toString());
+      const response = await fetch(url);
       if (!response.ok) throw new Error("Failed to fetch tasks");
 
       const data: TasksPaginationResponse = await response.json();
 
-      setState((prev) => ({
-        ...prev,
+      setState({
         tasks: data.data || [],
         currentPage: data.pagination?.page || page,
         pageSize: data.pagination?.limit || limit,
@@ -44,7 +53,7 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
         totalPages: data.pagination?.total_pages || 0,
         loading: false,
         error: null,
-      }));
+      });
     } catch (err) {
       setState((prev) => ({
         ...prev,
@@ -52,32 +61,43 @@ export function useTasksNewPaginated(params?: TasksPaginationParams) {
         error: err instanceof Error ? err.message : "Unknown error",
       }));
     }
-  };
+  }, []);
 
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= state.totalPages) {
-      fetchTasks(page, state.pageSize);
-    }
-  };
+  const goToPage = useCallback((page: number) => {
+    fetchTasks(page, state.pageSize, searchTerm, statusTerm);
+  }, [fetchTasks, state.pageSize, searchTerm, statusTerm]);
 
-  const changePageSize = (limit: number) => {
-    fetchTasks(1, limit); // Reset to first page when changing page size
-  };
+  const changePageSize = useCallback((limit: number) => {
+    fetchTasks(1, limit, searchTerm, statusTerm);
+  }, [fetchTasks, searchTerm, statusTerm]);
 
-  const refreshTasks = () => {
-    fetchTasks(state.currentPage, state.pageSize);
-  };
+  const changeSearch = useCallback((search: string) => {
+    setSearchTerm(search);
+    fetchTasks(1, state.pageSize, search, statusTerm);
+  }, [fetchTasks, state.pageSize, statusTerm]);
+
+  const changeStatus = useCallback((status: string) => {
+    setStatusTerm(status);
+    fetchTasks(1, state.pageSize, searchTerm, status);
+  }, [fetchTasks, state.pageSize, searchTerm]);
+
+  const refreshTasks = useCallback(() => {
+    fetchTasks(state.currentPage, state.pageSize, searchTerm, statusTerm);
+  }, [fetchTasks, state.currentPage, state.pageSize, searchTerm, statusTerm]);
 
   useEffect(() => {
-    fetchTasks(state.currentPage, state.pageSize); // Initial fetch with default values
-  }, []); // Only run on mount
+    fetchTasks(1, 10, "", "all");
+  }, []);
 
   return {
     ...state,
-    fetchTasks,
     goToPage,
     changePageSize,
+    changeSearch,
+    changeStatus,
     refreshTasks,
+    search: searchTerm,
+    status: statusTerm,
   };
 }
 
@@ -158,9 +178,11 @@ export async function addTaskNew(task: {
 export async function updateTaskNew(
   id: number,
   task: {
+    reported_by: string;
     phone_id: number | null;
     system_id: number;
     text: string;
+    issue_type: number;
     issue_else?: string;
     status: number;
     assign_to?: string | null;
@@ -227,7 +249,7 @@ export async function getTaskNewById(id: number) {
 }
 
 
-export async function updateTaskAssignTo(id: number, task:{assign_to: string | null}) {
+export async function updateTaskAssignTo(id: number, task:{assign_to: string | null, update_telegram: boolean}) {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/update/assignto/${id}`,

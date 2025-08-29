@@ -18,20 +18,15 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getTaskNewById } from "@/lib/api/tasks";
-import { useAssign } from "@/lib/api/assign";
 import type { TaskWithPhone } from "@/types/entities";
 
 function ShowTaskPage() {
   const router = useRouter();
   const params = useParams();
   const taskId = params.id as string;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { assignTo } = useAssign();
 
   const [task, setTask] = useState<TaskWithPhone | null>(null);
   const [loading, setLoading] = useState(true);
-
-  console.log("Task", task);
 
   // Load the specific task data
   useEffect(() => {
@@ -50,6 +45,8 @@ function ShowTaskPage() {
 
     loadTask();
   }, [taskId]);
+
+  console.log("Task", task);
 
   const handleCancel = () => {
     router.push("/tasks");
@@ -103,6 +100,8 @@ function ShowTaskPage() {
     );
   }
 
+  console.log("task", task);
+
   return (
     <SidebarProvider
       style={
@@ -119,7 +118,6 @@ function ShowTaskPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
               <div className="container mx-auto max-w-2xl">
-
                 {/* Show Task Form */}
                 <Card>
                   <CardHeader>
@@ -150,16 +148,44 @@ function ShowTaskPage() {
                         </p>
                       </div>
 
-                      {/* Program Selection */}
+                      {/* Type Selection */}
                       <div className="space-y-2">
                         <Label className="font-bold text-[16px]">
-                          โปรแกรม (Program)
+                          ชนิดของปัญหา (Type)
                         </Label>
                         <p className="text-muted-foreground">
-                          {task.system_id
-                            ? `${task.system_name}`
-                            : "ไม่ได้ระบุ Program"}
+                          {task.issue_type
+                            ? `${task.system_type}`
+                            : "ไม่ได้ระบุ Type"}
                         </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Problem Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            ปัญหา (Problem)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.system_id === 0
+                              ? "อื่นๆ"
+                              : `${task.system_name}`}
+                          </p>
+                        </div>
+
+                        {/* Issue Selection */}
+                        {task.system_id === 0 && (
+                          <div className="space-y-2">
+                            <Label className="font-bold text-[16px]">
+                              ปัญหาเพิ่มเติม (Problem)
+                            </Label>
+                            <p className="text-muted-foreground">
+                              {task.system_id === 0
+                                ? `${task.issue_else}`
+                                : "ไม่ได้ระบุ"}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       {/* Task Description */}

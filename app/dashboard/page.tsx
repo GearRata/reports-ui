@@ -100,8 +100,8 @@ function Page() {
   const status: TaskStats = useMemo(() => {
     const total = filteredTasks.length;
     const pending = filteredTasks.filter((t) => t.status === 0).length;
-    const solved = filteredTasks.filter((t) => t.status === 1).length;
-    return { total, pending, solved };
+    const done = filteredTasks.filter((t) => t.status === 1).length;
+    return { total, pending, done };
   }, [filteredTasks]);
 
   // Callback functions for filters

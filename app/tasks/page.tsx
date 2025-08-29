@@ -1,15 +1,12 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { TasksNewTable } from "@/components/tables/tasks-new-table";
-import {
-  useTasksNewPaginated,
-  deleteTaskNew,
-} from "@/lib/api/tasks";
+import { useTasksNewPaginated, deleteTaskNew } from "@/lib/api/tasks";
 import { updateTaskAssignTo } from "@/lib/api/tasks";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
@@ -21,6 +18,19 @@ import { useRouter } from "next/navigation";
 
 function Page() {
   const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const lastSearchRef = useRef<string>("");
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const {
     tasks,
     currentPage,
@@ -32,23 +42,39 @@ function Page() {
     goToPage,
     changePageSize,
     refreshTasks,
-  } = useTasksNewPaginated({ page: 1, limit: 10 });
+    changeSearch,
+    changeStatus,
+  } = useTasksNewPaginated({ page: 1, limit: 10, search: debouncedSearch, status: statusFilter });
 
-  const [searchQuery, setSearchQuery] = useState("");
+  // Update search when debounced value changes
+  useEffect(() => {
+    if (debouncedSearch !== lastSearchRef.current) {
+      lastSearchRef.current = debouncedSearch;
+      changeSearch(debouncedSearch);
+    }
+  }, [debouncedSearch, changeSearch]);
+
+  // Update status filter
+  useEffect(() => {
+    if (changeStatus) {
+      changeStatus(statusFilter);
+    }
+  }, [statusFilter, changeStatus]);
 
   const handleAssignChange = async (taskId: number, assignTo: string) => {
-  try {
-    const task = tasks.find(t => t.id === taskId);
-    if (task) {
-      await updateTaskAssignTo(taskId, {
-        assign_to: assignTo || null,
-      });
-      refreshTasks();
+    try {
+      const task = tasks.find((t) => t.id === taskId);
+      if (task) {
+        await updateTaskAssignTo(taskId, {
+          assign_to: assignTo || null,
+          update_telegram: true,
+        });
+        refreshTasks();
+      }
+    } catch (error) {
+      console.error("Error updating assignment:", error);
     }
-  } catch (error) {
-    console.error("Error updating assignment:", error);
-  }
-};
+  };
 
   const handleAddTask = () => {
     router.push("/tasks/create");
@@ -60,7 +86,7 @@ function Page() {
 
   const handleShow = (task: TaskWithPhone) => {
     router.push(`/tasks/show/${task.id}`);
-  }
+  };
 
   const handleDeleteTask = async (id: number) => {
     try {
@@ -70,20 +96,6 @@ function Page() {
       console.error("Error deleting task:", error);
     }
   };
-
-  // Note: Server-side filtering will be implemented later
-  // For now, we'll use client-side filtering with paginated data
-  const filteredTasks = tasks.filter((task) =>
-    task.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (task.ticket_no && task.ticket_no.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    task.id.toString().includes(searchQuery.toLowerCase()) ||
-    (task.phone_name && task.phone_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (task.department_name && task.department_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (task.system_name && task.system_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (task.branch_name && task.branch_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (task.assign_to && task.assign_to.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (task.system_type && task.system_type.toLowerCase().includes(searchQuery.toLowerCase())) 
-  );
 
   return (
     <SidebarProvider
@@ -105,7 +117,8 @@ function Page() {
                 <div className="flex items-center justify-between">
                   <div className="flex flex-1 items-center space-x-2">
                     <Input
-                      placeholder="Filter tasks..."
+                      aria-label="ค้นหารายการงาน"
+                      placeholder="ค้นหา"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="h-8 w-[150px] lg:w-[450px]"
@@ -125,11 +138,13 @@ function Page() {
                 <div className="space-y-4">
                   <PaginationErrorBoundary onRetry={refreshTasks}>
                     <TasksNewTable
-                      tasks={filteredTasks}
+                      tasks={tasks}
                       onEditTask={handleEditTask}
                       onDeleteTask={handleDeleteTask}
                       onShowTask={handleShow}
                       onAssignChange={handleAssignChange}
+                      onStatusFilterChange={setStatusFilter}
+                      statusFilter={statusFilter}
                       loading={loading}
                       error={error}
                     />

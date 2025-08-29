@@ -11,59 +11,59 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import {
-  getBranchById,
-  updateBranch,
-} from "@/lib/api/branches";
-import type { Branch } from "@/types/entities";
+  getAssignToId,
+  updateAssignTo,
+} from "@/lib/api/assign";
+import type { AssignData } from "@/types/assignto/model";
 
 function EditBranchPage() {
   const router = useRouter();
   const params = useParams();
-  const branchId = params.id as string;
+  const assignToId = params.id as string;
 
-  const [branch, setBranch] = useState<Branch | null>(null);
+  const [assignTo, setAssignTo] = useState<AssignData | null>(null);
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Load the specific branch data
   useEffect(() => {
-    const loadBranch = async () => {
-      if (branchId) {
+    const loadAssignTo = async () => {
+      if (assignToId) {
         try {
-          const branchData = await getBranchById(Number(branchId));
-          setBranch(branchData);
-          setName(branchData.name);
+          const assignToData = await getAssignToId(Number(assignToId));
+          setAssignTo(assignToData);
+          setName(assignToData.name);
           setLoading(false);
         } catch (error) {
-          console.error("Error loading branch:", error);
+          console.error("Error loading assign:", error);
           setLoading(false);
         }
       }
     };
 
-    loadBranch();
-  }, [branchId]);
+    loadAssignTo();
+  }, [assignToId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!branch) return;
+    if (!assignTo) return;
     
     setIsSubmitting(true);
 
     try {
-      await updateBranch(branch.id, { name });
+      await updateAssignTo(assignTo.id, { name });
       // Navigate back to branches page
       router.push('/branches');
     } catch (error) {
-      console.error("Error updating branch:", error);
+      console.error("Error updating assign:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    router.push('/branches');
+    router.push('/supervisor');
   };
 
   if (loading) {
@@ -90,7 +90,7 @@ function EditBranchPage() {
     );
   }
 
-  if (!branch) {
+  if (!assignTo) {
     return (
       <SidebarProvider
         style={
@@ -134,7 +134,7 @@ function EditBranchPage() {
                 {/* Edit Branch Form */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Edit Branch: {branch.name}</CardTitle>
+                    <CardTitle>Edit AssignTo: {assignTo.name}</CardTitle>
                     <CardDescription>
                       Update the branch details below.
                     </CardDescription>

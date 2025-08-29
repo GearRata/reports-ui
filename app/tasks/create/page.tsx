@@ -41,7 +41,7 @@ function CreateTaskPage() {
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
-  const [reportby, setReportBy] = useState<string>("");
+  const [reportBy, setReportBy] = useState<string>("");
 
   useEffect(() => {
     setProgramID("");
@@ -60,7 +60,7 @@ function CreateTaskPage() {
 
     try {
       await addTaskNew({
-        reported_by: reportby,
+        reported_by: reportBy,
         phone_id:
           phoneId && phoneId !== "" && phoneId !== "null"
             ? Number(phoneId)
@@ -127,7 +127,7 @@ function CreateTaskPage() {
                           type="text"
                           id="report_by"
                           className="w-full border-1 rounded-md p-2"
-                          value={reportby}
+                          value={reportBy}
                           onChange={(e) => setReportBy(e.target.value)}
                         />
                       </div>
@@ -212,13 +212,14 @@ function CreateTaskPage() {
 
                         {programID === "0" && (
                           <div className="space-y-2">
-                            <Label htmlFor="report_by">Add Problem</Label>
+                            <Label htmlFor="type">Add Problem</Label>
                             <input
                               type="text"
-                              id="report_by"
+                              id="type"
                               className="w-full border-1 rounded-md p-1.5"
                               value={issue}
                               onChange={(e) => setIssue(e.target.value)}
+                              placeholder="อธิบายปัญหาที่พบ"
                             />
                           </div>
                         )}
