@@ -7,9 +7,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash} from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import type { TaskWithPhone } from "@/types/entities";
 import { MdDone } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
@@ -30,7 +37,7 @@ interface TasksNewTableProps {
   onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
   onShowTask: (task: TaskWithPhone) => void;
-  onAssignChange?: (taskId: number, assignTo: string) => void;
+  onAssignChange?: (taskId: number, assignTo: string, assignToId: number) => void;
   onStatusFilterChange?: (status: string) => void;
   statusFilter?: string;
   loading?: boolean;
@@ -124,8 +131,7 @@ export function TasksNewTable({
     }
     return out.join("");
   };
-
-  console.log("task", tasks[0]?.status);
+                        
 
   return (
     <div className="rounded-md border">
@@ -144,16 +150,44 @@ export function TasksNewTable({
             <TableHead>
               <div className="flex items-center gap-2">
                 <span>Status</span>
-                <Select value={statusFilter} onValueChange={handleStatusChange}>
-                  <SelectTrigger className="w-[40px] h-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                  </SelectContent>
-                </Select>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-8 w-8"
+                      aria-label="Filter status"
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="start" sideOffset={4}>
+                    <DropdownMenuItem onClick={() => handleStatusChange("all")}>
+                      All
+                      {statusFilter === "all" && (
+                        <Check className="ml-auto h-4 w-4" />
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleStatusChange("pending")}
+                    >
+                      Pending
+                      {statusFilter === "pending" && (
+                        <Check className="ml-auto h-4 w-4" />
+                      )}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => handleStatusChange("done")}
+                    >
+                      Done
+                      {statusFilter === "done" && (
+                        <Check className="ml-auto h-4 w-4" />
+                      )}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </TableHead>
             <TableHead>Time</TableHead>
@@ -259,7 +293,10 @@ export function TasksNewTable({
                         const assignName = selectedAssign
                           ? selectedAssign.name
                           : "";
-                        onAssignChange(task.id, assignName);
+                        const assignId = selectedAssign
+                          ? selectedAssign.id
+                          : 0;
+                        onAssignChange(task.id, assignName, assignId);
                       }
                     }}
                   >
@@ -310,7 +347,6 @@ export function TasksNewTable({
               </TableRow>
             ))
           )}
-         
         </TableBody>
       </Table>
     </div>

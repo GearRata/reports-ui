@@ -61,11 +61,12 @@ function Page() {
     }
   }, [statusFilter, changeStatus]);
 
-  const handleAssignChange = async (taskId: number, assignTo: string) => {
+  const handleAssignChange = async (taskId: number, assignTo: string, assignToId: number) => {
     try {
       const task = tasks.find((t) => t.id === taskId);
       if (task) {
         await updateTaskAssignTo(taskId, {
+          assignedto_id: assignToId,
           assign_to: assignTo || null,
           update_telegram: true,
         });

@@ -75,7 +75,7 @@ function EditTaskPage() {
           );
           setText(taskData.text);
           setStatus(taskData.status.toString());
-
+          setAssignId(taskData.assignedto_id)
           // Find assign ID from assign name
           const assignPerson = assignTo.find(
             (p) => p.name === taskData.assign_to
@@ -109,6 +109,7 @@ function EditTaskPage() {
         ? assignTo.find((p) => p.id === Number(assignId))
         : null;
       const assignName = assignPerson ? assignPerson.name : null;
+      const assignToId = assignPerson ? assignPerson.id : 0;
 
       await updateTaskNew(task.id, {
         phone_id:
@@ -122,6 +123,7 @@ function EditTaskPage() {
         text,
         status: Number(status),
         assign_to: assignName,
+        assignedto_id: assignToId,
         telegram: true,
       });
 
