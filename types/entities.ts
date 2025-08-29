@@ -38,6 +38,8 @@ export interface RequestIpPhone {
 
 export interface TaskWithPhone {
   file_paths(file_paths: any): unknown
+  issue_type: number
+  issue_else: string
   id: number
   phone_id: number
   text: string

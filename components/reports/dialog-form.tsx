@@ -10,10 +10,10 @@ import {
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle  } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { useParams } from "next/navigation";
-import { Branch, Department, Program, Type } from "@/types/entities";
+import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
 import CameraPicker from "@/components/camera";
 import {
@@ -28,6 +28,7 @@ import {
   CheckCircle2,
   CircuitBoard,
   MessageCircle,
+  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -38,11 +39,14 @@ export default function DialogForm() {
   const [departmentID, setDepartmentID] = useState(0);
   const [text, setText] = useState("");
   const [department, setDepartment] = useState<Department | undefined>();
+  const [phoneID, setPhoneID] = useState<IPPhone | undefined>();
+  const [phones, setPhones] = useState<IPPhone[]>([]);
   const [branch, setBranch] = useState<Branch | undefined>();
   const [programID, setProgramID] = useState<Program | undefined>();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [typeID, setTypeID] = useState<Type | undefined>();
   const [types, setTypes] = useState<Type[]>([]);
+  const [loadingPhone, setLoadingPhone] = useState(false);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const [loadingBranch, setLoadingBranch] = useState(false);
@@ -65,6 +69,28 @@ export default function DialogForm() {
   const handleFilesCapture = (files: File[]) => {
     setCapturedFiles(files);
   };
+
+  const loadIpPhone = useCallback(async () => {
+    setLoadingPhone(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`
+      );
+      const data = await response.json();
+      if (data.data && data.data.length > 0) {
+        setPhones(data.data);
+      } else {
+        setPhones([]);
+        setPhoneID(undefined)
+      }
+    } catch (error) {
+      console.error("Error loading ipphone:", error);
+      setPhones([]);
+      setPhoneID(undefined)
+    } finally {
+      setLoadingPhone(false);
+    }
+  }, []);
 
   // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
   const loadProgram = useCallback(async () => {
@@ -160,6 +186,10 @@ export default function DialogForm() {
     setBranchID(branchId);
     setDepartmentID(departmentId);
   }, [params]);
+
+  useEffect(() => {
+    loadIpPhone();
+  }, [loadIpPhone]);
 
   // useEffect สำหรับโหลดข้อมูล programs (โหลดครั้งเดียวตอน mount)
   useEffect(() => {
@@ -263,6 +293,8 @@ export default function DialogForm() {
       setIsSubmitting(false);
     }
   };
+
+  console.log("IP Phone", phones)
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -390,6 +422,123 @@ export default function DialogForm() {
               </div>
             </div>
 
+            {/* ==================== DROPDOWN เลือก IP Phone ====================*/}
+             <div className="space-y-5 group">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-purple-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                  <div className="relative p-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                    <Phone className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <Label
+                    htmlFor="phone"
+                    className="text-base sm:text-lg font-bold text-slate-100 block"
+                  >
+                    IP Phone <span className="text-red-400 animate-pulse">*</span>
+                  </Label>
+                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                    เลือกเบอร์ IP
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <Select
+                  value={phoneID?.id?.toString() || ""}
+                  onValueChange={(value) => {
+                    const selectedPhone = phones.find(
+                      (p) => p.id.toString() === value
+                    );
+                    setPhoneID(selectedPhone);
+                  }}
+                  disabled={loadingPhone}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      "h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
+                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
+                      phoneID
+                        ? "border-green-400/60 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
+                        : "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
+                      "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                    )}
+                  >
+                    <SelectValue
+                      placeholder={
+                        loadingPhone ? "กำลังโหลด..." : "เลือกเบอร์ IP"
+                      }
+                    >
+                      {loadingPhone ? (
+                        <div className="flex items-center gap-3 text-slate-400">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span>กำลังโหลด...</span>
+                        </div>
+                      ) : (
+                        <span
+                          className={cn(
+                            "flex items-center gap-3",
+                            phoneID ? "text-slate-100" : "text-slate-400"
+                          )}
+                        >
+                          {phoneID && (
+                            <Monitor className="h-4 w-4 text-purple-400" />
+                          )}
+                          {phoneID?.name || "เลือกเบอร์ IP"}
+                        </span>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl bg-slate-800/95 backdrop-blur-xl border-slate-600/50 shadow-2xl">
+                    {loadingPhone ? (
+                      <SelectItem
+                        value="loading"
+                        disabled
+                        className="text-slate-400 py-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>กำลังโหลดชนิดปัญหา...</span>
+                        </div>
+                      </SelectItem>
+                    ) : !phones || phones.length === 0 ? (
+                      <SelectItem
+                        value="empty"
+                        disabled
+                        className="text-slate-400 py-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          <AlertCircle className="h-4 w-4" />
+                          <span>ไม่พบ IP Phone ที่ใช้งานได้</span>
+                        </div>
+                      </SelectItem>
+                    ) : (
+                      phones?.map((phone) => (
+                        <SelectItem
+                          key={phone.id}
+                          value={phone.id.toString()}
+                          className="text-slate-100 focus:bg-slate-700/70 py-4 rounded-xl m-1 transition-all duration-200 hover:bg-slate-700/50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Monitor className="h-4 w-4 text-purple-400" />
+                            <span className="font-medium">{phone.name}</span>
+                          </div>
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                {typeID && (
+                  <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
+                    <CheckCircle2 className="h-4 w-4 animate-bounce" />
+                    <span className="font-medium">
+                      เลือกชนิด: {typeID.name}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>                
+
             {/* ==================== DROPDOWN เลือก Type ====================*/}
             <div className="space-y-5 group">
               <div className="flex items-center gap-4">
@@ -452,7 +601,7 @@ export default function DialogForm() {
                           {typeID && (
                             <Monitor className="h-4 w-4 text-purple-400" />
                           )}
-                          {typeID?.name || "เลือกโปรแกรม"}
+                          {typeID?.name || "เลือกชนิดปัญหา"}
                         </span>
                       )}
                     </SelectValue>
@@ -466,7 +615,7 @@ export default function DialogForm() {
                       >
                         <div className="flex items-center gap-3">
                           <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>กำลังโหลดโปรแกรม...</span>
+                          <span>กำลังโหลดชนิดปัญหา...</span>
                         </div>
                       </SelectItem>
                     ) : programs.length === 0 ? (
@@ -477,7 +626,7 @@ export default function DialogForm() {
                       >
                         <div className="flex items-center gap-3">
                           <AlertCircle className="h-4 w-4" />
-                          <span>ไม่พบโปรแกรมที่ใช้งานได้</span>
+                          <span>ไม่พบชนิดปัญหาที่ใช้งานได้</span>
                         </div>
                       </SelectItem>
                     ) : (

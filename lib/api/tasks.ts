@@ -28,16 +28,22 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
 
     try {
       const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`;
-      let url = search?.trim() 
-        ? `${baseUrl}/${encodeURIComponent(search.trim())}?page=${page}&limit=${limit}`
-        : `${baseUrl}?page=${page}&limit=${limit}`;
+      let url;
       
       // Add status filter if not "all"
       if (status && status !== "all") {
         const statusValue = status === "pending" ? "0" : status === "done" ? "1" : "";
         if (statusValue) {
-          url += `&status=${statusValue}`;
+          url = `${baseUrl}/status/${statusValue}?page=${page}&limit=${limit}`;
+        } else {
+          url = search?.trim() 
+            ? `${baseUrl}/${encodeURIComponent(search.trim())}?page=${page}&limit=${limit}`
+            : `${baseUrl}?page=${page}&limit=${limit}`;
         }
+      } else {
+        url = search?.trim() 
+          ? `${baseUrl}/${encodeURIComponent(search.trim())}?page=${page}&limit=${limit}`
+          : `${baseUrl}?page=${page}&limit=${limit}`;
       }
 
       const response = await fetch(url);
@@ -186,6 +192,7 @@ export async function updateTaskNew(
     issue_else?: string;
     status: number;
     assign_to?: string | null;
+    assignedto_id?: number;
     telegram?: boolean;
     file_paths?: string[];
   }
@@ -199,6 +206,7 @@ export async function updateTaskNew(
       issue_else: task.issue_else || "",
       status: task.status,
       assign_to: task.assign_to,
+      assignedto_id: task.assignedto_id,
       telegram: task.telegram,
       file_paths: task.file_paths || [],
     };
@@ -249,7 +257,7 @@ export async function getTaskNewById(id: number) {
 }
 
 
-export async function updateTaskAssignTo(id: number, task:{assign_to: string | null, update_telegram: boolean}) {
+export async function updateTaskAssignTo(id: number, task:{assignedto_id: number, assign_to: string | null, update_telegram: boolean}) {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/update/assignto/${id}`,
@@ -259,6 +267,12 @@ export async function updateTaskAssignTo(id: number, task:{assign_to: string | n
         body: JSON.stringify(task),
       }
     );
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to update assigned person: ${response.status} ${errorText}`);
+    }
+    
     return await response.json();
   } catch (error) {
     console.error("Error updating task assign_to:", error);
