@@ -1,7 +1,8 @@
+// app/tasks/page.tsx
 "use client";
 
 import type React from "react";
-import { useState, useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
@@ -14,20 +15,33 @@ import type { TaskWithPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-function Page() {
+// ——— แยกเนื้อหาออกมาเป็นคอมโพเนนต์ที่อยู่ใน Suspense ———
+function TasksPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "done">("all");
   const lastSearchRef = useRef<string>("");
 
-  // Debounce search input
+  // อ่านค่า status จาก URL เมื่อเข้าเพจหรือเมื่อ URL เปลี่ยน
+  const urlStatusRef = useRef<string | null>(null);
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 500);
+    const currentStatus = searchParams.get("status");
+    if (urlStatusRef.current !== currentStatus) {
+      urlStatusRef.current = currentStatus;
+      const raw = (currentStatus || "all").toLowerCase();
+      const normalized = raw === "pending" || raw === "done" ? (raw as "pending" | "done") : "all";
+      setStatusFilter(normalized);
+    }
+  }, [searchParams]);
+
+  // debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -44,9 +58,14 @@ function Page() {
     refreshTasks,
     changeSearch,
     changeStatus,
-  } = useTasksNewPaginated({ page: 1, limit: 10, search: debouncedSearch, status: statusFilter });
+  } = useTasksNewPaginated({
+    page: 1,
+    limit: 10,
+    search: debouncedSearch,
+    status: statusFilter, // ← ใช้ค่าจาก URL/Dropdown
+  });
 
-  // Update search when debounced value changes
+  // อัปเดต search ใน hook เมื่อ debounce เปลี่ยน
   useEffect(() => {
     if (debouncedSearch !== lastSearchRef.current) {
       lastSearchRef.current = debouncedSearch;
@@ -54,10 +73,12 @@ function Page() {
     }
   }, [debouncedSearch, changeSearch]);
 
-  // Update status filter
+  // อัปเดต status ใน hook เมื่อ statusFilter เปลี่ยน (ทั้งจาก URL และ dropdown)
+  const statusRef = useRef(statusFilter);
   useEffect(() => {
-    if (changeStatus) {
-      changeStatus(statusFilter);
+    if (statusRef.current !== statusFilter) {
+      statusRef.current = statusFilter;
+      changeStatus?.(statusFilter);
     }
   }, [statusFilter, changeStatus]);
 
@@ -77,26 +98,9 @@ function Page() {
     }
   };
 
-  const handleAddTask = () => {
-    router.push("/tasks/create");
-  };
-
-  const handleEditTask = (task: TaskWithPhone) => {
-    router.push(`/tasks/edit/${task.id}`);
-  };
-
-  const handleShow = (task: TaskWithPhone) => {
-    router.push(`/tasks/show/${task.id}`);
-  };
-
-  const handleDeleteTask = async (id: number) => {
-    try {
-      await deleteTaskNew(id);
-      refreshTasks();
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
+  const handleAddTask = () => router.push("/tasks/create");
+  const handleEditTask = (task: TaskWithPhone) => router.push(`/tasks/edit/${task.id}`);
+  const handleShow = (task: TaskWithPhone) => router.push(`/tasks/show/${task.id}`);
 
   return (
     <SidebarProvider
@@ -114,7 +118,7 @@ function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto space-y-6">
-                {/* Header with search and add button */}
+                {/* Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex flex-1 items-center space-x-2">
                     <Input
@@ -125,26 +129,34 @@ function Page() {
                       className="h-8 w-[150px] lg:w-[450px]"
                     />
                   </div>
-                  <Button
-                    onClick={handleAddTask}
-                    size="sm"
-                    className="ml-auto h-8 text-white"
-                  >
+                  <Button onClick={handleAddTask} size="sm" className="ml-auto h-8 text-white">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Task
                   </Button>
                 </div>
 
-                {/* Content */}
+                {/* Table & Pagination */}
                 <div className="space-y-4">
                   <PaginationErrorBoundary onRetry={refreshTasks}>
                     <TasksNewTable
                       tasks={tasks}
                       onEditTask={handleEditTask}
-                      onDeleteTask={handleDeleteTask}
+                      onDeleteTask={async (id) => {
+                        await deleteTaskNew(id);
+                        refreshTasks();
+                      }}
                       onShowTask={handleShow}
                       onAssignChange={handleAssignChange}
-                      onStatusFilterChange={setStatusFilter}
+                      onStatusFilterChange={(s) => {
+                        // เมื่อเปลี่ยนจาก dropdown ก็ยิง GET เหมือนเดิม (ผ่าน changeStatus)
+                        setStatusFilter(s as "all" | "pending" | "done");
+
+                        // อัปเดต URL ให้ตรงกัน (optional แต่แนะนำ)
+                        const params = new URLSearchParams(searchParams.toString());
+                        if (s === "all") params.delete("status");
+                        else params.set("status", s);
+                        router.replace(`/tasks?${params.toString()}`);
+                      }}
                       statusFilter={statusFilter}
                       loading={loading}
                       error={error}
@@ -174,4 +186,11 @@ function Page() {
   );
 }
 
-export default Page;
+export default function Page() {
+  // ห่อด้วย Suspense เพื่อรองรับ useSearchParams แบบไม่มี warning
+  return (
+    <Suspense fallback={<div className="p-4">Loading tasks…</div>}>
+      <TasksPageContent />
+    </Suspense>
+  );
+}

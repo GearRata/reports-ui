@@ -23,11 +23,12 @@
 "use client";
 import type React from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { BarChartComponents } from "@/components/charts/bar-chart";
-import { ChartPieDepartment } from "@/components/charts/pie-chart-department";
-import { ChartPieProgram } from "@/components/charts/pie-chart-program";
+import { BarChartComponents } from "@/components/dashboard/charts/bar-chart";
+import { ChartPieDepartment } from "@/components/dashboard/charts/pie-chart-department";
+import { ChartPieProgram } from "@/components/dashboard/charts/pie-chart-program";
+import { ChartPieType } from "@/components/dashboard/charts/pie-chart-type";
 import { SiteHeader } from "@/components/layout/site-header";
-import { TaskStatsCards } from "@/components/task/task-stats";
+import { StatsCards } from "@/components/dashboard/card/stats-card";
 import { TaskStats } from "@/types/entities";
 import { useDashboard } from "@/lib/api/dashboard";
 import { useMemo, useState, useCallback } from "react";
@@ -139,7 +140,7 @@ function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto space-y-6">
-                <TaskStatsCards stats={status} />
+                <StatsCards stats={status} />
 
                 {/* Dashboard Filters */}
                 <div className="grid grid-cols-2 gap-2 p-4 bg-card rounded-lg border max-md:grid-cols-1">
@@ -252,6 +253,13 @@ function Page() {
                   />
                   <ChartPieProgram
                     filteredTasks={filteredTasks}
+                    selectedDate={selectedDate}
+                    selectedBranch={selectedBranch}
+                    loading={loading}
+                    error={error}
+                  />
+                  <ChartPieType
+                   filteredTasks={filteredTasks}
                     selectedDate={selectedDate}
                     selectedBranch={selectedBranch}
                     loading={loading}

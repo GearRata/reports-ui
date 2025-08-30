@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { Label } from "../ui/label";
+import { Label } from "../../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Card, CardContent, CardHeader, CardTitle  } from "../ui/card";
-import { Badge } from "../ui/badge";
+} from "../../ui/select";
+import { Textarea } from "../../ui/textarea";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { Card, CardContent, CardHeader, CardTitle  } from "../../ui/card";
+import { Badge } from "../../ui/badge";
 import { useParams } from "next/navigation";
 import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";

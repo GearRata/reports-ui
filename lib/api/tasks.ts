@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 // TaskWithPhone type is used in pagination state
 import {
   TasksPaginationParams,
@@ -22,8 +22,18 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
 
   const [searchTerm, setSearchTerm] = useState(params?.search || "");
   const [statusTerm, setStatusTerm] = useState(params?.status || "all");
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchTasks = useCallback(async (page: number, limit: number, search: string, status: string = "all") => {
+    // ยกเลิก request เก่า
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // สร้าง AbortController ใหม่
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     try {
@@ -46,7 +56,7 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
           : `${baseUrl}?page=${page}&limit=${limit}`;
       }
 
-      const response = await fetch(url);
+      const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) throw new Error("Failed to fetch tasks");
 
       const data: TasksPaginationResponse = await response.json();
@@ -61,6 +71,10 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
         error: null,
       });
     } catch (err) {
+      // ไม่ update state ถ้า request ถูกยกเลิก
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
       setState((prev) => ({
         ...prev,
         loading: false,
@@ -92,7 +106,7 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
   }, [fetchTasks, state.currentPage, state.pageSize, searchTerm, statusTerm]);
 
   useEffect(() => {
-    fetchTasks(1, 10, "", "all");
+    fetchTasks(params?.page || 1, params?.limit || 10, params?.search || "", params?.status || "all");
   }, []);
 
   return {
@@ -200,6 +214,8 @@ export async function updateTaskNew(
   try {
     // สร้าง payload โดยเปลี่ยนเฉพาะ phone_id เป็น null ถ้าไม่ถูกต้อง
     const payload = {
+      reported_by: task.reported_by,
+      issue_type: task.issue_type,
       phone_id: task.phone_id && task.phone_id > 0 ? task.phone_id : null,
       system_id: task.system_id,
       text: task.text,
@@ -235,6 +251,7 @@ export async function updateTaskNew(
     console.error("Error updating task:", error);
     throw error;
   }
+  
 }
 
 export async function deleteTaskNew(id: number) {
@@ -254,6 +271,33 @@ export async function getTaskNewById(id: number) {
   if (!response.ok) throw new Error("Failed to fetch task");
   const data = await response.json();
   return data.data;
+}
+
+// Custom hook สำหรับ fetch task by id
+export function useTaskById(id: number) {
+  const [task, setTask] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    
+    const fetchTask = async () => {
+      try {
+        setLoading(true);
+        const data = await getTaskNewById(id);
+        setTask(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTask();
+  }, [id]);
+
+  return { task, loading, error };
 }
 
 
