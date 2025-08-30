@@ -13,12 +13,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
 import type { TaskWithPhone } from "@/types/entities";
-import { MdDone } from "react-icons/md";
 import { LuClock } from "react-icons/lu";
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
@@ -49,13 +48,13 @@ interface TasksNewTableProps {
 }
 
 const statusColors: Record<number, string> = {
-  0: "bg-green-400 rounded-full font-medium text-white flex items-center gap-2",
-  1: "bg-orange-400 rounded-full font-medium text-white flex items-center gap-2",
+  0: "bg-linear-to-r from-orange-500 to-yellow-500 rounded-full font-medium text-white flex items-center gap-2",
+  1: "bg-linear-to-r from-lime-500 to-emerald-500 rounded-full font-medium text-white flex items-center gap-2",
 };
 
 const statusLabels: Record<number, string> = {
-  1: "Pending",
-  0: "Done",
+  0: "Pending",
+  1: "Done",
 };
 
 export function TasksNewTable({
@@ -152,22 +151,28 @@ export function TasksNewTable({
             <TableHead>Text</TableHead>
             <TableHead>
               <div className="flex items-center gap-2">
-                <Badge>
-                  <span>
-                    {statusFilter === "all"
-                      ? (<span className="bg-">Status</span>)
-                      : statusFilter === "pending"
-                      ? "Pending"
-                      : "Done"}
-                  </span>
-                </Badge>
+                <span>
+                  {statusFilter === "all" ? (
+                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-cyan-500 to-blue-500">
+                      Status
+                    </Badge>
+                  ) : statusFilter === "pending" ? (
+                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-orange-500 to-yellow-500">
+                      Pending
+                    </Badge>
+                  ) : (
+                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-lime-500 to-emerald-500">
+                      Done
+                    </Badge>
+                  )}
+                </span>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
                       size="icon"
-                      className="h-8 w-8"
+                      className="h-6 w-6"
                       aria-label="Filter status"
                     >
                       <ChevronDown className="h-4 w-4" />
@@ -255,37 +260,28 @@ export function TasksNewTable({
                   {task.text}
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    className={statusColors[task.status ? 0 : 1 || "pending"]}
-                  >
-                    <div className="flex items-center gap-1">
-                      {task.status ? (
-                        <MdDone className="w-3 h-3" />
-                      ) : (
-                        <LuClock className="w-3 h-3" />
-                      )}
-                      {statusLabels[task.status ? 0 : 1 || "pending"]}
+                  <Badge className={statusColors[task.status ? 1 : 0]}>
+                    <div className="flex items-center gap-2 h-5 font-bold">
+                      {statusLabels[task.status ? 1 : 0]}
                     </div>
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge
-                    className={`rounded-full font-medium text-white flex items-center gap-2 ${
-                      task.status ? "bg-green-400" : "bg-orange-400"
-                    }`}
-                  >
-                    {task.status ? (
-                      <MdDone className="w-4 h-4" />
-                    ) : (
-                      <LuClock className="w-3 h-3" />
-                    )}
-                    {task.status
-                      ? task.updated_at
-                        ? formatFixedTime(task.updated_at)
-                        : "-"
-                      : task.created_at
-                      ? formatTimeAgo(task.created_at)
-                      : "-"}
+                  <Badge className={statusColors[task.status ? 1 : 0]}>
+                    <div className="flex items-center gap-1 h-5">
+                      {task.status ? (
+                        <SquareCheckBig className="w-4" />
+                      ) : (
+                        <LuClock className="w-3 h-3" />
+                      )}
+                      {task.status
+                        ? task.updated_at
+                          ? formatFixedTime(task.updated_at)
+                          : "-"
+                        : task.created_at
+                        ? formatTimeAgo(task.created_at)
+                        : "-"}
+                    </div>
                   </Badge>
                 </TableCell>
 
