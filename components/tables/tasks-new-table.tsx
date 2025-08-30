@@ -37,7 +37,11 @@ interface TasksNewTableProps {
   onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
   onShowTask: (task: TaskWithPhone) => void;
-  onAssignChange?: (taskId: number, assignTo: string, assignToId: number) => void;
+  onAssignChange?: (
+    taskId: number,
+    assignTo: string,
+    assignToId: number
+  ) => void;
   onStatusFilterChange?: (status: string) => void;
   statusFilter?: string;
   loading?: boolean;
@@ -131,7 +135,6 @@ export function TasksNewTable({
     }
     return out.join("");
   };
-                        
 
   return (
     <div className="rounded-md border">
@@ -149,7 +152,15 @@ export function TasksNewTable({
             <TableHead>Text</TableHead>
             <TableHead>
               <div className="flex items-center gap-2">
-                <span>Status</span>
+                <Badge>
+                  <span>
+                    {statusFilter === "all"
+                      ? (<span className="bg-">Status</span>)
+                      : statusFilter === "pending"
+                      ? "Pending"
+                      : "Done"}
+                  </span>
+                </Badge>
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -293,9 +304,7 @@ export function TasksNewTable({
                         const assignName = selectedAssign
                           ? selectedAssign.name
                           : "";
-                        const assignId = selectedAssign
-                          ? selectedAssign.id
-                          : 0;
+                        const assignId = selectedAssign ? selectedAssign.id : 0;
                         onAssignChange(task.id, assignName, assignId);
                       }
                     }}

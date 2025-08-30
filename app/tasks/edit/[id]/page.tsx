@@ -112,6 +112,7 @@ function EditTaskPage() {
       const assignToId = assignPerson ? assignPerson.id : 0;
 
       await updateTaskNew(task.id, {
+        reported_by: reportBy,
         phone_id:
           phoneId && phoneId !== "" && phoneId !== "null"
             ? Number(phoneId)
@@ -119,7 +120,6 @@ function EditTaskPage() {
         system_id: Number(programID),
         issue_type: Number(type),
         issue_else: issue,
-        reported_by: reportBy,
         text,
         status: Number(status),
         assign_to: assignName,
@@ -187,6 +187,8 @@ function EditTaskPage() {
       </SidebarProvider>
     );
   }
+
+  console.log("Task", task)
 
   return (
     <SidebarProvider
