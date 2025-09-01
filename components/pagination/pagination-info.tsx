@@ -26,13 +26,12 @@ export function PaginationInfo({
   const totalPages = Math.ceil(totalItems / pageSize)
 
   return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <span>
+    <div className="flex flex-col text-sm text-muted-foreground">
         แสดง {startItem.toLocaleString()}-{endItem.toLocaleString()} จาก {totalItems.toLocaleString()} {itemName}
-      </span>
-      <span className="text-xs">
-        (หน้า {currentPage} จาก {totalPages})
-      </span>
+        <div>
+          (หน้า {currentPage} จาก {totalPages})
+        </div>
+        
     </div>
   )
 }

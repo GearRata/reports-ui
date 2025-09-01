@@ -13,20 +13,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MessageSquarePlus } from "lucide-react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useRouter, useParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { getTaskNewById } from "@/lib/api/tasks";
 import type { TaskWithPhone } from "@/types/entities";
 
+
 function ShowTaskPage() {
-  const router = useRouter();
+  // const router = useRouter();
   const params = useParams();
   const taskId = params.id as string;
 
   const [task, setTask] = useState<TaskWithPhone | null>(null);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false)
 
   // Load the specific task data
   useEffect(() => {
@@ -46,18 +49,12 @@ function ShowTaskPage() {
     loadTask();
   }, [taskId]);
 
-  console.log("Task", task);
-
-  const handleCancel = () => {
-    router.push("/tasks");
-  };
-
   if (loading) {
     return (
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }
@@ -88,19 +85,16 @@ function ShowTaskPage() {
       >
         <AppSidebar variant="inset" />
         <SidebarInset>
-          <SiteHeader title="Edit Task" />
+          <SiteHeader title="Show Task" />
           <div className="flex flex-1 flex-col items-center justify-center">
             <div className="text-center">
               <p className="text-red-500 mb-4">Task not found</p>
-              <Button onClick={handleCancel}>Back to Tasks</Button>
             </div>
           </div>
         </SidebarInset>
       </SidebarProvider>
     );
   }
-
-  console.log("task", task);
 
   return (
     <SidebarProvider
@@ -113,154 +107,313 @@ function ShowTaskPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader title="Edit Task" />
+        <SiteHeader title="Show Task" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
-              <div className="container mx-auto max-w-2xl">
-                {/* Show Task Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Task #{task.ticket_no || task.id}</CardTitle>
-                    <CardDescription>
-                      แสดงรายละเอียดงานด้านล่างนี้
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form className="space-y-6">
-                      <div className="space-y-2">
-                        <Label className="font-bold text-[16px]">
-                          ชื่อผู้แจ้ง
-                        </Label>
-                        <p className="text-muted-foreground">
-                          {task.reported_by || "ไม่ได้ระบุชื่อผู้แจ้ง"}
-                        </p>
+            <div className="flex flex-col gap-4 py-3 md:gap-6 md:py-6 px-6">
+              <div className="container mx-auto max-w-5xl">
+                <div className="grid grid-cols-2 gap-4 max-md:grid-cols-1">
+                  {/* Show Task Form */}
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>
+                            Task #{task.ticket_no || task.id}
+                          </CardTitle>
+                          <CardDescription>
+                            แสดงรายละเอียดงานด้านล่างนี้
+                          </CardDescription>
+                        </div>
+                        <Button 
+                        onClick={() => setOpen(!open)}
+                        className="bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 hover:scale-110 cursor-pointer duration-300 ease-in-out"
+                          >
+                          <MessageSquarePlus />
+                        </Button>
                       </div>
-                      {/* IP Phone Selection */}
-                      <div className="space-y-2">
-                        <Label className="font-bold text-[16px]">
-                          โทรศัพท์ไอพี (IP Phone)
-                        </Label>
-                        <p className="text-muted-foreground">
-                          {task.phone_id
-                            ? `${task.number} - ${task.phone_name}`
-                            : "ไม่ได้ระบุ ID"}
-                        </p>
-                      </div>
-
-                      {/* Type Selection */}
-                      <div className="space-y-2">
-                        <Label className="font-bold text-[16px]">
-                          ชนิดของปัญหา (Type)
-                        </Label>
-                        <p className="text-muted-foreground">
-                          {task.issue_type
-                            ? `${task.system_type}`
-                            : "ไม่ได้ระบุ Type"}
-                        </p>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        {/* Problem Selection */}
+                    </CardHeader>
+                    <CardContent>
+                      <form className="space-y-6">
                         <div className="space-y-2">
                           <Label className="font-bold text-[16px]">
-                            ปัญหา (Problem)
+                            ชื่อผู้แจ้ง
                           </Label>
                           <p className="text-muted-foreground">
-                            {task.system_id === 0
-                              ? "อื่นๆ"
-                              : `${task.system_name}`}
+                            {task.reported_by || "ไม่ได้ระบุชื่อผู้แจ้ง"}
+                          </p>
+                        </div>
+                        {/* IP Phone Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            โทรศัพท์ไอพี (IP Phone)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.phone_id
+                              ? `${task.number} - ${task.phone_name}`
+                              : "ไม่ได้ระบุ ID"}
                           </p>
                         </div>
 
-                        {/* Issue Selection */}
-                        {task.system_id === 0 && (
+                        {/* Type Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            ชนิดของปัญหา (Type)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.issue_type
+                              ? `${task.system_type}`
+                              : "ไม่ได้ระบุ Type"}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Problem Selection */}
                           <div className="space-y-2">
                             <Label className="font-bold text-[16px]">
-                              ปัญหาเพิ่มเติม (Problem)
+                              ปัญหา (Problem)
                             </Label>
                             <p className="text-muted-foreground">
                               {task.system_id === 0
-                                ? `${task.issue_else}`
-                                : "ไม่ได้ระบุ"}
+                                ? "อื่นๆ"
+                                : `${task.system_name}`}
                             </p>
                           </div>
-                        )}
-                      </div>
 
-                      {/* Task Description */}
-                      <div className="space-y-2">
-                        <Label className="font-bold text-[16px]">
-                          รายละเอียดของปัญหา
-                        </Label>
-                        <Textarea
-                          value={task.text}
-                          placeholder="Describe the task in detail..."
-                          rows={4}
-                          readOnly
-                        />
-                      </div>
+                          {/* Issue Selection */}
+                          {task.system_id === 0 && (
+                            <div className="space-y-2">
+                              <Label className="font-bold text-[16px]">
+                                ปัญหาเพิ่มเติม (Problem)
+                              </Label>
+                              <p className="text-muted-foreground">
+                                {task.system_id === 0
+                                  ? `${task.issue_else}`
+                                  : "ไม่ได้ระบุ"}
+                              </p>
+                            </div>
+                          )}
+                        </div>
 
-                      {/* Status Selection */}
-                      <div className="space-y-2">
-                        <Label className="font-bold text-[16px]">สถานะ</Label>
-                        <span
-                          className={
-                            task.status === 0
-                              ? "bg-orange-400 px-2 rounded-md"
-                              : "bg-green-400 px-2 rounded-md"
-                          }
-                        >
-                          {task.status === 0 ? "รอดำเนินการ" : "เสร็จแล้ว"}
-                        </span>
-                      </div>
+                        {/* Task Description */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            รายละเอียดของปัญหา
+                          </Label>
+                          <Textarea
+                            value={task.text}
+                            placeholder="Describe the task in detail..."
+                            rows={4}
+                            readOnly
+                          />
+                        </div>
 
-                      {/* Assign To Selection */}
-                      <div className="space-y-2">
-                        <Label className="font-bold text-[16px]">
-                          มอบหมายงานให้กับ
-                        </Label>
-                        <p className="text-muted-foreground">
-                          {task.assign_to || "ไม่ได้ระบุ"}
-                        </p>
-                      </div>
+                        {/* Status Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">สถานะ</Label>
+                          <span
+                            className={
+                              task.status === 0
+                                ? "bg-orange-400 px-2 rounded-md"
+                                : "bg-green-400 px-2 rounded-md"
+                            }
+                          >
+                            {task.status === 0 ? "รอดำเนินการ" : "เสร็จแล้ว"}
+                          </span>
+                        </div>
 
-                      {/* แสดงรูปภาพที่มีอยู่ */}
-                      {task.file_paths &&
-                        Object.keys(task.file_paths).length > 0 && (
+                        {/* Assign To Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            มอบหมายงานให้กับ
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.assign_to || "ไม่ได้ระบุ"}
+                          </p>
+                        </div>
+
+                        {/* แสดงรูปภาพที่มีอยู่ */}
+                        {task.file_paths &&
+                          Object.keys(task.file_paths).length > 0 && (
+                            <div className="space-y-2">
+                              <Label className="font-bold text-[16px]">
+                                รูปภาพที่แนบมา
+                              </Label>
+                              <div className="grid grid-cols-4 gap-2">
+                                {Object.entries(task.file_paths).map(
+                                  ([key, url]) => (
+                                    <div
+                                      key={key}
+                                      className="relative aspect-square"
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={`Task image ${key}`}
+                                        className="w-full h-full object-cover rounded-md border"
+                                        onError={(e) => {
+                                          console.error(
+                                            "Image failed to load:",
+                                            url
+                                          );
+                                          e.currentTarget.src =
+                                            "/placeholder-image.png";
+                                        }}
+                                      />
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </form>
+                    </CardContent>
+                  </Card>
+
+                  {/* Show Sokution Form */}
+                  {open && (
+                    <Card>
+                    <CardHeader>
+                      <CardTitle>Task #{task.ticket_no || task.id}</CardTitle>
+                      <CardDescription>
+                        แสดงรายละเอียดงานด้านล่างนี้
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <form className="space-y-6">
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            ชื่อผู้แจ้ง
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.reported_by || "ไม่ได้ระบุชื่อผู้แจ้ง"}
+                          </p>
+                        </div>
+                        {/* IP Phone Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            โทรศัพท์ไอพี (IP Phone)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.phone_id
+                              ? `${task.number} - ${task.phone_name}`
+                              : "ไม่ได้ระบุ ID"}
+                          </p>
+                        </div>
+
+                        {/* Type Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            ชนิดของปัญหา (Type)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.issue_type
+                              ? `${task.system_type}`
+                              : "ไม่ได้ระบุ Type"}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Problem Selection */}
                           <div className="space-y-2">
                             <Label className="font-bold text-[16px]">
-                              รูปภาพที่แนบมา
+                              ปัญหา (Problem)
                             </Label>
-                            <div className="grid grid-cols-4 gap-2">
-                              {Object.entries(task.file_paths).map(
-                                ([key, url]) => (
-                                  <div
-                                    key={key}
-                                    className="relative aspect-square"
-                                  >
-                                    <img
-                                      src={url}
-                                      alt={`Task image ${key}`}
-                                      className="w-full h-full object-cover rounded-md border"
-                                      onError={(e) => {
-                                        console.error(
-                                          "Image failed to load:",
-                                          url
-                                        );
-                                        e.currentTarget.src =
-                                          "/placeholder-image.png";
-                                      }}
-                                    />
-                                  </div>
-                                )
-                              )}
-                            </div>
+                            <p className="text-muted-foreground">
+                              {task.system_id === 0
+                                ? "อื่นๆ"
+                                : `${task.system_name}`}
+                            </p>
                           </div>
-                        )}
-                    </form>
-                  </CardContent>
-                </Card>
+
+                          {/* Issue Selection */}
+                          {task.system_id === 0 && (
+                            <div className="space-y-2">
+                              <Label className="font-bold text-[16px]">
+                                ปัญหาเพิ่มเติม (Problem)
+                              </Label>
+                              <p className="text-muted-foreground">
+                                {task.system_id === 0
+                                  ? `${task.issue_else}`
+                                  : "ไม่ได้ระบุ"}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Task Description */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            รายละเอียดของปัญหา
+                          </Label>
+                          <Textarea
+                            value={task.text}
+                            placeholder="Describe the task in detail..."
+                            rows={4}
+                            readOnly
+                          />
+                        </div>
+
+                        {/* Status Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">สถานะ</Label>
+                          <span
+                            className={
+                              task.status === 0
+                                ? "bg-orange-400 px-2 rounded-md"
+                                : "bg-green-400 px-2 rounded-md"
+                            }
+                          >
+                            {task.status === 0 ? "รอดำเนินการ" : "เสร็จแล้ว"}
+                          </span>
+                        </div>
+
+                        {/* Assign To Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            มอบหมายงานให้กับ
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.assign_to || "ไม่ได้ระบุ"}
+                          </p>
+                        </div>
+
+                        {/* แสดงรูปภาพที่มีอยู่ */}
+                        {task.file_paths &&
+                          Object.keys(task.file_paths).length > 0 && (
+                            <div className="space-y-2">
+                              <Label className="font-bold text-[16px]">
+                                รูปภาพที่แนบมา
+                              </Label>
+                              <div className="grid grid-cols-4 gap-2">
+                                {Object.entries(task.file_paths).map(
+                                  ([key, url]) => (
+                                    <div
+                                      key={key}
+                                      className="relative aspect-square"
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={`Task image ${key}`}
+                                        className="w-full h-full object-cover rounded-md border"
+                                        onError={(e) => {
+                                          console.error(
+                                            "Image failed to load:",
+                                            url
+                                          );
+                                          e.currentTarget.src =
+                                            "/placeholder-image.png";
+                                        }}
+                                      />
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                          )}
+                      </form>
+                    </CardContent>
+                  </Card>)}
+                </div>
               </div>
             </div>
           </div>

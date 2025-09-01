@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { PaginationControls } from "./pagination-controls"
-import { PaginationInfo } from "./pagination-info"
-import { PageSizeSelector } from "./page-size-selector"
+import { PaginationControls } from "./pagination-controls";
+import { PaginationInfo } from "./pagination-info";
+import { PageSizeSelector } from "./page-size-selector";
 
 interface PaginationWrapperProps {
-  currentPage: number
-  pageSize: number
-  totalItems: number
-  totalPages: number
-  onPageChange: (page: number) => void
-  onPageSizeChange: (size: number) => void
-  disabled?: boolean
-  itemName?: string
-  showPageSizeSelector?: boolean
-  showInfo?: boolean
-  pageSizeOptions?: number[]
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
+  disabled?: boolean;
+  itemName?: string;
+  showPageSizeSelector?: boolean;
+  showInfo?: boolean;
+  pageSizeOptions?: number[];
 }
 
 export function PaginationWrapper({
@@ -32,16 +32,16 @@ export function PaginationWrapper({
   pageSizeOptions = [10, 20, 50, 100],
 }: PaginationWrapperProps) {
   const handlePageSizeChange = (newSize: number) => {
-    onPageSizeChange(newSize)
+    onPageSizeChange(newSize);
     // Reset to first page when changing page size
     if (currentPage > 1) {
-      onPageChange(1)
+      onPageChange(1);
     }
-  }
+  };
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-wrap justify-between">
+      <div>
         {showInfo && (
           <PaginationInfo
             currentPage={currentPage}
@@ -51,8 +51,7 @@ export function PaginationWrapper({
           />
         )}
       </div>
-
-      <div className="flex items-center gap-4">
+      <div>
         {showPageSizeSelector && (
           <PageSizeSelector
             pageSize={pageSize}
@@ -61,7 +60,8 @@ export function PaginationWrapper({
             disabled={disabled}
           />
         )}
-        
+      </div>
+      <div>
         <PaginationControls
           currentPage={currentPage}
           totalPages={totalPages}
@@ -70,5 +70,5 @@ export function PaginationWrapper({
         />
       </div>
     </div>
-  )
+  );
 }
