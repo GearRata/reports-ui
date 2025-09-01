@@ -65,6 +65,7 @@ function Page() {
       });
     }
 
+
     // Filter by branch if not "all"
     if (selectedBranch !== "all") {
       filtered = filtered.filter((task) => {
@@ -75,6 +76,30 @@ function Page() {
 
     return filtered;
   }, [data?.tasks, selectedDate, selectedBranch]);
+
+
+const tasksForType = useMemo(
+  () =>
+    filteredTasks.map((t: Record<string, unknown>) => ({
+      // ใช้ system_type ถ้ามี; ไม่งั้นลอง fallback เป็น system_name; สุดท้ายใส่ค่า default
+      system_type: String(
+        (t["system_type"] ?? t["system_name"] ?? "ไม่ระบุประเภท") as string
+      ),
+    })),
+  [filteredTasks]
+);
+
+const tasksForReport = useMemo(
+  () =>
+    filteredTasks.map((t: Record<string, unknown>) => ({
+      // ใช้ reported_by ถ้ามี; ไม่งั้นลอง created_by หรือ phone_name; สุดท้ายใส่ค่า default
+      reported_by: String(
+        (t["reported_by"] ?? t["created_by"] ?? t["phone_name"] ?? "ไม่ระบุชื่อผู้แจ้ง") as string
+      ),
+    })),
+  [filteredTasks]
+);
+
 
   // Calculate stats from filtered data
   const status: TaskStats = useMemo(() => {
@@ -238,14 +263,14 @@ function Page() {
                     error={error}
                   />
                   <ChartPieType
-                    filteredTasks={filteredTasks}
+                    filteredTasks={tasksForType}
                     selectedDate={selectedDate}
                     selectedBranch={selectedBranch}
                     loading={loading}
                     error={error}
                   />
                   <ChartPieReport
-                    filteredTasks={filteredTasks}
+                    filteredTasks={tasksForReport}
                     selectedDate={selectedDate}
                     selectedBranch={selectedBranch}
                     loading={loading}

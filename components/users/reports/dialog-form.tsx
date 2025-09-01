@@ -7,12 +7,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../ui/select";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Textarea } from "../../ui/textarea";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import { Card, CardContent, CardHeader, CardTitle  } from "../../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { useParams } from "next/navigation";
+import { useIPPhonesForDropdown } from "@/lib/api/phones";
 import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
 import CameraPicker from "@/components/camera";
@@ -29,11 +43,14 @@ import {
   CircuitBoard,
   MessageCircle,
   Phone,
+  Check,
+  ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function DialogForm() {
   const params = useParams();
+  const { ipPhones } = useIPPhonesForDropdown();
   const [reportby, setReportBy] = useState<string>("");
   const [branchID, setBranchID] = useState(0);
   const [departmentID, setDepartmentID] = useState(0);
@@ -55,6 +72,7 @@ export default function DialogForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [issue, setIssue] = useState<string>("");
+  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     setProgramID(undefined); // ล้างโปรแกรมเดิม
@@ -81,12 +99,12 @@ export default function DialogForm() {
         setPhones(data.data);
       } else {
         setPhones([]);
-        setPhoneID(undefined)
+        setPhoneID(undefined);
       }
     } catch (error) {
       console.error("Error loading ipphone:", error);
       setPhones([]);
-      setPhoneID(undefined)
+      setPhoneID(undefined);
     } finally {
       setLoadingPhone(false);
     }
@@ -294,7 +312,7 @@ export default function DialogForm() {
     }
   };
 
-  console.log("IP Phone", phones)
+  console.log("IP Phone", phones);
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -423,7 +441,8 @@ export default function DialogForm() {
             </div>
 
             {/* ==================== DROPDOWN เลือก IP Phone ====================*/}
-             <div className="space-y-5 group">
+
+            <div className="space-y-5 group">
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <div className="absolute inset-0 bg-purple-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
@@ -436,7 +455,8 @@ export default function DialogForm() {
                     htmlFor="phone"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    IP Phone <span className="text-red-400 animate-pulse">*</span>
+                    IP Phone{" "}
+                    <span className="text-red-400 animate-pulse">*</span>
                   </Label>
                   <p className="text-xs sm:text-sm text-slate-400 mt-1">
                     เลือกเบอร์ IP
@@ -444,100 +464,93 @@ export default function DialogForm() {
                 </div>
               </div>
               <div className="space-y-3">
-                <Select
-                  value={phoneID?.id?.toString() || ""}
-                  onValueChange={(value) => {
-                    const selectedPhone = phones.find(
-                      (p) => p.id.toString() === value
-                    );
-                    setPhoneID(selectedPhone);
-                  }}
-                  disabled={loadingPhone}
-                >
-                  <SelectTrigger
-                    className={cn(
-                      "h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
-                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
-                      phoneID
-                        ? "border-green-400/60 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
-                        : "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
-                      "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
-                    )}
-                  >
-                    <SelectValue
-                      placeholder={
-                        loadingPhone ? "กำลังโหลด..." : "เลือกเบอร์ IP"
-                      }
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-[50%] justify-between"
                     >
-                      {loadingPhone ? (
-                        <div className="flex items-center gap-3 text-slate-400">
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          <span>กำลังโหลด...</span>
-                        </div>
-                      ) : (
-                        <span
-                          className={cn(
-                            "flex items-center gap-3",
-                            phoneID ? "text-slate-100" : "text-slate-400"
-                          )}
-                        >
-                          {phoneID && (
-                            <Monitor className="h-4 w-4 text-purple-400" />
-                          )}
-                          {phoneID?.name || "เลือกเบอร์ IP"}
-                        </span>
-                      )}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl bg-slate-800/95 backdrop-blur-xl border-slate-600/50 shadow-2xl">
-                    {loadingPhone ? (
-                      <SelectItem
-                        value="loading"
-                        disabled
-                        className="text-slate-400 py-4"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>กำลังโหลดชนิดปัญหา...</span>
-                        </div>
-                      </SelectItem>
-                    ) : !phones || phones.length === 0 ? (
-                      <SelectItem
-                        value="empty"
-                        disabled
-                        className="text-slate-400 py-4"
-                      >
-                        <div className="flex items-center gap-3">
-                          <AlertCircle className="h-4 w-4" />
-                          <span>ไม่พบ IP Phone ที่ใช้งานได้</span>
-                        </div>
-                      </SelectItem>
-                    ) : (
-                      phones?.map((phone) => (
-                        <SelectItem
-                          key={phone.id}
-                          value={phone.id.toString()}
-                          className="text-slate-100 focus:bg-slate-700/70 py-4 rounded-xl m-1 transition-all duration-200 hover:bg-slate-700/50"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Monitor className="h-4 w-4 text-purple-400" />
-                            <span className="font-medium">{phone.name}</span>
-                          </div>
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-                {typeID && (
+                      {phones
+                        ? (() => {
+                            const phone = ipPhones.find(
+                              (phone) => phone.id.toString() === phones
+                            );
+                            return phone ? (
+                              `${phone.number} - ${phone.name}`
+                            ) : loadingPhone ? (
+                              <div className="flex items-center gap-3 text-slate-400">
+                                <Loader2 className="h-5 w-5 animate-spin" />
+                                <span>กำลังโหลด...</span>
+                              </div>
+                            ) : (
+                               <span className="text-slate-400">เลือก IP Phone</span>
+                            );
+                          })()
+                        : "Select Phone IP"}
+                      <ChevronsUpDown className="opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0">
+                    <Command className="bg-gradient-to-b from-slate-800/60 to-slate-900/80 backdrop-blur-xl">
+                      <CommandInput
+                        placeholder="Search phone..."
+                        className="h-9"
+                      />
+                      <CommandList>
+                        <CommandEmpty>No phone found.</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem
+                            value="null"
+                            onSelect={() => {
+                              setPhones([]);
+                              setOpen(false);
+                            }}
+                          >
+                            ไม่ได้ระบุ Phone ID
+                            <Check
+                              className={cn(
+                                "ml-auto",
+                                !phones ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                          {ipPhones.map((phone) => (
+                            <CommandItem
+                              key={phone.id}
+                              value={`${phone.number} ${phone.name}`}
+                              onSelect={() => {
+                                setPhones(phone.id.toString());
+                                setOpen(false);
+                              }}
+                            >
+                              {phone.number} - {phone.name}
+                              <Check
+                                className={cn(
+                                  "ml-auto",
+                                  phone === phone.id.toString()
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+                {phoneID && (
                   <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
                     <CheckCircle2 className="h-4 w-4 animate-bounce" />
                     <span className="font-medium">
-                      เลือกชนิด: {typeID.name}
+                      เลือกชนิด: {phoneID.name}
                     </span>
                   </div>
                 )}
               </div>
-            </div>                
+            </div>
 
             {/* ==================== DROPDOWN เลือก Type ====================*/}
             <div className="space-y-5 group">
@@ -826,7 +839,7 @@ export default function DialogForm() {
               )}
             </div>
 
-           {/* ==================== TEXTAREA รายละเอียดปัญหา ====================*/}
+            {/* ==================== TEXTAREA รายละเอียดปัญหา ====================*/}
             <div className="space-y-5 group">
               <div className="flex items-center gap-4">
                 <div className="relative">

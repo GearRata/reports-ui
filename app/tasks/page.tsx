@@ -101,12 +101,13 @@ function TasksPageContent() {
   const handleAddTask = () => router.push("/tasks/create");
   const handleEditTask = (task: TaskWithPhone) => router.push(`/tasks/edit/${task.id}`);
   const handleShow = (task: TaskWithPhone) => router.push(`/tasks/show/${task.id}`);
+  // const handleSolution = () => router.push("solution/create");
 
   return (
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
@@ -146,6 +147,7 @@ function TasksPageContent() {
                         refreshTasks();
                       }}
                       onShowTask={handleShow}
+                      // onSolution={handleSolution}
                       onAssignChange={handleAssignChange}
                       onStatusFilterChange={(s) => {
                         // เมื่อเปลี่ยนจาก dropdown ก็ยิง GET เหมือนเดิม (ผ่าน changeStatus)
