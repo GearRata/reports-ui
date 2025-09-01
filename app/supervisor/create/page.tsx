@@ -18,9 +18,10 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { addAssignTo } from "@/lib/api/assign";
 
-function CreateBranchPage() {
+function CreateSupervisorPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [user, setUser] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,7 +29,8 @@ function CreateBranchPage() {
     setIsSubmitting(true);
 
     try {
-      await addAssignTo({ name });
+      await addAssignTo({ name: name, 
+        telegram_username: user });
       // Navigate back to branches page
       router.push("/supervisor");
     } catch (error) {
@@ -58,7 +60,6 @@ function CreateBranchPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
-
                 {/* Create Branch Form */}
                 <Card>
                   <CardHeader>
@@ -77,6 +78,17 @@ function CreateBranchPage() {
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Enter supervisor name"
+                          required
+                        />
+                      </div>
+                      {/* Telegram user */}
+                      <div className="space-y-2">
+                        <Label htmlFor="user">Telegram User</Label>
+                        <Input
+                          id="user"
+                          value={user}
+                          onChange={(e) => setUser(e.target.value)}
+                          placeholder="@Username"
                           required
                         />
                       </div>
@@ -111,4 +123,4 @@ function CreateBranchPage() {
   );
 }
 
-export default CreateBranchPage;
+export default CreateSupervisorPage;

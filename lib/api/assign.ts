@@ -41,7 +41,7 @@ export async function addAssignTo(assign: CreateAssignData) {
   return await response.json();
 }
 
-export async function updateAssignTo(id: number, assign: { name: string }) {
+export async function updateAssignTo(id: number, assign: { name: string, telegram_username: string }) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/respons/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },

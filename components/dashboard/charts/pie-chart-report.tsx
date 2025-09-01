@@ -17,9 +17,9 @@ import {
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 
-interface PieChartTypeProps {
+interface PieChartReportProps {
   filteredTasks: Array<{
-    system_type: string;
+    reported_by: string;
     [key: string]: unknown;
   }>;
   selectedDate?: Date;
@@ -28,24 +28,26 @@ interface PieChartTypeProps {
   error?: string | null;
 }
 
-export const ChartPieType = React.memo(function ChartPieType({
+export const ChartPieReport = React.memo(function ChartPieReport({
   filteredTasks,
   selectedDate,
   selectedBranch,
   loading,
   error,
-}: PieChartTypeProps) {
-  // Type colors
-  const typeColors = React.useMemo(
+}: PieChartReportProps) {
+  // Reporter colors
+  const reporterColors = React.useMemo(
     () => [
-      "#3B82F6", // สีน้ำเงิน - Hardware
-      "#10B981", // สีเขียว - Software  
-      "#F59E0B", // สีเหลือง - Request
+      "#3B82F6", // สีน้ำเงิน
+      "#10B981", // สีเขียว
+      "#F59E0B", // สีเหลือง
       "#EF4444", // สีแดง
       "#8B5CF6", // สีม่วง
       "#F97316", // สีส้ม
       "#06B6D4", // สีฟ้า
       "#84CC16", // สีเขียวอ่อน
+      "#EC4899", // สีชมพู
+      "#6B7280", // สีเทา
     ],
     []
   );
@@ -55,20 +57,20 @@ export const ChartPieType = React.memo(function ChartPieType({
     const groupedData: { [key: string]: number } = {};
 
     filteredTasks.forEach((task) => {
-      const typeName = task.system_type || "ไม่ระบุประเภท";
-      groupedData[typeName] = (groupedData[typeName] || 0) + 1;
+      const reporterName = task.reported_by?.trim() || "ไม่ระบุชื่อผู้แจ้ง";
+      groupedData[reporterName] = (groupedData[reporterName] || 0) + 1;
     });
 
     const result = Object.entries(groupedData)
-      .map(([system_type, total_problems], index) => ({
-        system_type,
+      .map(([reported_by, total_problems], index) => ({
+        reported_by,
         total_problems,
-        fill: typeColors[index % typeColors.length],
+        fill: reporterColors[index % reporterColors.length],
       }))
       .sort((a, b) => b.total_problems - a.total_problems); // เรียงจากมากไปน้อย
 
     return result;
-  }, [filteredTasks, typeColors]);
+  }, [filteredTasks, reporterColors]);
 
   // Display text for selected date
   const selectedDateDisplay = React.useMemo(() => {
@@ -81,8 +83,8 @@ export const ChartPieType = React.memo(function ChartPieType({
   const chartConfig = React.useMemo(() => {
     const config: Record<string, { label: string; color: string }> = {};
     chartData.forEach((item) => {
-      config[item.system_type] = {
-        label: item.system_type,
+      config[item.reported_by] = {
+        label: item.reported_by,
         color: item.fill,
       };
     });
@@ -116,7 +118,7 @@ export const ChartPieType = React.memo(function ChartPieType({
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>สถิติปัญหาตามประเภท</CardTitle>
+        <CardTitle>สถิติปัญหาตามผู้แจ้ง</CardTitle>
         <CardDescription>
           ข้อมูลสำหรับวันที่ {selectedDateDisplay} -{" "}
           {selectedBranch === "all" ? "ทุกสาขา" : selectedBranch} (จำนวน{" "}
@@ -146,7 +148,7 @@ export const ChartPieType = React.memo(function ChartPieType({
                   content={
                     <ChartTooltipContent
                       formatter={(value, name) => [
-                        `ประเภท ${name}: `,
+                        `ผู้แจ้ง ${name}: `,
                         `${value} รายการ`,
                       ]}
                     />
@@ -155,12 +157,12 @@ export const ChartPieType = React.memo(function ChartPieType({
                 <Pie
                   data={chartData}
                   dataKey="total_problems"
-                  nameKey="system_type"
+                  nameKey="reported_by"
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
-                  label={({ system_type, total_problems, percent }) =>
-                    `${system_type}: ${total_problems} (${(
+                  label={({ reported_by, total_problems, percent }) =>
+                    `${reported_by}: ${total_problems} (${(
                       (percent || 0) * 100
                     ).toFixed(1)}%)`
                   }
