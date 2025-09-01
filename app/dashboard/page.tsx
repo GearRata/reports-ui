@@ -1,25 +1,3 @@
-/**
- * Dashboard Main Page Component
- *
- * This is the main dashboard page that displays various charts and statistics
- * for the task tracking system. Features include:
- *
- * - Task statistics cards showing total, pending, and solved counts
- * - Multiple chart components for different data visualizations:
- *   - ChartAreaInteractive: Original chart with time range filtering
- *   - BranchAreaChart: Monthly branch comparison with pending/solved breakdown
- *   - YearlyBranchChart: Yearly comparison between two main branches
- *   - PieChartSummary: Program statistics by department
- *
- * - Sidebar navigation and responsive layout
- * - Real-time data fetching from dashboard API
- * - Loading and error state handling
- *
- * Data Source: useDashboard() hook -> /api/v1/dashboard/data
- * Layout: Sidebar + main content area with grid layout for charts
- *
- */
-
 "use client";
 import type React from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
@@ -27,6 +5,7 @@ import { BarChartComponents } from "@/components/dashboard/charts/bar-chart";
 import { ChartPieDepartment } from "@/components/dashboard/charts/pie-chart-department";
 import { ChartPieProgram } from "@/components/dashboard/charts/pie-chart-program";
 import { ChartPieType } from "@/components/dashboard/charts/pie-chart-type";
+import { ChartPieReport } from "@/components/dashboard/charts/pie-chart-report";
 import { SiteHeader } from "@/components/layout/site-header";
 import { StatsCards } from "@/components/dashboard/card/stats-card";
 import { TaskStats } from "@/types/entities";
@@ -259,7 +238,14 @@ function Page() {
                     error={error}
                   />
                   <ChartPieType
-                   filteredTasks={filteredTasks}
+                    filteredTasks={filteredTasks}
+                    selectedDate={selectedDate}
+                    selectedBranch={selectedBranch}
+                    loading={loading}
+                    error={error}
+                  />
+                  <ChartPieReport
+                    filteredTasks={filteredTasks}
                     selectedDate={selectedDate}
                     selectedBranch={selectedBranch}
                     loading={loading}

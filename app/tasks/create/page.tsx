@@ -1,10 +1,23 @@
 "use client";
 
-import type React from "react";
+import * as React from "react";
 import { useMemo, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -28,6 +41,8 @@ import { useType } from "@/lib/api/type";
 import { useProgramsForDropdown } from "@/lib/api/programs";
 import { useIPPhonesForDropdown } from "@/lib/api/phones";
 import CameraPicker from "@/components/camera";
+import { cn } from "@/lib/utils";
+import { ChevronsUpDown, Check } from "lucide-react";
 
 function CreateTaskPage() {
   const router = useRouter();
@@ -42,6 +57,7 @@ function CreateTaskPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [reportBy, setReportBy] = useState<string>("");
+  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     setProgramID("");
@@ -92,6 +108,7 @@ function CreateTaskPage() {
     setCapturedFiles(files);
   };
 
+
   return (
     <SidebarProvider
       style={
@@ -134,6 +151,78 @@ function CreateTaskPage() {
                       {/* IP Phone Selection */}
                       <div className="space-y-2">
                         <Label htmlFor="phone_id">IP Phone</Label>
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={open}
+                              className="w-full justify-between"
+                            >
+                              {phoneId
+                                ? (() => {
+                                    const phone = ipPhones.find(
+                                      (phone) => phone.id.toString() === phoneId
+                                    );
+                                    return phone ? `${phone.number} - ${phone.name}` : "Select Phone ID...";
+                                  })()
+                                : "Select Phone IP"}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Search phone..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>No phone found.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem
+                                    value="null"
+                                    onSelect={() => {
+                                      setPhoneId("");
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    ไม่ได้ระบุ Phone ID
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        !phoneId ? "opacity-100" : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                  {ipPhones.map((phone) => (
+                                    <CommandItem
+                                      key={phone.id}
+                                      value={`${phone.number} ${phone.name}`}
+                                      onSelect={() => {
+                                        setPhoneId(phone.id.toString());
+                                        setOpen(false);
+                                      }}
+                                    >
+                                      {phone.number} - {phone.name}
+                                      <Check
+                                        className={cn(
+                                          "ml-auto",
+                                          phoneId === phone.id.toString()
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      
+                      {/* <div className="space-y-2">
+                        <Label htmlFor="phone_id">IP Phone</Label>
                         <Select
                           value={phoneId}
                           onValueChange={(value) => setPhoneId(value)}
@@ -153,8 +242,7 @@ function CreateTaskPage() {
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
-
+                      </div> */}
                       {/* Type Section */}
                       <div className="space-y-2">
                         <Label htmlFor="type">Type</Label>
@@ -178,7 +266,6 @@ function CreateTaskPage() {
                           </SelectContent>{" "}
                         </Select>
                       </div>
-
                       {/* Problem Selection */}
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -224,7 +311,6 @@ function CreateTaskPage() {
                           </div>
                         )}
                       </div>
-
                       {/* Task Description */}
                       <div className="space-y-2">
                         <Label htmlFor="text">Task Description</Label>
@@ -237,13 +323,11 @@ function CreateTaskPage() {
                           rows={4}
                         />
                       </div>
-
                       {/* Camera Section */}
                       <div className="space-y-2">
                         <Label>Add image</Label>
                         <CameraPicker onFilesCapture={handleFilesCapture} />
                       </div>
-
                       {/* Form Actions */}
                       <div className="flex justify-end gap-4">
                         <Button

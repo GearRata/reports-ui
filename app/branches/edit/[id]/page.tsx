@@ -45,6 +45,8 @@ function EditBranchPage() {
     loadBranch();
   }, [branchId]);
 
+  console.log("Data", branch)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!branch) return;
