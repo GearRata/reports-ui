@@ -188,7 +188,6 @@ function EditTaskPage() {
     );
   }
 
-  console.log("Task", task)
 
   return (
     <SidebarProvider

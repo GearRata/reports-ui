@@ -273,33 +273,6 @@ export async function getTaskNewById(id: number) {
   return data.data;
 }
 
-// Custom hook สำหรับ fetch task by id
-export function useTaskById(id: number) {
-  const [task, setTask] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-    
-    const fetchTask = async () => {
-      try {
-        setLoading(true);
-        const data = await getTaskNewById(id);
-        setTask(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTask();
-  }, [id]);
-
-  return { task, loading, error };
-}
-
 
 export async function updateTaskAssignTo(id: number, task:{assignedto_id: number, assign_to: string | null, update_telegram: boolean}) {
   try {
