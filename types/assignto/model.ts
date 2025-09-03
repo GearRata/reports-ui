@@ -1,6 +1,6 @@
 export interface AssignData {
     id: number;
-    name: string
+    name: string;
     telegram_username: string;
   }
 

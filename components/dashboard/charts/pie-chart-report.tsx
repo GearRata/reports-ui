@@ -38,16 +38,23 @@ export const ChartPieReport = React.memo(function ChartPieReport({
   // Reporter colors
   const reporterColors = React.useMemo(
     () => [
+      "#E43636", // สีแดง
+      "#8B5CF6", // สีม่วง
+      "#08CB00",
+      "#1A2A80",
+      "#F97316", // สีส้ม
+      "#FFE100",
+      "#0046FF",
+      "#B4E50D",
+      "#CC66DA",
+      "#06B6D4", // สีฟ้า
+      "#E4004B",
       "#3B82F6", // สีน้ำเงิน
       "#10B981", // สีเขียว
       "#F59E0B", // สีเหลือง
-      "#EF4444", // สีแดง
-      "#8B5CF6", // สีม่วง
-      "#F97316", // สีส้ม
-      "#06B6D4", // สีฟ้า
       "#84CC16", // สีเขียวอ่อน
       "#EC4899", // สีชมพู
-      "#6B7280", // สีเทา
+      "#154D71",
     ],
     []
   );
@@ -68,7 +75,6 @@ export const ChartPieReport = React.memo(function ChartPieReport({
         fill: reporterColors[index % reporterColors.length],
       }))
       .sort((a, b) => b.total_problems - a.total_problems); // เรียงจากมากไปน้อย
-
     return result;
   }, [filteredTasks, reporterColors]);
 

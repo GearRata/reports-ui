@@ -24,8 +24,19 @@ function TasksPageContent() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "done">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "done">(
+    "all"
+  );
   const lastSearchRef = useRef<string>("");
+
+  // ✅ อ่าน page & limit จาก URL
+  const initialPage = Math.max(
+    1,
+    parseInt(searchParams.get("page") ?? "1", 10)
+  );
+  const allowed = [10, 20, 50, 100];
+  const parsedLimit = parseInt(searchParams.get("limit") ?? "10", 10);
+  const initialLimit = allowed.includes(parsedLimit) ? parsedLimit : 10;
 
   // อ่านค่า status จาก URL เมื่อเข้าเพจหรือเมื่อ URL เปลี่ยน
   const urlStatusRef = useRef<string | null>(null);
@@ -34,7 +45,10 @@ function TasksPageContent() {
     if (urlStatusRef.current !== currentStatus) {
       urlStatusRef.current = currentStatus;
       const raw = (currentStatus || "all").toLowerCase();
-      const normalized = raw === "pending" || raw === "done" ? (raw as "pending" | "done") : "all";
+      const normalized =
+        raw === "pending" || raw === "done"
+          ? (raw as "pending" | "done")
+          : "all";
       setStatusFilter(normalized);
     }
   }, [searchParams]);
@@ -59,11 +73,32 @@ function TasksPageContent() {
     changeSearch,
     changeStatus,
   } = useTasksNewPaginated({
-    page: 1,
-    limit: 10,
+    page: initialPage, // ← ใช้ค่าจาก URL
+    limit: initialLimit, // ← ใช้ค่าจาก URL
     search: debouncedSearch,
-    status: statusFilter, // ← ใช้ค่าจาก URL/Dropdown
+    status: statusFilter,
   });
+
+  // ✅ เวลาเปลี่ยนหน้า ให้เขียนพารามิเตอร์กลับลง URL ด้วย
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    params.set("limit", String(pageSize)); // คง limit เดิม
+    // (จะใส่ status/search ต่อด้วยก็ได้)
+    router.replace(`/tasks?${params.toString()}`);
+    goToPage(page);
+  };
+
+  // ✅ เวลาเปลี่ยน page size ก็อัปเดต URL เช่นกัน
+  const handlePageSizeChange = (size: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("limit", String(size));
+    // ปกติควรรีเซ็ตไปหน้า 1
+    params.set("page", "1");
+    router.replace(`/tasks?${params.toString()}`);
+    changePageSize(size);
+    // ไม่ต้อง goToPage(1) ตรงนี้ก็ได้ เพราะ PaginationWrapper จะเรียก onPageChange(1) ให้อีกที
+  };
 
   // อัปเดต search ใน hook เมื่อ debounce เปลี่ยน
   useEffect(() => {
@@ -82,7 +117,11 @@ function TasksPageContent() {
     }
   }, [statusFilter, changeStatus]);
 
-  const handleAssignChange = async (taskId: number, assignTo: string, assignToId: number) => {
+  const handleAssignChange = async (
+    taskId: number,
+    assignTo: string,
+    assignToId: number
+  ) => {
     try {
       const task = tasks.find((t) => t.id === taskId);
       if (task) {
@@ -99,8 +138,10 @@ function TasksPageContent() {
   };
 
   const handleAddTask = () => router.push("/tasks/create");
-  const handleEditTask = (task: TaskWithPhone) => router.push(`/tasks/edit/${task.id}`);
-  const handleShow = (task: TaskWithPhone) => router.push(`/tasks/show/${task.id}`);
+  const handleEditTask = (task: TaskWithPhone) =>
+    router.push(`/tasks/edit/${task.id}`);
+  const handleShow = (task: TaskWithPhone) =>
+    router.push(`/tasks/show/${task.id}`);
   // const handleSolution = () => router.push("solution/create");
 
   return (
@@ -130,7 +171,11 @@ function TasksPageContent() {
                       className="h-8 w-[150px] lg:w-[450px]"
                     />
                   </div>
-                  <Button onClick={handleAddTask} size="sm" className="ml-auto h-8 text-white">
+                  <Button
+                    onClick={handleAddTask}
+                    size="sm"
+                    className="ml-auto h-8 text-white"
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Task
                   </Button>
@@ -154,7 +199,9 @@ function TasksPageContent() {
                         setStatusFilter(s as "all" | "pending" | "done");
 
                         // อัปเดต URL ให้ตรงกัน (optional แต่แนะนำ)
-                        const params = new URLSearchParams(searchParams.toString());
+                        const params = new URLSearchParams(
+                          searchParams.toString()
+                        );
                         if (s === "all") params.delete("status");
                         else params.set("status", s);
                         router.replace(`/tasks?${params.toString()}`);
@@ -170,8 +217,8 @@ function TasksPageContent() {
                         pageSize={pageSize}
                         totalItems={totalItems}
                         totalPages={totalPages}
-                        onPageChange={goToPage}
-                        onPageSizeChange={changePageSize}
+                        onPageChange={handlePageChange} // ← เปลี่ยนเป็น handler ใหม่
+                        onPageSizeChange={handlePageSizeChange} // ← เปลี่ยนเป็น handler ใหม่
                         disabled={loading}
                         itemName="งาน"
                         pageSizeOptions={[10, 20, 50, 100]}

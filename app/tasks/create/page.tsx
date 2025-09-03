@@ -221,29 +221,6 @@ function CreateTaskPage() {
                         </Popover>
                       </div>
                       
-                      {/* <div className="space-y-2">
-                        <Label htmlFor="phone_id">IP Phone</Label>
-                        <Select
-                          value={phoneId}
-                          onValueChange={(value) => setPhoneId(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select IP phone" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>
-                            {ipPhones.map((phone) => (
-                              <SelectItem
-                                key={phone.id}
-                                value={phone.id.toString()}
-                              >
-                                {phone.number} - {phone.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div> */}
-                      {/* Type Section */}
                       <div className="space-y-2">
                         <Label htmlFor="type">Type</Label>
                         <Select

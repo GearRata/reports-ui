@@ -41,13 +41,20 @@ export const ChartPieProgram = React.memo(function ChartPieProgram({
       "#3B82F6", // สีน้ำเงิน
       "#10B981", // สีเขียว
       "#F59E0B", // สีเหลือง
-      "#EF4444", // สีแดง
+      "#E43636", // สีแดง
       "#8B5CF6", // สีม่วง
+      "#FFE100",
+      "#0046FF",
+      "#CC66DA",
+      "#E4004B",
+      "#08CB00",
+      "#1A2A80",
       "#F97316", // สีส้ม
+      "#B4E50D",
       "#06B6D4", // สีฟ้า
       "#84CC16", // สีเขียวอ่อน
       "#EC4899", // สีชมพู
-      "#6B7280", // สีเทา
+      "#154D71",
     ],
     []
   );
@@ -57,7 +64,6 @@ export const ChartPieProgram = React.memo(function ChartPieProgram({
     const groupedData: { [key: string]: number } = {};
 
     filteredTasks.forEach((task) => {
-      console.log("Task system_name:", task.system_name); // ดูว่ามีค่าอะไร
       const systemName = task.system_name || "ไม่ระบุโปรแกรม";
       groupedData[systemName] = (groupedData[systemName] || 0) + 1;
     });
