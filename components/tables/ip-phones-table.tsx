@@ -3,11 +3,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Pencil, Trash } from "lucide-react"
-import type { IPPhone } from "@/types/entities"
+import type { IpPhoneData } from "@/types/Phone/model"
 
 interface IPPhonesTableProps {
-  ipPhones: IPPhone[]
-  onEditIPPhone: (ipPhone: IPPhone) => void
+  ipPhones: IpPhoneData[]
+  onEditIPPhone: (ipPhone: IpPhoneData) => void
   onDeleteIPPhone: (ipPhoneId: number) => void
   loading?: boolean
   error?: string | null

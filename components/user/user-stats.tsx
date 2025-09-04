@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Shield, User } from "lucide-react"
-import type { UserStats } from "@/types/user"
+import type { UserStats } from "@/types/User/model"
 
 interface UserStatsCardsProps {
   stats: UserStats

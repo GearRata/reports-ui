@@ -1,20 +1,5 @@
-/**
- * Branch Chart Data Processing Utilities
- * 
- * This module contains utility functions for processing task data
- * for branch-based charts (both area and line charts).
- * 
- * Functions include:
- * - Task filtering by month
- * - Date extraction from created_at field
- * - Daily task counting by branch
- * - Data validation for task structure
- * 
- * @author Kiro AI Assistant
- * @created 2025-01-24
- */
 
-import { DashboardData } from "@/types/entities";
+import { DashboardData } from "@/types/Dashboard/model"
 
 // Define chart data point structure for branch-specific data
 export interface BranchChartDataPoint {

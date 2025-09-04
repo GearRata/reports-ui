@@ -13,11 +13,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Check, SquareCheckBig, ShieldX } from "lucide-react";
+import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
-import type { TaskWithPhone } from "@/types/entities";
+import type { TaskData } from "@/types/Task/model"
 import { LuClock } from "react-icons/lu";
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
@@ -28,14 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAssign } from "@/lib/api/assign";
+import { useAssign } from "@/app/api/assign";
 // import { useState } from "react";
 
 interface TasksNewTableProps {
-  tasks: TaskWithPhone[];
-  onEditTask: (task: TaskWithPhone) => void;
+  tasks: TaskData[];
+  onEditTask: (task: TaskData) => void;
   onDeleteTask: (taskId: number) => void;
-  onShowTask: (task: TaskWithPhone) => void;
+  onShowTask: (task: TaskData) => void;
   // onSolution:
   onAssignChange?: (
     taskId: number,
@@ -329,16 +329,6 @@ export function TasksNewTable({
                 </TableCell>
 
                 <TableCell>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onShowTask(task);
-                    }}
-                    disabled={loading}
-                    className=" bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 cursor-pointer mr-2 text-white hover:scale-105 "
-                  >
-                    <ShieldX className=" h-4 w-4"/>
-                  </Button>
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();

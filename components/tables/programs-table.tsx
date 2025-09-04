@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
-import type { Program } from "@/types/entities";
+import type { ProgramData } from "@/types/Program/model";
 
 interface ProgramsTableProps {
-  programs: Program[];
-  onEditProgram: (program: Program) => void;
+  programs: ProgramData[];
+  onEditProgram: (program: ProgramData) => void;
   onDeleteProgram: (programId: number) => void;
   loading?: boolean;
   error?: string | null;

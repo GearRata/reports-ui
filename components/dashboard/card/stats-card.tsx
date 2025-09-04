@@ -1,7 +1,7 @@
 // components/task-stats.tsx
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Clock, ListTodo } from "lucide-react";
-import type { TaskStats } from "@/types/entities";
+import type { TaskStats } from "@/types/TaskState/model";
 import Link from "next/link";
 import type { ComponentType } from "react";
 
