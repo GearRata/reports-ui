@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
-import type { AssignData } from "@/types/assignto/model";
+import type { AssignData } from "@/types/Assignto/model";
 
 interface AssingToTableProps {
   assignto: AssignData[];
