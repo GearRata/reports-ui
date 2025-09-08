@@ -28,7 +28,7 @@ function CreateBranchPage() {
     setIsSubmitting(true);
 
     try {
-      await addBranch( name );
+      await addBranch({ name });
       // Navigate back to branches page
       router.push("/branches");
     } catch (error) {

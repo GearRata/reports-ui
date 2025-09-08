@@ -1,4 +1,4 @@
-import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/Solution/model"
+import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/solution/model"
 
 export async function getSolutionById(id: SolutionDataId) {
   const response = await fetch(

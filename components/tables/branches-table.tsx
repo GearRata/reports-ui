@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
-import type { BranchData } from "@/types/Branch/model"
+import type { Branch } from "@/types/entities";
 
 interface BranchesTableProps {
-  branches: BranchData[];
+  branches: Branch[];
   loading?: boolean;
-  onEditBranch: (branch: BranchData) => void;
+  onEditBranch: (branch: Branch) => void;
   onDeleteBranch: (branchId: number) => void;
 }
 

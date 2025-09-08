@@ -1,5 +1,6 @@
 
-import { DashboardData } from "@/types/Dashboard/model"
+
+import { DashboardData } from "@/types/entities";
 
 // Define chart data point structure for branch-specific data
 export interface BranchChartDataPoint {

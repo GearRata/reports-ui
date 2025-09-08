@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ProgramDataId, CreateProgram, UpdateProgram, DeleteProgram } from "@/types/Program/model"
+import type { ProgramDataId, CreateProgram, UpdateProgram, DeleteProgram } from "@/types/program/model"
 // Program type is used in pagination state
 import type {
   ProgramsPaginationParams,
   ProgramsPaginationResponse,
   ProgramsPaginationState,
-} from "@/types/Pagination/model";
+} from "@/types/pagination/model";
 
 // Programs Hook with Pagination Support
 export function useProgramsPaginated(params?: ProgramsPaginationParams) {
@@ -119,4 +119,3 @@ export async function deleteProgram(id: ProgramDataId) {
   });
   return response.ok;
 }
-

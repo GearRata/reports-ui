@@ -25,6 +25,7 @@ function CreatePhonePage() {
   const router = useRouter();
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
   const { departments, loading: departmentsLoading } = useDepartmentsForDropdown();
+  
   const [number, setNumber] = useState("");
   const [name, setName] = useState("");
   const [branchId, setBranchId] = useState<string>("");

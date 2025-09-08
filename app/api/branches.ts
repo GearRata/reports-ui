@@ -7,7 +7,7 @@ import type {
   CreateBranch,
   UpdateBranch,
   DeleteBranch,
-} from "@/types/Branch/model";
+} from "@/types/branch/model";
 
 // Branches Hook
 export function useBranches() {

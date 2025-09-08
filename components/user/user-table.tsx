@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { MoreHorizontal, Edit, Trash2, Eye, EyeOff } from "lucide-react"
-import type { User } from "@/types/User/model"
+import type { User } from "@/types/user"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface UserTableProps {

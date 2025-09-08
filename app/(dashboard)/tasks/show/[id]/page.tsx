@@ -24,8 +24,8 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
-import type { TaskData } from "@/types/Task/model";
-import type { SolutionData } from "@/types/Solution/model";
+import type { TaskData } from "@/types/task/model";
+import type { SolutionData } from "@/types/solution/model";
 import { useAssign } from "@/app/api/assign";
 import CameraPicker from "@/components/camera";
 import { useRouter, useParams } from "next/navigation";
@@ -128,8 +128,6 @@ function ShowTaskPage() {
       await addSolution(task!.id, {
         images: capturedFiles, // ส่งไฟล์รูปภาพ
         solution: text,
-        assignedto_id: number;
-        assignto: string | null;
       });
 
       // Update task assignment if selected
@@ -232,8 +230,6 @@ function ShowTaskPage() {
         solution: editSolutionText,
         images: editSolutionFiles, // รูปภาพใหม่
         existing_images: existingSolutionImages, // ลิงค์รูปภาพเดิม ให้ backend จัดการ
-        assignedto_id: number;
-        assignto: string | null;
       });
 
       // Update task assignment if changed
@@ -247,8 +243,6 @@ function ShowTaskPage() {
             assignedto_id: selectedAssignData.id,
             assign_to: selectedAssignData.name,
             update_telegram: false,
-            assignedto_id: number;
-            assignto: string | null;
           });
           console.log("Assignment update result:", updateResult);
         }

@@ -17,7 +17,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getAssignToId, updateAssignTo } from "@/app/api/assign";
-import type { AssignData } from "@/types/Assignto/model";
+import type { AssignData } from "@/types/assignto/model";
 
 function EditSupervisorPage() {
   const router = useRouter();

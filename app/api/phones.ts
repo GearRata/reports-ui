@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react";
 // import type { RequestIpPhone } from "@/types/entities";
-import type { AddIpPhone, IpPhoneDataId, UpdateIpPhone, DeleteIpPhone } from "@/types/Phone/model"
+import type { AddIpPhone, IpPhoneDataId, UpdateIpPhone, DeleteIpPhone } from "@/types/phone/model"
 import {
   IPPhonesPaginationParams,
   IPPhonesPaginationResponse,
   IPPhonesPaginationState,
-} from "@/types/Pagination/model";
+} from "@/types/pagination/model";
+
 // IP Phones Hook with Pagination Support
 export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {
   const [state, setState] = useState<IPPhonesPaginationState>({
@@ -100,42 +101,25 @@ export async function addIPPhone(phone: AddIpPhone) {
 }
 
 export async function updateIPPhone(id: number, ipPhone: UpdateIpPhone) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ipPhone),
   });
-  const data = await response.json();
-  return data.data;
-  } catch (error) {
-    console.log("Error fetching phone", error);
-    throw error;
-  }
+  return await response.json();
 }
 
 export async function deleteIPPhone(id: DeleteIpPhone) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/delete/${id}`, {
-      method: "DELETE",
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/delete/${id}`, {
+    method: "DELETE",
   });
-    return response.ok;
-  } catch (error) {
-    console.log("Error fetching phone", error);
-    throw error;
-  }
+  return response.ok;
 }
 
 // Get single IP phone by ID
 export async function getIPPhoneById(id: IpPhoneDataId) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/${id}`);
-    if (!response.ok) throw new Error("Failed to fetch IP phone");
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error("Error fetching IP phone:", error);
-    throw error;
-  }
-
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch IP phone");
+  const data = await response.json();
+  return data.data;
 }

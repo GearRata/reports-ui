@@ -12,7 +12,7 @@ import { useProgramsPaginated, deleteProgram } from "@/app/api/programs"
 // import { useType } from "@/lib/api/type";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper"
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary"
-import type { ProgramData } from "@/types/Program/model"
+import type { Program } from "@/types/entities"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { SiteHeader } from "@/components/layout/site-header"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
@@ -41,7 +41,7 @@ function Page() {
     router.push('/program/create')
   }
 
-  const handleEditProgram = (program: ProgramData) => {
+  const handleEditProgram = (program: Program) => {
     router.push(`/program/edit/${program.id}`)
   }
 

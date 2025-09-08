@@ -11,7 +11,7 @@ import { useTasksNewPaginated, deleteTaskNew } from "@/app/api/tasks";
 import { updateTaskAssignTo } from "@/app/api/tasks";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
-import type { TaskData } from "@/types/Task/model"
+import type { TaskWithPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -138,9 +138,9 @@ function TasksPageContent() {
   };
 
   const handleAddTask = () => router.push("/tasks/create");
-  const handleEditTask = (task: TaskData) =>
+  const handleEditTask = (task: TaskWithPhone) =>
     router.push(`/tasks/edit/${task.id}`);
-  const handleShow = (task: TaskData) =>
+  const handleShow = (task: TaskWithPhone) =>
     router.push(`/tasks/show/${task.id}`);
   // const handleSolution = () => router.push("solution/create");
 

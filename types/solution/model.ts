@@ -10,8 +10,6 @@ export interface AddSolution {
     file_paths?: string[];
     images?: File[];
     solution: string;
-    assignedto_id: number;
-    assignto: string | null;
 }
 
 export interface UpdateSolution {
@@ -19,8 +17,6 @@ export interface UpdateSolution {
     images?: File[];
     file_paths?: string[];
     existing_images?: string[];
-    assignedto_id: number;
-    assignto: string | null;
 }
 
 export type DeleteSolution = number;

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DepartmentDataId, AddDepartment, UpdateDepartment, DeleteDepartment } from "@/types/Department/model";
+import { DepartmentDataId, AddDepartment, UpdateDepartment, DeleteDepartment } from "@/types/department/model";
 import type {
   DepartmentsPaginationParams,
   DepartmentsPaginationResponse,
   DepartmentsPaginationState,
-} from "@/types/Pagination/model";
+} from "@/types/pagination/model";
 
 // Departments Hook with Pagination Support
 export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
@@ -87,58 +87,36 @@ export function useDepartmentsForDropdown() {
   return { departments, loading, error };
 }
 
-export async function getDepartmentById(id: DepartmentDataId) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/${id}`);
-    if (!response.ok) throw new Error("Failed to fetch department");
-    const data = await response.json();
-    return data.data;
-  } catch (error) {
-    console.error("Error fetching department:", error);
-    throw error;
-  }
-}
-
 // API Functions
 export async function addDepartment(department: AddDepartment) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/create`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/create`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(department),
   });
-  const data = await response.json();
-  return data.data;
-  } catch (error) {
-    console.error("Error adding department:", error);
-    throw error;
-  }
+  return await response.json();
 }
 
 export async function updateDepartment(id: number, department: UpdateDepartment) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/update/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(department),
   });
-  const data = await response.json();
-  return data.data;
-  } catch (error) {
-    console.error("Error updating department:", error);
-    throw error;
-  }
+  return await response.json();
 }
 
 export async function deleteDepartment(id: DeleteDepartment) {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/delete/${id}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/delete/${id}`, {
     method: "DELETE",
   });
   return response.ok;
-  } catch (error) {
-    console.error("Error deleting department:", error);
-    throw error;
-  }
 }
 
+// Get single department by ID
+export async function getDepartmentById(id: DepartmentDataId) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/${id}`);
+  if (!response.ok) throw new Error("Failed to fetch department");
+  const data = await response.json();
+  return data.data;
+}
