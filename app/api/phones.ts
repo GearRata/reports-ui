@@ -8,7 +8,6 @@ import {
   IPPhonesPaginationResponse,
   IPPhonesPaginationState,
 } from "@/types/Pagination/model";
-
 // IP Phones Hook with Pagination Support
 export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {
   const [state, setState] = useState<IPPhonesPaginationState>({
@@ -101,25 +100,42 @@ export async function addIPPhone(phone: AddIpPhone) {
 }
 
 export async function updateIPPhone(id: number, ipPhone: UpdateIpPhone) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/update/${id}`, {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/update/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(ipPhone),
   });
-  return await response.json();
+  const data = await response.json();
+  return data.data;
+  } catch (error) {
+    console.log("Error fetching phone", error);
+    throw error;
+  }
 }
 
 export async function deleteIPPhone(id: DeleteIpPhone) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/delete/${id}`, {
-    method: "DELETE",
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/delete/${id}`, {
+      method: "DELETE",
   });
-  return response.ok;
+    return response.ok;
+  } catch (error) {
+    console.log("Error fetching phone", error);
+    throw error;
+  }
 }
 
 // Get single IP phone by ID
 export async function getIPPhoneById(id: IpPhoneDataId) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/${id}`);
-  if (!response.ok) throw new Error("Failed to fetch IP phone");
-  const data = await response.json();
-  return data.data;
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/${id}`);
+    if (!response.ok) throw new Error("Failed to fetch IP phone");
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching IP phone:", error);
+    throw error;
+  }
+
 }

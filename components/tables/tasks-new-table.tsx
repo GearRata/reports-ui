@@ -17,7 +17,7 @@ import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
-import type { TaskData } from "@/types/Task/model"
+import type { TaskData } from "@/types/Task/model";
 import { LuClock } from "react-icons/lu";
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
@@ -320,7 +320,7 @@ export function TasksNewTable({
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem value="no-data" disabled>
+                        <SelectItem value="0" disabled>
                           ไม่มีข้อมูลผู้รับผิดชอบ
                         </SelectItem>
                       )}

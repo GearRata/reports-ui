@@ -128,6 +128,8 @@ function ShowTaskPage() {
       await addSolution(task!.id, {
         images: capturedFiles, // ส่งไฟล์รูปภาพ
         solution: text,
+        assignedto_id: number;
+        assignto: string | null;
       });
 
       // Update task assignment if selected
@@ -230,6 +232,8 @@ function ShowTaskPage() {
         solution: editSolutionText,
         images: editSolutionFiles, // รูปภาพใหม่
         existing_images: existingSolutionImages, // ลิงค์รูปภาพเดิม ให้ backend จัดการ
+        assignedto_id: number;
+        assignto: string | null;
       });
 
       // Update task assignment if changed
@@ -243,6 +247,8 @@ function ShowTaskPage() {
             assignedto_id: selectedAssignData.id,
             assign_to: selectedAssignData.name,
             update_telegram: false,
+            assignedto_id: number;
+            assignto: string | null;
           });
           console.log("Assignment update result:", updateResult);
         }

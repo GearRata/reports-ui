@@ -39,12 +39,17 @@ export function useAssign() {
 }
 
 export async function getAssignToId(id: AssignDataId) {
-  const response = await fetch(
+  try {
+    const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/respons/${id}`
   );
   if (!response.ok) throw new Error("Faild to fetct AssignTo ID");
   const data = await response.json();
   return data.data;
+  } catch(err) {
+    console.log("Error fetching AssignTo ID:", err);
+    throw err;
+  }
 }
 
 export async function addAssignTo(assign: CreateAssignData) {

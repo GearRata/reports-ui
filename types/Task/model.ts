@@ -1,5 +1,7 @@
 export interface TaskData {
     file_paths(file_paths: []): unknown
+    assignto: string
+    assignedto_id: number
     issue_type: number
     issue_else: string
     id: number
