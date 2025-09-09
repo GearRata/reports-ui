@@ -1,4 +1,4 @@
-import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/solution/model"
+import type { SolutionDataId, UpdateSolution, DeleteSolution } from "@/types/solution/model"
 
 export async function getSolutionById(id: SolutionDataId) {
   const response = await fetch(
@@ -11,8 +11,13 @@ export async function getSolutionById(id: SolutionDataId) {
 
 export async function addSolution(
   id: number,
-  task: AddSolution
-) {
+  task: {
+  file_paths?: string[];
+    images?: File[];
+    solution: string;
+    assignedto_id: number;
+    assignto: string | null;
+}) {
   try {
     // สร้าง payload แบบ JSON (ขนาดเล็กกว่า FormData)
     const formData = new FormData();
@@ -102,6 +107,8 @@ export async function updateSolution(
       formData.append("image_urls", JSON.stringify(solutionData.existing_images));
       console.log("Sending existing image URLs to API:", solutionData.existing_images);
     }
+
+
 
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/resolution/update/${id}`,

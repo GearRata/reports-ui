@@ -30,7 +30,7 @@ import {
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
+import { getTaskNewById, updateTaskAssignTo} from "@/app/api/tasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
 import CameraPicker from "@/components/camera";
@@ -76,7 +76,7 @@ function ShowTaskPage() {
         try {
           const taskData = await getTaskNewById(Number(taskId));
           setTask(taskData);
-          setAssignId(taskData.assignedto_id.toString())
+          setAssignId(taskData.assignedto_id.toString());
           setLoadTask(false);
         } catch (error) {
           console.error("Error loading task:", error);
@@ -114,7 +114,6 @@ function ShowTaskPage() {
     }
   }, [task, taskId]);
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -146,7 +145,7 @@ function ShowTaskPage() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000)
+      }, 1000);
       // Show success message or navigate back
     } catch (error) {
       console.error("Error creating solution:", error);
@@ -177,7 +176,7 @@ function ShowTaskPage() {
     }
   };
 
-  console.log("Edit Assign:", editAssign)
+  console.log("Edit Assign:", editAssign);
 
   const handleCancelEdit = () => {
     setIsEditingSolution(false);
@@ -222,20 +221,24 @@ function ShowTaskPage() {
         assignto: assignName,
       });
 
-      await updateTaskAssignTo(Number(taskId), {
+       await updateTaskAssignTo(Number(taskId), {
         assignedto_id: assignToId,
         assign_to: assignName,
-        update_telegram: false,
+        update_telegram: true
       });
 
-      
+      // await new Promise(resolve => setTimeout(resolve, 500));
+
       // Reload solution data
       const solutionData = await getSolutionById(Number(taskId));
+      const taskData = await getTaskNewById(Number(taskId));
       setSoltuion(solutionData);
+      setTask(taskData);
       setIsEditingSolution(false);
       setEditSolutionText("");
       setEditSolutionFiles([]);
       setExistingSolutionImages([]);
+
 
       console.log("Solution updated successfully");
     } catch (error) {
@@ -474,7 +477,7 @@ function ShowTaskPage() {
                     </Card>
                   </TabsContent>
                   {/*======================================================*/}
-                
+
                   {/*================ วิธีแก้ไขปัญหา ================*/}
                   <TabsContent value="solution">
                     {task.status === 1 && solution ? (
@@ -613,7 +616,7 @@ function ShowTaskPage() {
                                       }
                                     />
                                   </div>
-    
+
                                   <div className="flex justify-end gap-2">
                                     <Button
                                       type="button"
