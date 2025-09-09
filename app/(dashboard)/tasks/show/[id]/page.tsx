@@ -30,7 +30,7 @@ import {
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getTaskNewById } from "@/app/api/tasks";
+import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
 import CameraPicker from "@/components/camera";
@@ -85,7 +85,7 @@ function ShowTaskPage() {
       }
     };
     loadTask();
-  }, [taskId]);
+  }, [taskId, task]);
 
   // Load solution only if task is completed (status === 1)
   useEffect(() => {
@@ -222,10 +222,16 @@ function ShowTaskPage() {
         assignto: assignName,
       });
 
+      await updateTaskAssignTo(Number(taskId), {
+        assignedto_id: assignToId,
+        assign_to: assignName,
+        update_telegram: false,
+      });
+
+      
       // Reload solution data
       const solutionData = await getSolutionById(Number(taskId));
       setSoltuion(solutionData);
-
       setIsEditingSolution(false);
       setEditSolutionText("");
       setEditSolutionFiles([]);
