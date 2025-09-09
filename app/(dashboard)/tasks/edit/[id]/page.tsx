@@ -68,10 +68,10 @@ function EditTaskPage() {
               : "null"
           );
           setType(
-            taskData.issue_type ? taskData.issue_type.toString() : "null"
+            taskData.issue_type ? taskData.issue_type.toString() : ""
           );
           setIssue(
-            taskData.issue_else ? taskData.issue_else.toString() : "null"
+            taskData.issue_else ? taskData.issue_else.toString() : ""
           );
           setText(taskData.text);
           setStatus(taskData.status.toString());

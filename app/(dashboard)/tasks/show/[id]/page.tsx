@@ -76,10 +76,6 @@ function ShowTaskPage() {
         try {
           const taskData = await getTaskNewById(Number(taskId));
           setTask(taskData);
-          // const assignPerson = assignTo.find(
-          //   (assign) => assign.name === taskData.assign_to
-          // );
-          // setAssignId(assignPerson ? assignPerson.id.toString() : "")
           setAssignId(taskData.assignedto_id.toString())
           setLoadTask(false);
         } catch (error) {
@@ -129,8 +125,6 @@ function ShowTaskPage() {
         : null;
       const assignName = assignPerson ? assignPerson.name : null;
       const assignToId = assignPerson ? assignPerson.id : 0;
-      console.log("Assign to ID:", assignToId);
-      console.log("Assign to Name", assignName);
       await addSolution(Number(taskId), {
         images: capturedFiles, // ส่งไฟล์รูปภาพ
         solution: text,
@@ -152,7 +146,7 @@ function ShowTaskPage() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 3000)
+      }, 2000)
       // Show success message or navigate back
     } catch (error) {
       console.error("Error creating solution:", error);
@@ -183,6 +177,8 @@ function ShowTaskPage() {
     }
   };
 
+  console.log("Edit Assign:", editAssign)
+
   const handleCancelEdit = () => {
     setIsEditingSolution(false);
     setEditSolutionText("");
@@ -198,10 +194,12 @@ function ShowTaskPage() {
     setIsSubmitting(true);
     try {
       const assignPerson = editAssign
-        ? assignTo.find((person) => person.id === Number(assignId))
+        ? assignTo.find((person) => person.id === Number(editAssign))
         : null;
       const assignName = assignPerson ? assignPerson.name : null;
       const assignToId = assignPerson ? assignPerson.id : 0;
+      console.log("Assign Data", assignTo);
+      console.log("Assign Person:", editAssign);
       console.log("Assign to ID:", assignToId);
       console.log("Assign to Name", assignName);
 
@@ -473,7 +471,7 @@ function ShowTaskPage() {
                                 Task #{task.ticket_no || task.id}
                               </CardTitle>
                               <CardDescription>
-                                วิธีแก้ไขปัญหา (เสร็จแล้ว)
+                                วิธีแก้ไขปัญหา (แก้ไข)
                               </CardDescription>
                             </div>
                             <DropdownMenu>
@@ -593,10 +591,6 @@ function ShowTaskPage() {
 
                                   <div className="space-y-2">
                                     <Label>เพิ่มรูปภาพใหม่</Label>
-                                    <p className="text-sm text-muted-foreground">
-                                      รูปภาพใหม่จะถูกเพิ่มเข้าไปกับรูปภาพเดิม (
-                                      {existingSolutionImages.length} รูปเดิม)
-                                    </p>
                                     <CameraPicker
                                       onFilesCapture={
                                         handleEditSolutionFilesCapture
@@ -604,7 +598,6 @@ function ShowTaskPage() {
                                     />
                                   </div>
     
-
                                   <div className="flex justify-end gap-2">
                                     <Button
                                       type="button"

@@ -1,6 +1,6 @@
-// import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/solution/model"
+import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/solution/model"
 
-export async function getSolutionById(id: number) {
+export async function getSolutionById(id: SolutionDataId) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/resolution/${id}`
   );
@@ -11,13 +11,7 @@ export async function getSolutionById(id: number) {
 
 export async function addSolution(
   id: number,
-  task: {
-    file_paths?: string[];
-    images?: File[];
-    solution: string;
-    assignedto_id: number;
-    assignto: string | null;
-  }
+  task: AddSolution
 ) {
   try {
     // สร้าง payload แบบ JSON (ขนาดเล็กกว่า FormData)
@@ -73,14 +67,7 @@ export async function addSolution(
 
 export async function updateSolution(
   id: number,
-  solutionData: {
-    solution: string;
-    images?: File[];
-    file_paths?: string[];
-    existing_images?: string[];
-    assignedto_id: number;
-    assignto: string | null;
-  }
+  solutionData: UpdateSolution
 ) {
   try {
     const formData = new FormData();
@@ -139,12 +126,18 @@ export async function updateSolution(
   }
 }
 
-export async function deleteSolution(id: number) {
-  const response = await fetch(
+export async function deleteSolution(id: DeleteSolution) {
+  try {
+      const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/resolution/delete/${id}`,
     {
       method: "DELETE",
     }
   );
   return response.ok;
+  } catch (error) {
+    console.log("Error delete solution", error);
+    throw error;
+  }
+
 }

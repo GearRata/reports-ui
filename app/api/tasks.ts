@@ -1,6 +1,13 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import type {
+  AddTask,
+  TaskDataId,
+  UpdateTask,
+  DeleteTask,
+  updateTaskAssignTo,
+} from "@/types/task/model";
 // TaskWithPhone type is used in pagination state
 import type {
   TasksPaginationParams,
@@ -9,7 +16,9 @@ import type {
 } from "@/types/pagination/model";
 
 // Tasks Hook with Pagination Support
-export function useTasksNewPaginated(params?: TasksPaginationParams & { search?: string; status?: string }) {
+export function useTasksNewPaginated(
+  params?: TasksPaginationParams & { search?: string; status?: string }
+) {
   const [state, setState] = useState<TasksPaginationState>({
     tasks: [],
     currentPage: params?.page || 1,
@@ -24,89 +33,119 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
   const [statusTerm, setStatusTerm] = useState(params?.status || "all");
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchTasks = useCallback(async (page: number, limit: number, search: string, status: string = "all") => {
-    // ยกเลิก request เก่า
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    
-    // สร้าง AbortController ใหม่
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-    
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+  const fetchTasks = useCallback(
+    async (
+      page: number,
+      limit: number,
+      search: string,
+      status: string = "all"
+    ) => {
+      // ยกเลิก request เก่า
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
 
-    try {
-      const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`;
-      let url;
-      
-      // Add status filter if not "all"
-      if (status && status !== "all") {
-        const statusValue = status === "pending" ? "0" : status === "done" ? "1" : "";
-        if (statusValue) {
-          url = `${baseUrl}/status/${statusValue}?page=${page}&limit=${limit}`;
+      // สร้าง AbortController ใหม่
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+
+      try {
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`;
+        let url;
+
+        // Add status filter if not "all"
+        if (status && status !== "all") {
+          const statusValue =
+            status === "pending" ? "0" : status === "done" ? "1" : "";
+          if (statusValue) {
+            url = `${baseUrl}/status/${statusValue}?page=${page}&limit=${limit}`;
+          } else {
+            url = search?.trim()
+              ? `${baseUrl}/${encodeURIComponent(
+                  search.trim()
+                )}?page=${page}&limit=${limit}`
+              : `${baseUrl}?page=${page}&limit=${limit}`;
+          }
         } else {
-          url = search?.trim() 
-            ? `${baseUrl}/${encodeURIComponent(search.trim())}?page=${page}&limit=${limit}`
+          url = search?.trim()
+            ? `${baseUrl}/${encodeURIComponent(
+                search.trim()
+              )}?page=${page}&limit=${limit}`
             : `${baseUrl}?page=${page}&limit=${limit}`;
         }
-      } else {
-        url = search?.trim() 
-          ? `${baseUrl}/${encodeURIComponent(search.trim())}?page=${page}&limit=${limit}`
-          : `${baseUrl}?page=${page}&limit=${limit}`;
+
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("Failed to fetch tasks");
+
+        const data: TasksPaginationResponse = await response.json();
+
+        setState({
+          tasks: data.data || [],
+          currentPage: data.pagination?.page || page,
+          pageSize: data.pagination?.limit || limit,
+          totalItems: data.pagination?.total || 0,
+          totalPages: data.pagination?.total_pages || 0,
+          loading: false,
+          error: null,
+        });
+      } catch (err) {
+        // ไม่ update state ถ้า request ถูกยกเลิก
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: err instanceof Error ? err.message : "Unknown error",
+        }));
       }
+    },
+    []
+  );
 
-      const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) throw new Error("Failed to fetch tasks");
+  const goToPage = useCallback(
+    (page: number) => {
+      fetchTasks(page, state.pageSize, searchTerm, statusTerm);
+    },
+    [fetchTasks, state.pageSize, searchTerm, statusTerm]
+  );
 
-      const data: TasksPaginationResponse = await response.json();
+  const changePageSize = useCallback(
+    (limit: number) => {
+      fetchTasks(1, limit, searchTerm, statusTerm);
+    },
+    [fetchTasks, searchTerm, statusTerm]
+  );
 
-      setState({
-        tasks: data.data || [],
-        currentPage: data.pagination?.page || page,
-        pageSize: data.pagination?.limit || limit,
-        totalItems: data.pagination?.total || 0,
-        totalPages: data.pagination?.total_pages || 0,
-        loading: false,
-        error: null,
-      });
-    } catch (err) {
-      // ไม่ update state ถ้า request ถูกยกเลิก
-      if (err instanceof Error && err.name === 'AbortError') {
-        return;
-      }
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Unknown error",
-      }));
-    }
-  }, []);
+  const changeSearch = useCallback(
+    (search: string) => {
+      setSearchTerm(search);
+      fetchTasks(1, state.pageSize, search, statusTerm);
+    },
+    [fetchTasks, state.pageSize, statusTerm]
+  );
 
-  const goToPage = useCallback((page: number) => {
-    fetchTasks(page, state.pageSize, searchTerm, statusTerm);
-  }, [fetchTasks, state.pageSize, searchTerm, statusTerm]);
-
-  const changePageSize = useCallback((limit: number) => {
-    fetchTasks(1, limit, searchTerm, statusTerm);
-  }, [fetchTasks, searchTerm, statusTerm]);
-
-  const changeSearch = useCallback((search: string) => {
-    setSearchTerm(search);
-    fetchTasks(1, state.pageSize, search, statusTerm);
-  }, [fetchTasks, state.pageSize, statusTerm]);
-
-  const changeStatus = useCallback((status: string) => {
-    setStatusTerm(status);
-    fetchTasks(1, state.pageSize, searchTerm, status);
-  }, [fetchTasks, state.pageSize, searchTerm]);
+  const changeStatus = useCallback(
+    (status: string) => {
+      setStatusTerm(status);
+      fetchTasks(1, state.pageSize, searchTerm, status);
+    },
+    [fetchTasks, state.pageSize, searchTerm]
+  );
 
   const refreshTasks = useCallback(() => {
     fetchTasks(state.currentPage, state.pageSize, searchTerm, statusTerm);
   }, [fetchTasks, state.currentPage, state.pageSize, searchTerm, statusTerm]);
 
   useEffect(() => {
-    fetchTasks(params?.page || 1, params?.limit || 10, params?.search || "", params?.status || "all");
+    fetchTasks(
+      params?.page || 1,
+      params?.limit || 10,
+      params?.search || "",
+      params?.status || "all"
+    );
   }, []);
 
   return {
@@ -121,20 +160,22 @@ export function useTasksNewPaginated(params?: TasksPaginationParams & { search?:
   };
 }
 
+export async function getTaskNewById(id: TaskDataId) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/${id}`
+    );
+    if (!response.ok) throw new Error("Failed to fetch task");
+    const data = await response.json();
+    return data.data;
+  } catch (error) {
+    console.error("Error fetch task ID:", error);
+    throw error;
+  }
+}
+
 // API Functions
-export async function addTaskNew(task: {
-  reported_by: string;
-  phone_id: number | null;
-  issue_type: number;
-  system_id: number;
-  issue_else: string;
-  text: string;
-  status: number;
-  assign_to?: string | null;
-  telegram?: boolean;
-  file_paths?: string[];
-  images?: File[];
-}) {
+export async function addTaskNew(task: AddTask) {
   try {
     // สร้าง payload แบบ JSON (ขนาดเล็กกว่า FormData)
     const formData = new FormData();
@@ -195,22 +236,7 @@ export async function addTaskNew(task: {
   }
 }
 
-export async function updateTaskNew(
-  id: number,
-  task: {
-    reported_by: string;
-    phone_id: number | null;
-    system_id: number;
-    text: string;
-    issue_type: number;
-    issue_else?: string;
-    status: number;
-    assign_to?: string | null;
-    assignedto_id?: number;
-    telegram?: boolean;
-    file_paths?: string[];
-  }
-) {
+export async function updateTaskNew(id: number, task: UpdateTask) {
   try {
     // สร้าง payload โดยเปลี่ยนเฉพาะ phone_id เป็น null ถ้าไม่ถูกต้อง
     const payload = {
@@ -251,30 +277,24 @@ export async function updateTaskNew(
     console.error("Error updating task:", error);
     throw error;
   }
-  
 }
 
-export async function deleteTaskNew(id: number) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/delete/${id}`,
-    {
-      method: "DELETE",
-    }
-  );
-  return response.ok;
+export async function deleteTaskNew(id: DeleteTask) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/delete/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+    return response.ok;
+  } catch (error) {
+    console.log("Error delete task", error);
+    throw error;
+  }
 }
 
-export async function getTaskNewById(id: number) {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/${id}`
-  );
-  if (!response.ok) throw new Error("Failed to fetch task");
-  const data = await response.json();
-  return data.data;
-}
-
-
-export async function updateTaskAssignTo(id: number, task:{assignedto_id: number, assign_to: string | null, update_telegram: boolean}) {
+export async function updateTaskAssignTo(id: number, task: updateTaskAssignTo) {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/update/assignto/${id}`,
@@ -284,16 +304,17 @@ export async function updateTaskAssignTo(id: number, task:{assignedto_id: number
         body: JSON.stringify(task),
       }
     );
-    
+
     if (!response.ok) {
       const errorText = await response.text();
-      throw new Error(`Failed to update assigned person: ${response.status} ${errorText}`);
+      throw new Error(
+        `Failed to update assigned person: ${response.status} ${errorText}`
+      );
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error("Error updating task assign_to:", error);
     throw error;
   }
 }
-
