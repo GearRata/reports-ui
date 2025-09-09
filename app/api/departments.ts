@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DepartmentDataId, AddDepartment, UpdateDepartment, DeleteDepartment } from "@/types/Department/model";
+import { DepartmentDataId, AddDepartment, UpdateDepartment, DeleteDepartment } from "@/types/department/model";
 import type {
   DepartmentsPaginationParams,
   DepartmentsPaginationResponse,
   DepartmentsPaginationState,
-} from "@/types/Pagination/model";
+} from "@/types/pagination/model";
 
 // Departments Hook with Pagination Support
 export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {

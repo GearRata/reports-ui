@@ -29,7 +29,7 @@ import { useAssign } from "@/app/api/assign";
 import { useType } from "@/app/api/type";
 import { useProgramsForDropdown } from "@/app/api/programs";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
-import type { TaskData } from "@/types/Task/model"
+import type { TaskWithPhone } from "@/types/entities";
 
 function EditTaskPage() {
   const router = useRouter();
@@ -41,7 +41,7 @@ function EditTaskPage() {
   const { types } = useType();
   const { assignTo: assignTo } = useAssign();
 
-  const [task, setTask] = useState<TaskData | null>(null);
+  const [task, setTask] = useState<TaskWithPhone | null>(null);
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
   const [reportBy, setReportBy] = useState<string>("");
@@ -92,6 +92,9 @@ function EditTaskPage() {
 
     loadTask();
   }, [taskId, assignTo]);
+
+console.log("AssignID", assignId)
+  console.log("taskData", task)
 
   const filteredPrograms = useMemo(() => {
     if (!type) return [];
@@ -145,7 +148,7 @@ function EditTaskPage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }

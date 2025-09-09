@@ -17,7 +17,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getAssignToId, updateAssignTo } from "@/app/api/assign";
-import type { AssignData } from "@/types/Assignto/model";
+import type { AssignData } from "@/types/assignto/model";
 
 function EditSupervisorPage() {
   const router = useRouter();
@@ -80,7 +80,7 @@ function EditSupervisorPage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }

@@ -8,7 +8,7 @@ import { ChartPieType } from "@/components/dashboard/charts/pie-chart-type";
 import { ChartPieReport } from "@/components/dashboard/charts/pie-chart-report";
 import { SiteHeader } from "@/components/layout/site-header";
 import { StatsCards } from "@/components/dashboard/card/stats-card";
-import { TaskStats } from "@/types/TaskState/model";
+import { TaskStats } from "@/types/entities";
 import { useDashboard } from "@/app/api/dashboard";
 import { useMemo, useState, useCallback } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -132,7 +132,7 @@ const tasksForReport = useMemo(
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }

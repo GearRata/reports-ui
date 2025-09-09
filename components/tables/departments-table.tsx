@@ -3,11 +3,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import {  Pencil, Trash } from "lucide-react"
-import type { DepartmentData } from "@/types/Department/model"
+import type { Department } from "@/types/entities"
 
 interface DepartmentsTableProps {
-  departments: DepartmentData[]
-  onEditDepartment: (department: DepartmentData) => void
+  departments: Department[]
+  onEditDepartment: (department: Department) => void
   onDeleteDepartment: (departmentId: number) => void
   loading?: boolean
   error?: string | null

@@ -17,7 +17,8 @@ import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
-import type { TaskData } from "@/types/Task/model"
+// import type { TaskData } from "@/types/Task/model";
+import type { TaskWithPhone } from "@/types/entities";
 import { LuClock } from "react-icons/lu";
 import moment from "moment";
 import "moment/locale/th"; // Import Thai locale
@@ -32,10 +33,10 @@ import { useAssign } from "@/app/api/assign";
 // import { useState } from "react";
 
 interface TasksNewTableProps {
-  tasks: TaskData[];
-  onEditTask: (task: TaskData) => void;
+  tasks: TaskWithPhone[];
+  onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
-  onShowTask: (task: TaskData) => void;
+  onShowTask: (task: TaskWithPhone) => void;
   // onSolution:
   onAssignChange?: (
     taskId: number,
@@ -83,6 +84,7 @@ export function TasksNewTable({
   // Function to format time in Thai
   const formatTimeAgo = (dateString: string) => {
     const now = moment();
+    console.log(typeof(now));
     const taskTime = moment(dateString);
     const diffInMinutes = now.diff(taskTime, "minutes");
     const diffInHours = now.diff(taskTime, "hours");
@@ -320,7 +322,7 @@ export function TasksNewTable({
                           </SelectItem>
                         ))
                       ) : (
-                        <SelectItem value="no-data" disabled>
+                        <SelectItem value="0" disabled>
                           ไม่มีข้อมูลผู้รับผิดชอบ
                         </SelectItem>
                       )}

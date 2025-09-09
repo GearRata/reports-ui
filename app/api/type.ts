@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { TypeData, AddType, UpdateType, DeleteType } from "@/types/Type/model";
+import type { TypeData, AddType, UpdateType, DeleteType } from "@/types/type/model";
 
 export function useType() {
   const [types, setTypes] = useState<TypeData[]>([]);

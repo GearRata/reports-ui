@@ -27,11 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
 import { Badge } from "../../ui/badge";
 import { useParams } from "next/navigation";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
-import { TypeData } from "@/types/Type/model";
-import type { BranchData } from "@/types/Branch/model"
-import type { ProgramData } from "@/types/Program/model"
-import type { DepartmentData } from "@/types/Department/model"
-import type { IpPhoneData } from "@/types/Phone/model"
+import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
 import CameraPicker from "@/components/camera";
 import {
@@ -59,14 +55,14 @@ export default function DialogForm() {
   const [branchID, setBranchID] = useState(0);
   const [departmentID, setDepartmentID] = useState(0);
   const [text, setText] = useState("");
-  const [department, setDepartment] = useState<DepartmentData | undefined>();
-  const [phoneID, setPhoneID] = useState<IpPhoneData | undefined>();
-  const [phones, setPhones] = useState<IpPhoneData[]>([]);
-  const [branch, setBranch] = useState<BranchData | undefined>();
-  const [programID, setProgramID] = useState<ProgramData | undefined>();
-  const [programs, setPrograms] = useState<ProgramData[]>([]);
-  const [typeID, setTypeID] = useState<TypeData | undefined>();
-  const [types, setTypes] = useState<TypeData[]>([]);
+  const [department, setDepartment] = useState<Department | undefined>();
+  const [phoneID, setPhoneID] = useState<IPPhone | undefined>();
+  const [phones, setPhones] = useState<IPPhone[]>([]);
+  const [branch, setBranch] = useState<Branch | undefined>();
+  const [programID, setProgramID] = useState<Program | undefined>();
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [typeID, setTypeID] = useState<Type | undefined>();
+  const [types, setTypes] = useState<Type[]>([]);
   const [loadingPhone, setLoadingPhone] = useState(false);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [loadingType, setLoadingType] = useState(false);

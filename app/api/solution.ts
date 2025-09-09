@@ -1,6 +1,6 @@
-import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/Solution/model"
+// import type { SolutionDataId, AddSolution, UpdateSolution, DeleteSolution } from "@/types/solution/model"
 
-export async function getSolutionById(id: SolutionDataId) {
+export async function getSolutionById(id: number) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/resolution/${id}`
   );
@@ -11,12 +11,20 @@ export async function getSolutionById(id: SolutionDataId) {
 
 export async function addSolution(
   id: number,
-  task: AddSolution
+  task: {
+    file_paths?: string[];
+    images?: File[];
+    solution: string;
+    assignedto_id: number;
+    assignto: string | null;
+  }
 ) {
   try {
     // สร้าง payload แบบ JSON (ขนาดเล็กกว่า FormData)
     const formData = new FormData();
     formData.append("solution", task.solution);
+    formData.append("assignedto_id", task.assignedto_id.toString());
+    formData.append("assignto", task.assignto || "")
 
     // เพิ่มรูปภาพ (ถ้ามี)
     if (task.images && task.images.length > 0) {
@@ -65,11 +73,20 @@ export async function addSolution(
 
 export async function updateSolution(
   id: number,
-  solutionData: UpdateSolution
+  solutionData: {
+    solution: string;
+    images?: File[];
+    file_paths?: string[];
+    existing_images?: string[];
+    assignedto_id: number;
+    assignto: string | null;
+  }
 ) {
   try {
     const formData = new FormData();
     formData.append("solution", solutionData.solution);
+    formData.append("assignedto_id", solutionData.assignedto_id.toString());
+    formData.append("assignto", solutionData.assignto || "");
 
     // เพิ่มรูปภาพใหม่ (ถ้ามี)
     if (solutionData.images && solutionData.images.length > 0) {
@@ -122,7 +139,7 @@ export async function updateSolution(
   }
 }
 
-export async function deleteSolution(id: DeleteSolution) {
+export async function deleteSolution(id: number) {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/resolution/delete/${id}`,
     {

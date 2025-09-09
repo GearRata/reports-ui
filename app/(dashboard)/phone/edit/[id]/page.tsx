@@ -23,7 +23,7 @@ import {
 } from "@/app/api/phones";
 import { useBranchesForDropdown } from "@/app/api/branches";
 import { useDepartmentsForDropdown } from "@/app/api/departments";
-import type { IpPhoneData } from "@/types/Phone/model";
+import type { IPPhone } from "@/types/entities";
 
 function EditPhonePage() {
   const router = useRouter();
@@ -33,7 +33,7 @@ function EditPhonePage() {
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
   const { departments, loading: departmentsLoading } = useDepartmentsForDropdown();
 
-  const [phone, setPhone] = useState<IpPhoneData | null>(null);
+  const [phone, setPhone] = useState<IPPhone | null>(null);
   const [number, setNumber] = useState("");
   const [name, setName] = useState("");
   const [branchId, setBranchId] = useState<string>("");
@@ -94,7 +94,7 @@ function EditPhonePage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }

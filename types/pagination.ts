@@ -26,7 +26,7 @@ export interface PaginationState<T = any> {
 }
 
 // Tasks specific pagination types
-export type TasksPaginationParams = PaginationParams
+export interface TasksPaginationParams extends PaginationParams {}
 
 export interface TasksPaginationResponse extends PaginationResponse {
   data: any[] // Can be typed more specifically based on TaskWithPhone
@@ -37,7 +37,7 @@ export interface TasksPaginationState extends Omit<PaginationState, 'data'> {
 }
 
 // Programs specific pagination types
-export type ProgramsPaginationParams = PaginationParams
+export interface ProgramsPaginationParams extends PaginationParams {}
 
 export interface ProgramsPaginationResponse extends PaginationResponse {
   data: any[] // Can be typed more specifically based on Program
@@ -48,7 +48,7 @@ export interface ProgramsPaginationState extends Omit<PaginationState, 'data'> {
 }
 
 // Departments specific pagination types
-export type DepartmentsPaginationParams = PaginationParams
+export interface DepartmentsPaginationParams extends PaginationParams {}
 
 export interface DepartmentsPaginationResponse extends PaginationResponse {
   data: any[] // Can be typed more specifically based on Department
@@ -59,7 +59,7 @@ export interface DepartmentsPaginationState extends Omit<PaginationState, 'data'
 }
 
 // IP Phones specific pagination types
-export type IPPhonesPaginationParams = PaginationParams
+export interface IPPhonesPaginationParams extends PaginationParams {}
 
 export interface IPPhonesPaginationResponse extends PaginationResponse {
   data: any[] // Can be typed more specifically based on IPPhone

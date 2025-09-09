@@ -25,6 +25,7 @@ function CreatePhonePage() {
   const router = useRouter();
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
   const { departments, loading: departmentsLoading } = useDepartmentsForDropdown();
+  
   const [number, setNumber] = useState("");
   const [name, setName] = useState("");
   const [branchId, setBranchId] = useState<string>("");
@@ -59,7 +60,7 @@ function CreatePhonePage() {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }

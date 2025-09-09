@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { DashboardData } from "@/types/Dashboard/model";
+import type { DashboardData } from "@/types/dashboard/model";
 
 // Dashboard Hook
 export function useDashboard() {

@@ -11,7 +11,7 @@ import {
   useBranches,
   deleteBranch,
 } from "@/app/api/branches";
-import type { BranchData } from "@/types/Branch/model"
+import type { Branch } from "@/types/entities";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,7 @@ function Page() {
     router.push("/branches/create")
   };
 
-  const handleEditBranch = (branch: BranchData) => {
+  const handleEditBranch = (branch: Branch) => {
     // Navigate to edit page with branch ID
     router.push(`/branches/edit/${branch.id}`);
   };
@@ -53,7 +53,7 @@ function Page() {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }

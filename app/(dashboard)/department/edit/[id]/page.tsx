@@ -22,7 +22,7 @@ import {
   updateDepartment,
 } from "@/app/api/departments";
 import { useBranchesForDropdown } from "@/app/api/branches";
-import type { DepartmentData } from "@/types/Department/model";
+import type { Department } from "@/types/entities";
 
 function EditDepartmentPage() {
   const router = useRouter();
@@ -31,7 +31,7 @@ function EditDepartmentPage() {
 
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
 
-  const [department, setDepartment] = useState<DepartmentData | null>(null);
+  const [department, setDepartment] = useState<Department | null>(null);
   const [name, setName] = useState("");
   const [branchId, setBranchId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -86,7 +86,7 @@ function EditDepartmentPage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }

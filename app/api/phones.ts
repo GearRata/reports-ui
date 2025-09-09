@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 // import type { RequestIpPhone } from "@/types/entities";
-import type { AddIpPhone, IpPhoneDataId, UpdateIpPhone, DeleteIpPhone } from "@/types/Phone/model"
+import type { AddIpPhone, IpPhoneDataId, UpdateIpPhone, DeleteIpPhone } from "@/types/phone/model"
 import {
   IPPhonesPaginationParams,
   IPPhonesPaginationResponse,
   IPPhonesPaginationState,
-} from "@/types/Pagination/model";
+} from "@/types/pagination/model";
 
 // IP Phones Hook with Pagination Support
 export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {

@@ -13,6 +13,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   addSolution,
@@ -23,10 +30,9 @@ import {
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
-import type { TaskData } from "@/types/Task/model";
-import type { SolutionData } from "@/types/Solution/model";
-import { useAssign } from "@/app/api/assign";
+import { getTaskNewById } from "@/app/api/tasks";
+import type { TaskData } from "@/types/task/model";
+import type { SolutionData } from "@/types/solution/model";
 import CameraPicker from "@/components/camera";
 import { useRouter, useParams } from "next/navigation";
 import TaskImageViewer from "@/components/images-viewer";
@@ -36,14 +42,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { useAssign } from "@/app/api/assign";
 
 function ShowTaskPage() {
   const router = useRouter();
@@ -53,24 +53,19 @@ function ShowTaskPage() {
   const [text, setText] = useState("");
   const [task, setTask] = useState<TaskData | null>(null);
   const [solution, setSoltuion] = useState<SolutionData | null>(null);
+  const { assignTo: assignTo } = useAssign();
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [loadTask, setLoadTask] = useState(true);
   const [loadSolution, setLoadSolution] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isEditingSolution, setIsEditingSolution] = useState(false);
   const [editSolutionText, setEditSolutionText] = useState("");
+  const [editAssign, setEditAssign] = useState("");
   const [editSolutionFiles, setEditSolutionFiles] = useState<File[]>([]);
   const [existingSolutionImages, setExistingSolutionImages] = useState<
     string[]
   >([]);
-  const [selectedAssignTo, setSelectedAssignTo] = useState<string>("");
-  const [editAssignTo, setEditAssignTo] = useState<string>("");
-  const { assignTo } = useAssign();
-  
-  // Debug assignTo data
-  useEffect(() => {
-    console.log("AssignTo data:", assignTo);
-  }, [assignTo]);
+  const [assignId, setAssignId] = useState<string>("");
   const taskImages = Object.values(task?.file_paths || {}) as string[];
   const solutionImages = Object.values(solution?.file_paths || {}) as string[];
 
@@ -80,10 +75,12 @@ function ShowTaskPage() {
       if (taskId) {
         try {
           const taskData = await getTaskNewById(Number(taskId));
-          console.log("Initial task data loaded:", taskData);
-          console.log("Task assign_to:", taskData?.assign_to);
-          console.log("Task assignedto_id:", taskData?.assignedto_id);
           setTask(taskData);
+          // const assignPerson = assignTo.find(
+          //   (assign) => assign.name === taskData.assign_to
+          // );
+          // setAssignId(assignPerson ? assignPerson.id.toString() : "")
+          setAssignId(taskData.assignedto_id.toString())
           setLoadTask(false);
         } catch (error) {
           console.error("Error loading task:", error);
@@ -121,30 +118,25 @@ function ShowTaskPage() {
     }
   }, [task, taskId]);
 
-  const handleSubmit = async () => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await addSolution(task!.id, {
+      const assignPerson = assignId
+        ? assignTo.find((person) => person.id === Number(assignId))
+        : null;
+      const assignName = assignPerson ? assignPerson.name : null;
+      const assignToId = assignPerson ? assignPerson.id : 0;
+      console.log("Assign to ID:", assignToId);
+      console.log("Assign to Name", assignName);
+      await addSolution(Number(taskId), {
         images: capturedFiles, // ส่งไฟล์รูปภาพ
         solution: text,
+        assignedto_id: assignToId,
+        assignto: assignName,
       });
-
-      // Update task assignment if selected
-      if (selectedAssignTo) {
-        const selectedAssignData = assignTo.find(
-          (assign) => assign.name === selectedAssignTo
-        );
-        if (selectedAssignData) {
-          console.log("Updating task assignment to:", selectedAssignData);
-          const updateResult = await updateTaskAssignTo(task!.id, {
-            assignedto_id: selectedAssignData.id,
-            assign_to: selectedAssignData.name,
-            update_telegram: false,
-          });
-          console.log("Assignment update result:", updateResult);
-        }
-      }
 
       // Reload solution data after successful creation
       try {
@@ -154,25 +146,16 @@ function ShowTaskPage() {
         console.error("Error reloading solution:", error);
       }
 
-      // Reload task data to get updated assignment
-      try {
-        const taskData = await getTaskNewById(Number(taskId));
-        console.log("Reloaded task data:", taskData);
-        setTask(taskData);
-      } catch (error) {
-        console.error("Error reloading task:", error);
-      }
-
       // Clear form
       setText("");
       setCapturedFiles([]);
-      setSelectedAssignTo("");
 
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000)
       // Show success message or navigate back
-      // router.push("/tasks");
     } catch (error) {
       console.error("Error creating solution:", error);
-      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
       setIsSubmitting(false);
     }
@@ -190,7 +173,7 @@ function ShowTaskPage() {
     if (solution) {
       setIsEditingSolution(true);
       setEditSolutionText(solution.solution || "");
-      setEditAssignTo(task?.assign_to || "");
+      setEditAssign(task?.assignedto_id?.toString() || "");
       // เก็บรูปภาพเดิมไว้ในตัวแปร
       const existingImages = Object.values(
         solution.file_paths || {}
@@ -205,7 +188,6 @@ function ShowTaskPage() {
     setEditSolutionText("");
     setEditSolutionFiles([]);
     setExistingSolutionImages([]);
-    setEditAssignTo("");
   };
 
   const handleUpdateSolution = async () => {
@@ -215,6 +197,14 @@ function ShowTaskPage() {
 
     setIsSubmitting(true);
     try {
+      const assignPerson = editAssign
+        ? assignTo.find((person) => person.id === Number(assignId))
+        : null;
+      const assignName = assignPerson ? assignPerson.name : null;
+      const assignToId = assignPerson ? assignPerson.id : 0;
+      console.log("Assign to ID:", assignToId);
+      console.log("Assign to Name", assignName);
+
       console.log("Updating solution with:");
       console.log("- Existing images:", existingSolutionImages);
       console.log("- New images:", editSolutionFiles);
@@ -230,38 +220,18 @@ function ShowTaskPage() {
         solution: editSolutionText,
         images: editSolutionFiles, // รูปภาพใหม่
         existing_images: existingSolutionImages, // ลิงค์รูปภาพเดิม ให้ backend จัดการ
+        assignedto_id: assignToId,
+        assignto: assignName,
       });
-
-      // Update task assignment if changed
-      if (editAssignTo && editAssignTo !== task?.assign_to) {
-        const selectedAssignData = assignTo.find(
-          (assign) => assign.name === editAssignTo
-        );
-        if (selectedAssignData) {
-          console.log("Updating task assignment to:", selectedAssignData);
-          const updateResult = await updateTaskAssignTo(Number(taskId), {
-            assignedto_id: selectedAssignData.id,
-            assign_to: selectedAssignData.name,
-            update_telegram: false,
-          });
-          console.log("Assignment update result:", updateResult);
-        }
-      }
 
       // Reload solution data
       const solutionData = await getSolutionById(Number(taskId));
       setSoltuion(solutionData);
 
-      // Reload task data to get updated assignment
-      const taskData = await getTaskNewById(Number(taskId));
-      console.log("Reloaded task data after edit:", taskData);
-      setTask(taskData);
-
       setIsEditingSolution(false);
       setEditSolutionText("");
       setEditSolutionFiles([]);
       setExistingSolutionImages([]);
-      setEditAssignTo("");
 
       console.log("Solution updated successfully");
     } catch (error) {
@@ -323,7 +293,7 @@ function ShowTaskPage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }
@@ -538,6 +508,7 @@ function ShowTaskPage() {
                               <Label className="font-bold text-[16px]">
                                 วิธีแก้ไขปัญหา
                               </Label>
+
                               {isEditingSolution ? (
                                 <div className="space-y-4">
                                   <Textarea
@@ -550,23 +521,23 @@ function ShowTaskPage() {
                                     className="border-primary"
                                   />
 
-                                  {/* Assign To Selection for Edit */}
+                                  {/* Edit Assign Data */}
                                   <div className="space-y-2">
-                                    <Label className="font-bold text-[16px]">
-                                      มอบหมายงานให้กับ
-                                    </Label>
+                                    <Label htmlFor="assign_to">Assign To</Label>
                                     <Select
-                                      value={editAssignTo}
-                                      onValueChange={setEditAssignTo}
+                                      value={editAssign}
+                                      onValueChange={(value) =>
+                                        setEditAssign(value)
+                                      }
                                     >
-                                      <SelectTrigger>
-                                        <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
+                                      <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="Select AssignTo" />
                                       </SelectTrigger>
                                       <SelectContent>
                                         {assignTo.map((assign) => (
                                           <SelectItem
                                             key={assign.id}
-                                            value={assign.name}
+                                            value={assign.id.toString()}
                                           >
                                             {assign.name}
                                           </SelectItem>
@@ -632,6 +603,7 @@ function ShowTaskPage() {
                                       }
                                     />
                                   </div>
+    
 
                                   <div className="flex justify-end gap-2">
                                     <Button
@@ -660,27 +632,25 @@ function ShowTaskPage() {
                                   </div>
                                 </div>
                               ) : (
-                                <Textarea
-                                  value={solution.solution || ""}
-                                  placeholder="ไม่มีรายละเอียดการแก้ปัญหา"
-                                  rows={4}
-                                  readOnly
-                                  className="bg-muted"
-                                />
+                                <div className="space-y-4">
+                                  <Textarea
+                                    value={solution.solution || ""}
+                                    placeholder="ไม่มีรายละเอียดการแก้ปัญหา"
+                                    rows={4}
+                                    readOnly
+                                    className="bg-muted"
+                                  />
+                                  <div className="space-y-2">
+                                    <Label className="font-bold text-[16px]">
+                                      มอบหมายงานให้กับ
+                                    </Label>
+                                    <p className="text-muted-foreground">
+                                      {task.assign_to || "ไม่ได้ระบุ"}
+                                    </p>
+                                  </div>
+                                </div>
                               )}
                             </div>
-
-                            {/* Show current assignee */}
-                            {!isEditingSolution && (
-                              <div className="space-y-2">
-                                <Label className="font-bold text-[16px]">
-                                  ผู้รับผิดชอบ
-                                </Label>
-                                <p className="text-muted-foreground">
-                                  {task?.assign_to || "ไม่ได้ระบุผู้รับผิดชอบ"}
-                                </p>
-                              </div>
-                            )}
                             {/* Show solution images */}
                             {!isEditingSolution && (
                               <TaskImageViewer
@@ -717,7 +687,7 @@ function ShowTaskPage() {
                           <CardDescription>เพิ่มวิธีแก้ไขปัญหา</CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <div className="space-y-6">
+                          <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
                               <Label htmlFor="text">วิธีแก้ไขปัญหา</Label>
                               <Textarea
@@ -730,21 +700,20 @@ function ShowTaskPage() {
                               />
                             </div>
 
-                            {/* Assign To Selection */}
                             <div className="space-y-2">
-                              <Label htmlFor="assignTo">มอบหมายงานให้กับ</Label>
+                              <Label htmlFor="assign_to">Assign To</Label>
                               <Select
-                                value={selectedAssignTo}
-                                onValueChange={setSelectedAssignTo}
+                                value={assignId}
+                                onValueChange={(value) => setAssignId(value)}
                               >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select AssignTo" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {assignTo.map((assign) => (
                                     <SelectItem
                                       key={assign.id}
-                                      value={assign.name}
+                                      value={assign.id.toString()}
                                     >
                                       {assign.name}
                                     </SelectItem>
@@ -762,8 +731,7 @@ function ShowTaskPage() {
                             </div>
                             <div className="flex justify-end gap-4">
                               <Button
-                                type="button"
-                                onClick={handleSubmit}
+                                type="submit"
                                 className="text-white"
                                 disabled={isSubmitting}
                               >
@@ -772,7 +740,7 @@ function ShowTaskPage() {
                                   : "บันทึกวิธีแก้ไข"}
                               </Button>
                             </div>
-                          </div>
+                          </form>
                         </CardContent>
                       </Card>
                     )}

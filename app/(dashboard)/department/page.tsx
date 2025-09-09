@@ -13,7 +13,7 @@ import {
 } from "@/app/api/departments";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
-import type { DepartmentData } from "@/types/Department/model";
+import type { Department } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -41,7 +41,7 @@ function Page() {
     router.push("/department/create");
   };
 
-  const handleEditDepartment = (department: DepartmentData) => {
+  const handleEditDepartment = (department: Department) => {
     router.push(`/department/edit/${department.id}`);
   };
 
@@ -67,7 +67,7 @@ function Page() {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }

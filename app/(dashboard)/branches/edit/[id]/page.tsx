@@ -14,14 +14,14 @@ import {
   getBranchById,
   updateBranch,
 } from "@/app/api/branches";
-import type { BranchData } from "@/types/Branch/model"
+import type { Branch } from "@/types/entities";
 
 function EditBranchPage() {
   const router = useRouter();
   const params = useParams();
   const branchId = params.id as string;
 
-  const [branch, setBranch] = useState<BranchData | null>(null);
+  const [branch, setBranch] = useState<Branch | null>(null);
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -54,7 +54,7 @@ function EditBranchPage() {
     setIsSubmitting(true);
 
     try {
-      await updateBranch(branch.id, name );
+      await updateBranch(branch.id,  name );
       // Navigate back to branches page
       router.push('/branches');
     } catch (error) {
@@ -73,7 +73,7 @@ function EditBranchPage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }

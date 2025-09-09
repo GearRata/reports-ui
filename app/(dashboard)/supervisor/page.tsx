@@ -6,7 +6,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 // BranchForm removed - using separate pages for create/edit
 import { useAssign, deleteAssignTo } from "@/app/api/assign";
-import type { AssignData } from "@/types/Assignto/model";
+import type { AssignData } from "@/types/assignto/model";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -40,7 +40,7 @@ function Page() {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }

@@ -6,7 +6,7 @@ import type {
   TasksPaginationParams,
   TasksPaginationResponse,
   TasksPaginationState,
-} from "@/types/Pagination/model";
+} from "@/types/pagination/model";
 
 // Tasks Hook with Pagination Support
 export function useTasksNewPaginated(params?: TasksPaginationParams & { search?: string; status?: string }) {
@@ -296,5 +296,4 @@ export async function updateTaskAssignTo(id: number, task:{assignedto_id: number
     throw error;
   }
 }
-
 

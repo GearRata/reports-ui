@@ -24,7 +24,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getProgramById, updateProgram } from "@/app/api/programs";
-import type { ProgramData } from "@/types/Program/model";
+import type { Program } from "@/types/entities";
 import { useTypesForDropdown } from "@/app/api/type";
 
 function EditProgramPage() {
@@ -33,7 +33,7 @@ function EditProgramPage() {
   const programId = params.id as string;
   const { types, loading: typesLoading } = useTypesForDropdown();
   const [typeId, setTypeId] = useState<string>("");
-  const [program, setProgram] = useState<ProgramData | null>(null);
+  const [program, setProgram] = useState<Program | null>(null);
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -84,7 +84,7 @@ function EditProgramPage() {
       <SidebarProvider
         style={
           {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
+            "--sidebar-width": "calc(var(--spacing) * 53)",
             "--header-height": "calc(var(--spacing) * 12)",
           } as React.CSSProperties
         }

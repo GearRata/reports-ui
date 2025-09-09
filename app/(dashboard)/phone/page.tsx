@@ -9,7 +9,7 @@ import { IPPhonesTable } from "@/components/tables/ip-phones-table";
 import { useIPPhonesPaginated, deleteIPPhone } from "@/app/api/phones";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
-import type { IpPhoneData } from "@/types/Phone/model";
+import type { IPPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -37,7 +37,7 @@ function Page() {
     router.push("/phone/create");
   };
 
-  const handleEditIPPhone = (ipPhone: IpPhoneData) => {
+  const handleEditIPPhone = (ipPhone: IPPhone) => {
     router.push(`/phone/edit/${ipPhone.id}`);
   };
 
@@ -65,7 +65,7 @@ function Page() {
     <SidebarProvider
       style={
         {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
+          "--sidebar-width": "calc(var(--spacing) * 53)",
           "--header-height": "calc(var(--spacing) * 12)",
         } as React.CSSProperties
       }
