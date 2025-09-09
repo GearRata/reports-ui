@@ -20,7 +20,7 @@ import { Pencil, Trash } from "lucide-react";
 // import type { TaskData } from "@/types/Task/model";
 import type { TaskWithPhone } from "@/types/entities";
 import { LuClock } from "react-icons/lu";
-import moment from "moment";
+import moment from "moment-timezone";
 import "moment/locale/th"; // Import Thai locale
 import {
   Select,
@@ -81,11 +81,12 @@ export function TasksNewTable({
     }
   };
 
-  // Function to format time in Thai
+  // Function to format time in Thai timezone
   const formatTimeAgo = (dateString: string) => {
-    const now = moment();
-    console.log(typeof(now));
-    const taskTime = moment(dateString);
+    // แปลง UTC timestamp เป็น Bangkok timezone
+    const taskTime = moment.utc(dateString).tz('Asia/Bangkok');
+    const now = moment.tz('Asia/Bangkok');
+    
     const diffInMinutes = now.diff(taskTime, "minutes");
     const diffInHours = now.diff(taskTime, "hours");
     const diffInDays = now.diff(taskTime, "days");
@@ -109,7 +110,8 @@ export function TasksNewTable({
 
   // Function to format fixed time (for completed tasks)
   const formatFixedTime = (dateString: string) => {
-    return moment(dateString).format("DD/MM/YYYY HH:mm");
+    const thaiLand =moment.utc(dateString).tz('Asia/Bangkok');
+    return thaiLand.format("DD MMMM YYYY HH:mm");
   };
 
   const filterAlphabet = (str: string): string => {
