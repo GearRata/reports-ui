@@ -119,6 +119,12 @@ export async function updateSolution(
 
     const result = await response.json();
     console.log("Update API Response:", result);
+    
+    // Debug: ตรวจสอบว่า backend อัปเดตข้อมูลจริงหรือไม่
+    console.log("Checking updated data from backend...");
+    const updatedData = await getSolutionById(id);
+    console.log("Updated solution data:", updatedData);
+    
     return result;
   } catch (error) {
     console.error("Error updating solution:", error);
