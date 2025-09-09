@@ -85,7 +85,7 @@ function ShowTaskPage() {
       }
     };
     loadTask();
-  }, [taskId, task]);
+  }, [taskId]);
 
   // Load solution only if task is completed (status === 1)
   useEffect(() => {
@@ -331,17 +331,21 @@ function ShowTaskPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-3 md:gap-6 md:py-6 px-6">
               <div className="container mx-auto max-w-2xl">
+                {/*================ แสดงข้อมูลและแก้ไขข้อมูล ================*/}
+
+                {/* ทริกเกอร์ระหว่างแสดงข้อมูลกับเพิ่มวิธีแก้ไขปัญหา */}
                 <Tabs defaultValue="show">
                   <TabsList>
                     <TabsTrigger value="show">ปัญหา</TabsTrigger>
                     <TabsTrigger value="solution">วิธีแก้ไขปัญหา</TabsTrigger>
                   </TabsList>
-                  {/* Show Task Form */}
 
+                  {/* แสดงข้อมูล */}
                   <TabsContent value="show">
                     <Card>
                       <CardHeader>
                         <div className="flex items-center justify-between">
+                          {/* แสดงรายละเอียดของ  Ticket */}
                           <div>
                             <CardTitle>
                               Task #{task.ticket_no || task.id}
@@ -350,6 +354,8 @@ function ShowTaskPage() {
                               แสดงรายละเอียดงานด้านล่างนี้
                             </CardDescription>
                           </div>
+
+                          {/* Icon สำหรับไว้แก้ไขข้อมูล */}
                           <div className="flex items-center gap-2">
                             <Button
                               variant="outline"
@@ -374,8 +380,10 @@ function ShowTaskPage() {
                           </div>
                         </div>
                       </CardHeader>
+
                       <CardContent>
                         <form className="space-y-6">
+                          {/* ชื่อผู้แจ้ง */}
                           <div className="space-y-2">
                             <Label className="font-bold text-[16px]">
                               ชื่อผู้แจ้ง
@@ -465,7 +473,9 @@ function ShowTaskPage() {
                       </CardContent>
                     </Card>
                   </TabsContent>
-
+                  {/*======================================================*/}
+                
+                  {/*================ วิธีแก้ไขปัญหา ================*/}
                   <TabsContent value="solution">
                     {task.status === 1 && solution ? (
                       // Task is completed and solution exists - Show solution (read-only)
