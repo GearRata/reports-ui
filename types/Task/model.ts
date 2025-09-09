@@ -57,3 +57,9 @@ export interface UpdateTask {
 }
 
 export type DeleteTask = number;
+
+export interface updateTaskAssignTo {
+    assignedto_id: number,
+    assign_to: string | null, 
+    update_telegram: boolean
+}
