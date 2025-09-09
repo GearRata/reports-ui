@@ -13,7 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Check, SquareCheckBig, ShieldX } from "lucide-react";
+import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
@@ -84,6 +84,7 @@ export function TasksNewTable({
   // Function to format time in Thai
   const formatTimeAgo = (dateString: string) => {
     const now = moment();
+    console.log(typeof(now));
     const taskTime = moment(dateString);
     const diffInMinutes = now.diff(taskTime, "minutes");
     const diffInHours = now.diff(taskTime, "hours");
@@ -330,16 +331,6 @@ export function TasksNewTable({
                 </TableCell>
 
                 <TableCell>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onShowTask(task);
-                    }}
-                    disabled={loading}
-                    className=" bg-gradient-to-r from-rose-500 via-rose-600 to-pink-600 cursor-pointer mr-2 text-white hover:scale-105 "
-                  >
-                    <ShieldX className=" h-4 w-4"/>
-                  </Button>
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();

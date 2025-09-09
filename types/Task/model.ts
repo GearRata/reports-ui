@@ -7,6 +7,7 @@ export interface TaskData {
     text: string
     status: number  // เปลี่
     reported_by: string
+    assignedto_id: number
     assign_to: string
     assign_name?: string
     assignId?: string
