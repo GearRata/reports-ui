@@ -30,7 +30,7 @@ export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
 
     try {
       const url = new URL(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/list`
+        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/listall`
       );
       url.searchParams.set("page", page.toString());
       url.searchParams.set("limit", limit.toString());
