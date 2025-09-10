@@ -145,7 +145,7 @@ function ShowTaskPage() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 1000);
+      }, 500);
       // Show success message or navigate back
     } catch (error) {
       console.error("Error creating solution:", error);

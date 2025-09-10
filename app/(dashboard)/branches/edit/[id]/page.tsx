@@ -54,7 +54,7 @@ function EditBranchPage() {
     setIsSubmitting(true);
 
     try {
-      await updateBranch(branch.id,  name );
+      await updateBranch(branch.id, {name} );
       // Navigate back to branches page
       router.push('/branches');
     } catch (error) {
