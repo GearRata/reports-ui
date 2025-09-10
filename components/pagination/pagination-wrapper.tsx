@@ -61,7 +61,7 @@ export function PaginationWrapper({
           />
         )}
       </div>
-      <div>
+      <div className="mt-2">
         <PaginationControls
           currentPage={currentPage}
           totalPages={totalPages}
