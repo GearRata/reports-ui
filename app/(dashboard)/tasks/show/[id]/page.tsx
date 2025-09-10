@@ -30,7 +30,7 @@ import {
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getTaskNewById, updateTaskAssignTo} from "@/app/api/tasks";
+import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
 import CameraPicker from "@/components/camera";
@@ -76,7 +76,8 @@ function ShowTaskPage() {
         try {
           const taskData = await getTaskNewById(Number(taskId));
           setTask(taskData);
-          setAssignId(taskData.assignedto_id.toString());
+          // Only set assignId if it's not 0 (unassigned)
+          setAssignId(taskData.assignedto_id && taskData.assignedto_id !== 0 ? taskData.assignedto_id.toString() : "");
           setLoadTask(false);
         } catch (error) {
           console.error("Error loading task:", error);
@@ -176,8 +177,6 @@ function ShowTaskPage() {
     }
   };
 
-  console.log("Edit Assign:", editAssign);
-
   const handleCancelEdit = () => {
     setIsEditingSolution(false);
     setEditSolutionText("");
@@ -221,10 +220,10 @@ function ShowTaskPage() {
         assignto: assignName,
       });
 
-       await updateTaskAssignTo(Number(taskId), {
+      await updateTaskAssignTo(Number(taskId), {
         assignedto_id: assignToId,
         assign_to: assignName,
-        update_telegram: true
+        update_telegram: true,
       });
 
       // await new Promise(resolve => setTimeout(resolve, 500));
@@ -238,7 +237,6 @@ function ShowTaskPage() {
       setEditSolutionText("");
       setEditSolutionFiles([]);
       setExistingSolutionImages([]);
-
 
       console.log("Solution updated successfully");
     } catch (error) {
@@ -347,7 +345,7 @@ function ShowTaskPage() {
                   <TabsContent value="show">
                     <Card>
                       <CardHeader>
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between ">
                           {/* แสดงรายละเอียดของ  Ticket */}
                           <div>
                             <CardTitle>
@@ -358,28 +356,34 @@ function ShowTaskPage() {
                             </CardDescription>
                           </div>
 
-                          {/* Icon สำหรับไว้แก้ไขข้อมูล */}
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                router.push(`/tasks/edit/${task.id}`)
-                              }
-                              className="flex items-center gap-2"
-                            >
-                              <Pencil className="h-4 w-4" />
-                              แก้ไข
-                            </Button>
-                            <span
-                              className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                task.status === 0
-                                  ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200"
-                                  : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                              }`}
-                            >
-                              {task.status === 0 ? "รอดำเนินการ" : "เสร็จแล้ว"}
-                            </span>
+                          <div className="grid place-items-center md:flex gap-2 max-sm:grid max-md:gap-3 ">
+                            {/* Icon สำหรับไว้แก้ไขข้อมูล */}
+                            <div className="">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  router.push(`/tasks/edit/${task.id}`)
+                                }
+                                className="flex items-center gap-2"
+                              >
+                                <Pencil className="h-4 w-4" />
+                                แก้ไข
+                              </Button>
+                            </div>
+                            <div className="max-md:flex ">
+                              <span
+                                className={`px-2 py-1 rounded-full text-sm font-medium ${
+                                  task.status === 0
+                                    ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-center"
+                                    : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-center"
+                                }`}
+                              >
+                                {task.status === 0
+                                  ? "รอดำเนินการ"
+                                  : "เสร็จแล้ว"}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       </CardHeader>
@@ -540,7 +544,7 @@ function ShowTaskPage() {
 
                                   {/* Edit Assign Data */}
                                   <div className="space-y-2">
-                                    <Label htmlFor="assign_to">Assign To</Label>
+                                    <Label htmlFor="assign_to">มอบหมายงานให้กับ</Label>
                                     <Select
                                       value={editAssign}
                                       onValueChange={(value) =>
@@ -556,7 +560,7 @@ function ShowTaskPage() {
                                             key={assign.id}
                                             value={assign.id.toString()}
                                           >
-                                            {assign.name}
+                                            {assign.name || "ไม่ได้ระบุ"}
                                           </SelectItem>
                                         ))}
                                       </SelectContent>
@@ -713,13 +717,13 @@ function ShowTaskPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="assign_to">Assign To</Label>
+                              <Label htmlFor="assign_to">มอบหมายงานให้กับ</Label>
                               <Select
                                 value={assignId}
                                 onValueChange={(value) => setAssignId(value)}
                               >
                                 <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Select AssignTo" />
+                                  <SelectValue placeholder="ยังไม่ได้ระบุ" />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {assignTo.map((assign) => (
@@ -727,7 +731,7 @@ function ShowTaskPage() {
                                       key={assign.id}
                                       value={assign.id.toString()}
                                     >
-                                      {assign.name}
+                                      {assign.name || "ไม่ได้ระบุ"}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>

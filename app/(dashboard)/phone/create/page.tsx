@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import * as React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,39 +12,61 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ChevronsUpDown, Check } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { addIPPhone } from "@/app/api/phones";
+import { cn } from "@/lib/utils";
 import { useBranchesForDropdown } from "@/app/api/branches";
 import { useDepartmentsForDropdown } from "@/app/api/departments";
 
 function CreatePhonePage() {
   const router = useRouter();
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
-  const { departments, loading: departmentsLoading } = useDepartmentsForDropdown();
-  
+  const { departments } = useDepartmentsForDropdown();
+
   const [number, setNumber] = useState("");
   const [name, setName] = useState("");
   const [branchId, setBranchId] = useState<string>("");
   const [departmentId, setDepartmentId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await addIPPhone({ 
+      await addIPPhone({
         number: Number(number),
         name,
         branch_id: Number(branchId),
-        department_id: Number(departmentId)
+        department_id: Number(departmentId),
       });
       // Navigate back to phones page
-      router.push('/phone');
+      router.push("/phone");
     } catch (error) {
       console.error("Error creating IP phone:", error);
     } finally {
@@ -72,7 +94,6 @@ function CreatePhonePage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
               <div className="container mx-auto max-w-2xl">
-
                 {/* Create Phone Form */}
                 <Card>
                   <CardHeader>
@@ -117,13 +138,18 @@ function CreatePhonePage() {
                           required
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue 
-                              placeholder={branchesLoading ? "Loading..." : "Select Branch"} 
+                            <SelectValue
+                              placeholder={
+                                branchesLoading ? "Loading..." : "Select Branch"
+                              }
                             />
                           </SelectTrigger>
                           <SelectContent>
                             {branches.map((branch) => (
-                              <SelectItem key={branch.id} value={branch.id.toString()}>
+                              <SelectItem
+                                key={branch.id}
+                                value={branch.id.toString()}
+                              >
                                 {branch.name}
                               </SelectItem>
                             ))}
@@ -131,27 +157,85 @@ function CreatePhonePage() {
                         </Select>
                       </div>
 
-                      {/* Department Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="department">Department</Label>
-                        <Select
-                          value={departmentId}
-                          onValueChange={(value) => setDepartmentId(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue 
-                              placeholder={departmentsLoading ? "Loading..." : "Select Department"} 
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {departments.map((department) => (
-                              <SelectItem key={department.id} value={department.id.toString()}>
-                                {department.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="phone_id">IP Phone</Label>
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={open}
+                              className="w-full justify-between"
+                            >
+                              {departmentId
+                                ? (() => {
+                                    const department = departments.find(
+                                      (department) =>
+                                        department.id.toString() ===
+                                        departmentId
+                                    );
+                                    return department
+                                      ? `${department.number} - ${department.name}`
+                                      : "Select Department...";
+                                  })()
+                                : <span className="text-muted-foreground">Select Department</span>}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Search phone..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>No phone found.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem
+                                    value="null"
+                                    onSelect={() => {
+                                      setDepartmentId("");
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    ไม่ได้ระบุ Phone ID
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        !departmentId
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                  {departments.map((department) => (
+                                    <CommandItem
+                                      key={department.id}
+                                      value={`${department.number} ${department.name}`}
+                                      onSelect={() => {
+                                        setDepartmentId(
+                                          department.id.toString()
+                                        );
+                                        setOpen(false);
+                                      }}
+                                    >
+                                      {department.number} - {department.name}
+                                      <Check
+                                        className={cn(
+                                          "ml-auto",
+                                          departmentId ===
+                                            department.id.toString()
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
 
                       {/* Form Actions */}
@@ -166,7 +250,13 @@ function CreatePhonePage() {
                         </Button>
                         <Button
                           type="submit"
-                          disabled={isSubmitting || !number || !name.trim() || !branchId || !departmentId}
+                          disabled={
+                            isSubmitting ||
+                            !number ||
+                            !name.trim() ||
+                            !branchId ||
+                            !departmentId
+                          }
                           className="text-white"
                         >
                           {isSubmitting ? "Creating..." : "Create IP Phone"}

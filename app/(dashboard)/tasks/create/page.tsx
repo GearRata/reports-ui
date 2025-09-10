@@ -166,7 +166,7 @@ function CreateTaskPage() {
                                     );
                                     return phone ? `${phone.number} - ${phone.name}` : "Select Phone ID...";
                                   })()
-                                : "Select Phone IP"}
+                                : <span className="text-muted-foreground">Select Phone IP</span>}
                               <ChevronsUpDown className="opacity-50" />
                             </Button>
                           </PopoverTrigger>
