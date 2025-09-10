@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 type Props = {
   taskImages?: string[];
@@ -77,7 +78,6 @@ export default function ImagesViewer({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent aria-describedby={undefined} className="p-0 border-0 bg-transparent max-w-[95vw]">
-          {/* 👇 หัวข้อ/คำอธิบายแบบซ่อน แต่ screen reader มองเห็น */}
           <DialogHeader className="sr-only">
             <DialogTitle>Image preview</DialogTitle>
             <DialogDescription id="image-viewer-desc">
@@ -102,17 +102,17 @@ export default function ImagesViewer({
                   type="button"
                   onClick={prev}
                   aria-label="Previous"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-2 bg-black/60 text-white"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full p-1 bg-gray-500/60 text-white "
                 >
-                  ‹
+                  <ArrowLeft/>
                 </button>
                 <button
                   type="button"
                   onClick={next}
                   aria-label="Next"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-2 bg-black/60 text-white"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 bg-gray-500/60 text-white "
                 >
-                  ›
+                  <ArrowRight />
                 </button>
               </>
             )}

@@ -39,7 +39,6 @@ export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
       if (!response.ok) throw new Error("Failed to fetch departments");
 
       const data: DepartmentsPaginationResponse = await response.json();
-      console.log(data);
 
       setState((prev) => ({
         ...prev,
