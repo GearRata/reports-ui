@@ -314,7 +314,7 @@ export function TasksNewTable({
                       <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
                     <SelectContent>
-                      {assignTo && assignTo.length > 0 ? (
+                      {task.status === 0 ? (assignTo && assignTo.length > 0 ? (
                         assignTo.map((assign) => (
                           <SelectItem
                             key={assign.id}
@@ -327,7 +327,15 @@ export function TasksNewTable({
                         <SelectItem value="0" disabled>
                           ไม่มีข้อมูลผู้รับผิดชอบ
                         </SelectItem>
+                      )) : (
+                        <SelectItem disabled value={assignTo.find((a) => a.name === task.assign_to)?.id.toString() || ""}>
+                           {assignTo
+                        .find((a) => a.name === task.assign_to)
+                        ?.name || ""}
+                        </SelectItem>
                       )}
+                      
+                      
                     </SelectContent>
                   </Select>
                 </TableCell>

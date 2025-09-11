@@ -14,6 +14,8 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FileDown } from "lucide-react";
+import { exportFilePhone } from "@/lib/utils";
 
 // ——— แยกเนื้อหาออกมาเป็นคอมโพเนนต์ที่อยู่ใน Suspense ———
 function IPPhonesPageContent() {
@@ -120,7 +122,7 @@ function IPPhonesPageContent() {
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
               <div className="container mx-auto space-y-6">
                 {/* Header with search and add button */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex flex-1 items-center space-x-2">
                     <Input
                       aria-label="ค้นหาโทรศัพท์ IP"
@@ -131,9 +133,17 @@ function IPPhonesPageContent() {
                     />
                   </div>
                   <Button
+                  onClick={exportFilePhone}
+                  size="sm"
+                  className="text-white bg-linear-to-r from-violet-500 to-pink-500"
+                >
+                    <FileDown />
+                  </Button>
+                  
+                  <Button
                     onClick={handleAddIPPhone}
                     size="sm"
-                    className="ml-auto h-8 text-white"
+                    className="bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add IP Phone
