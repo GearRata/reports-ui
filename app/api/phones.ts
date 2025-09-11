@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 // import type { RequestIpPhone } from "@/types/entities";
 import type {
   AddIpPhone,
@@ -15,7 +15,9 @@ import {
 } from "@/types/pagination/model";
 
 // IP Phones Hook with Pagination Support
-export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {
+export function useIPPhonesPaginated(
+  params?: IPPhonesPaginationParams & { search?: string }
+) {
   const [state, setState] = useState<IPPhonesPaginationState>({
     ipPhones: [],
     currentPage: params?.page || 1,
@@ -26,64 +28,108 @@ export function useIPPhonesPaginated(params?: IPPhonesPaginationParams) {
     error: null,
   });
 
-  const fetchIPPhones = async (page: number = 1, limit: number = 10) => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+  const [searchTerm, setSearchTerm] = useState(params?.search || "");
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-    try {
-      const url = new URL(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`
-      );
-      url.searchParams.set("page", page.toString());
-      url.searchParams.set("limit", limit.toString());
+  const fetchIPPhones = useCallback(
+    async (
+      page: number,
+      limit: number,
+      search: string = ""
+    ) => {
+      // ยกเลิก request เก่า
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error("Failed to fetch IP phones");
+      // สร้าง AbortController ใหม่
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-      const data: IPPhonesPaginationResponse = await response.json();
+      setState((prev) => ({ ...prev, loading: true, error: null }));
 
-      setState((prev) => ({
-        ...prev,
-        ipPhones: data.data || [],
-        currentPage: data.pagination?.page || page,
-        pageSize: data.pagination?.limit || limit,
-        totalItems: data.pagination?.total || 0,
-        totalPages: data.pagination?.total_pages || 0,
-        loading: false,
-        error: null,
-      }));
-    } catch (err) {
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Unknown error",
-      }));
-    }
-  };
+      try {
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`;
+        let url;
 
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= state.totalPages) {
-      fetchIPPhones(page, state.pageSize);
-    }
-  };
+        if (search?.trim()) {
+          url = `${baseUrl}/${encodeURIComponent(
+            search.trim()
+          )}?page=${page}&limit=${limit}`;
+        } else {
+          url = `${baseUrl}?page=${page}&limit=${limit}`;
+        }
 
-  const changePageSize = (limit: number) => {
-    fetchIPPhones(1, limit); // Reset to first page when changing page size
-  };
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("Failed to fetch IP phones");
 
-  const refreshIPPhones = () => {
-    fetchIPPhones(state.currentPage, state.pageSize);
-  };
+        const data: IPPhonesPaginationResponse = await response.json();
+
+        setState({
+          ipPhones: data.data || [],
+          currentPage: data.pagination?.page || page,
+          pageSize: data.pagination?.limit || limit,
+          totalItems: data.pagination?.total || 0,
+          totalPages: data.pagination?.total_pages || 0,
+          loading: false,
+          error: null,
+        });
+      } catch (err) {
+        // ไม่ update state ถ้า request ถูกยกเลิก
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: err instanceof Error ? err.message : "Unknown error",
+        }));
+      }
+    },
+    []
+  );
+
+  const goToPage = useCallback(
+    (page: number) => {
+      fetchIPPhones(page, state.pageSize, searchTerm);
+    },
+    [fetchIPPhones, state.pageSize, searchTerm]
+  );
+
+  const changePageSize = useCallback(
+    (limit: number) => {
+      fetchIPPhones(1, limit, searchTerm);
+    },
+    [fetchIPPhones, searchTerm]
+  );
+
+  const changeSearch = useCallback(
+    (search: string) => {
+      setSearchTerm(search);
+      fetchIPPhones(1, state.pageSize, search);
+    },
+    [fetchIPPhones, state.pageSize]
+  );
+
+  const refreshIPPhones = useCallback(() => {
+    fetchIPPhones(state.currentPage, state.pageSize, searchTerm);
+  }, [fetchIPPhones, state.currentPage, state.pageSize, searchTerm]);
 
   useEffect(() => {
-    fetchIPPhones(state.currentPage, state.pageSize); // Initial fetch with default values
-  }, []); // Only run on mount
+    fetchIPPhones(
+      params?.page || 1,
+      params?.limit || 10,
+      params?.search || ""
+    );
+  }, []);
 
   return {
     ...state,
-    fetchIPPhones,
     goToPage,
     changePageSize,
+    changeSearch,
     refreshIPPhones,
+    search: searchTerm,
   };
 }
 

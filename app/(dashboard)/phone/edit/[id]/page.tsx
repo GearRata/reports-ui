@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,18 +12,36 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ChevronsUpDown, Check } from "lucide-react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
-import {
-  getIPPhoneById,
-  updateIPPhone,
-} from "@/app/api/phones";
+import { getIPPhoneById, updateIPPhone } from "@/app/api/phones";
 import { useBranchesForDropdown } from "@/app/api/branches";
 import { useDepartmentsForDropdown } from "@/app/api/departments";
 import type { IPPhone } from "@/types/entities";
+import { cn } from "@/lib/utils";
 
 function EditPhonePage() {
   const router = useRouter();
@@ -31,7 +49,7 @@ function EditPhonePage() {
   const phoneId = params.id as string;
 
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
-  const { departments, loading: departmentsLoading } = useDepartmentsForDropdown();
+  const { departments } = useDepartmentsForDropdown();
 
   const [phone, setPhone] = useState<IPPhone | null>(null);
   const [number, setNumber] = useState("");
@@ -40,6 +58,7 @@ function EditPhonePage() {
   const [departmentId, setDepartmentId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = React.useState(false);
 
   // Load the specific phone data
   useEffect(() => {
@@ -66,18 +85,18 @@ function EditPhonePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) return;
-    
+
     setIsSubmitting(true);
 
     try {
-      await updateIPPhone(phone.id, { 
+      await updateIPPhone(phone.id, {
         number: Number(number),
         name,
         branch_id: Number(branchId),
-        department_id: Number(departmentId)
+        department_id: Number(departmentId),
       });
       // Navigate back to phones page
-      router.push('/phone');
+      router.push("/phone");
     } catch (error) {
       console.error("Error updating IP phone:", error);
     } finally {
@@ -86,7 +105,7 @@ function EditPhonePage() {
   };
 
   const handleCancel = () => {
-    router.push('/phone');
+    router.push("/phone");
   };
 
   if (loading) {
@@ -153,11 +172,12 @@ function EditPhonePage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
               <div className="container mx-auto max-w-2xl">
-
                 {/* Edit Phone Form */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Edit IP Phone: {phone.number} - {phone.name}</CardTitle>
+                    <CardTitle>
+                      Edit IP Phone: {phone.number} - {phone.name}
+                    </CardTitle>
                     <CardDescription>
                       Update the IP phone details below.
                     </CardDescription>
@@ -198,13 +218,18 @@ function EditPhonePage() {
                           required
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue 
-                              placeholder={branchesLoading ? "Loading..." : "Select Branch"} 
+                            <SelectValue
+                              placeholder={
+                                branchesLoading ? "Loading..." : "Select Branch"
+                              }
                             />
                           </SelectTrigger>
                           <SelectContent>
                             {branches.map((branch) => (
-                              <SelectItem key={branch.id} value={branch.id.toString()}>
+                              <SelectItem
+                                key={branch.id}
+                                value={branch.id.toString()}
+                              >
                                 {branch.name}
                               </SelectItem>
                             ))}
@@ -212,28 +237,90 @@ function EditPhonePage() {
                         </Select>
                       </div>
 
-                      {/* Department Selection */}
                       <div className="space-y-2">
-                        <Label htmlFor="department">Department</Label>
-                        <Select
-                          value={departmentId}
-                          onValueChange={(value) => setDepartmentId(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue 
-                              placeholder={departmentsLoading ? "Loading..." : "Select Department"} 
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {departments.map((department) => (
-                              <SelectItem key={department.id} value={department.id.toString()}>
-                                {department.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="department_id">Department</Label>
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={open}
+                              className="w-full justify-between"
+                            >
+                              {departmentId ? (
+                                (() => {
+                                  const department = departments.find(
+                                    (department) =>
+                                      department.id.toString() === departmentId
+                                  );
+                                  return department
+                                    ? `${department.name}`
+                                    : "Select Department...";
+                                })()
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Select Department
+                                </span>
+                              )}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Search phone..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>No phone found.</CommandEmpty>
+                                <CommandGroup>
+                                  <CommandItem
+                                    value="null"
+                                    onSelect={() => {
+                                      setDepartmentId("");
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    ไม่ได้ระบุ Phone ID
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        !departmentId
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                  {departments.map((department) => (
+                                    <CommandItem
+                                      key={department.id}
+                                      value={`${department.number} ${department.name}`}
+                                      onSelect={() => {
+                                        setDepartmentId(
+                                          department.id.toString()
+                                        );
+                                        setOpen(false);
+                                      }}
+                                    >
+                                      {department.name}
+                                      <Check
+                                        className={cn(
+                                          "ml-auto",
+                                          departmentId ===
+                                            department.id.toString()
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
+                     
 
                       {/* Form Actions */}
                       <div className="flex justify-end gap-4">
@@ -247,7 +334,13 @@ function EditPhonePage() {
                         </Button>
                         <Button
                           type="submit"
-                          disabled={isSubmitting || !number || !name.trim() || !branchId || !departmentId}
+                          disabled={
+                            isSubmitting ||
+                            !number ||
+                            !name.trim() ||
+                            !branchId ||
+                            !departmentId
+                          }
                           className="text-white"
                         >
                           {isSubmitting ? "Updating..." : "Update IP Phone"}

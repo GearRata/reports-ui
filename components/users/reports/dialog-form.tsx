@@ -57,7 +57,6 @@ export default function DialogForm() {
   const [text, setText] = useState("");
   const [department, setDepartment] = useState<Department | undefined>();
   const [phoneID, setPhoneID] = useState<IPPhone | undefined>();
-  const [phones, setPhones] = useState<IPPhone[]>([]);
   const [branch, setBranch] = useState<Branch | undefined>();
   const [programID, setProgramID] = useState<Program | undefined>();
   const [programs, setPrograms] = useState<Program[]>([]);
@@ -95,15 +94,11 @@ export default function DialogForm() {
         `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`
       );
       const data = await response.json();
-      if (data.data && data.data.length > 0) {
-        setPhones(data.data);
-      } else {
-        setPhones([]);
+      if (!data.data || data.data.length === 0) {
         setPhoneID(undefined);
       }
     } catch (error) {
       console.error("Error loading ipphone:", error);
-      setPhones([]);
       setPhoneID(undefined);
     } finally {
       setLoadingPhone(false);
@@ -229,12 +224,18 @@ export default function DialogForm() {
     loadDepartment();
   }, [loadDepartment]);
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!reportby.trim()) {
       toast.error("กรุณากรอกชื่อผู้แจ้ง");
       return;
+    }
+
+    if (!phoneID) {
+      toast.error("กรุณาเลือก");
     }
 
     if (!text.trim()) {
@@ -256,6 +257,8 @@ export default function DialogForm() {
       fd.append("text", text || "");
       fd.append("branch_id", String(branchID || ""));
       fd.append("department_id", String(departmentID || ""));
+      if (phoneID && phoneID.id != null)
+        fd.append("phone_id", String(phoneID.id));
       if (programID && programID.id != null)
         fd.append("system_id", String(programID.id));
       if (typeID && typeID.id != null)
@@ -312,7 +315,6 @@ export default function DialogForm() {
     }
   };
 
-  console.log("IP Phone", phones);
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -397,11 +399,7 @@ export default function DialogForm() {
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
                     ชื่อผู้แจ้ง{" "}
-                    <span className="text-red-400 animate-pulse">*</span>
                   </Label>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                    กรอกชื่อจริงเพื่อการติดต่อกลับ
-                  </p>
                 </div>
               </div>
               <div className="space-y-3">
@@ -456,11 +454,7 @@ export default function DialogForm() {
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
                     IP Phone{" "}
-                    <span className="text-red-400 animate-pulse">*</span>
                   </Label>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                    เลือกเบอร์ IP
-                  </p>
                 </div>
               </div>
               <div className="space-y-3">
@@ -472,23 +466,16 @@ export default function DialogForm() {
                       aria-expanded={open}
                       className="w-[50%] justify-between"
                     >
-                      {phones
-                        ? (() => {
-                            const phone = ipPhones.find(
-                              (phone) => phone.id.toString() === phones
-                            );
-                            return phone ? (
-                              `${phone.number} - ${phone.name}`
-                            ) : loadingPhone ? (
-                              <div className="flex items-center gap-3 text-slate-400">
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                                <span>กำลังโหลด...</span>
-                              </div>
-                            ) : (
-                               <span className="text-slate-400">เลือก IP Phone</span>
-                            );
-                          })()
-                        : "Select Phone IP"}
+                      {phoneID
+                        ? `${phoneID.number} - ${phoneID.name}`
+                        : loadingPhone ? (
+                          <div className="flex items-center gap-3 text-slate-400">
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            <span>กำลังโหลด...</span>
+                          </div>
+                        ) : (
+                          <span className="text-slate-400">เลือก IP Phone</span>
+                        )}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -504,7 +491,7 @@ export default function DialogForm() {
                           <CommandItem
                             value="null"
                             onSelect={() => {
-                              setPhones([]);
+                              setPhoneID(undefined);
                               setOpen(false);
                             }}
                           >
@@ -512,7 +499,7 @@ export default function DialogForm() {
                             <Check
                               className={cn(
                                 "ml-auto",
-                                !phones ? "opacity-100" : "opacity-0"
+                                !phoneID ? "opacity-100" : "opacity-0"
                               )}
                             />
                           </CommandItem>
@@ -521,7 +508,7 @@ export default function DialogForm() {
                               key={phone.id}
                               value={`${phone.number} ${phone.name}`}
                               onSelect={() => {
-                                setPhones(phone.id.toString());
+                                setPhoneID(phone);
                                 setOpen(false);
                               }}
                             >
@@ -529,7 +516,7 @@ export default function DialogForm() {
                               <Check
                                 className={cn(
                                   "ml-auto",
-                                  phone === phone.id.toString()
+                                  phoneID?.id === phone.id
                                     ? "opacity-100"
                                     : "opacity-0"
                                 )}
@@ -545,7 +532,7 @@ export default function DialogForm() {
                   <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
                     <CheckCircle2 className="h-4 w-4 animate-bounce" />
                     <span className="font-medium">
-                      เลือกชนิด: {phoneID.name}
+                      เลือก IP Phone: {phoneID.number} - {phoneID.name}
                     </span>
                   </div>
                 )}
@@ -566,11 +553,8 @@ export default function DialogForm() {
                     htmlFor="type"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    Type <span className="text-red-400 animate-pulse">*</span>
+                    Type 
                   </Label>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                    เลือกระบบที่เกิดปัญหา
-                  </p>
                 </div>
               </div>
               <div className="space-y-3">
@@ -670,8 +654,8 @@ export default function DialogForm() {
             </div>
 
             {/* ==================== DROPDOWN เลือกปัญหา ====================*/}
-            <div className="grid grid-cols-2">
-              <div>
+            <div className="space-y-5 grid grid-cols-2 gap-2 place-content-center max-md:grid-cols-1">
+              <div className="space-y-5 group">
                 <div className="flex items-center gap-4 ">
                   <div className="relative p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
                     <Monitor className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -683,11 +667,7 @@ export default function DialogForm() {
                       className="text-base sm:text-lg font-bold text-slate-100 block"
                     >
                       ปัญหา{" "}
-                      <span className="text-red-400 animate-pulse">*</span>
                     </Label>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                      เลือกระบบที่เกิดปัญหา
-                    </p>
                   </div>
                 </div>
                 <div className="mt-5">
@@ -793,9 +773,18 @@ export default function DialogForm() {
                     </SelectContent>
                   </Select>
                 </div>
+                {programID && (
+                <div className="mt-3 flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
+                  <CheckCircle2 className="h-4 w-4 animate-bounce" />
+                  <span className="font-medium">
+                    เลือกปัญหา: {programID.name}
+                  </span>
+                </div>
+              )}
               </div>
+
               {/* ==================== FIELD กรอกปัญหาเพิ่มเติม ====================*/}
-              <div>
+              <div className="space-y-5 group">
                 {programID?.id === 0 && (
                   <>
                     <div className="flex items-center gap-4">
@@ -821,7 +810,7 @@ export default function DialogForm() {
                     <input
                       type="text"
                       id="issue_else"
-                      className="mt-5 w-full h-10 sm:h-9 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500 bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30 px-4"
+                      className="w-full h-10 sm:h-9 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500 bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30 px-4"
                       placeholder="ระบุปัญหาที่พบ..."
                       value={issue}
                       onChange={(e) => setIssue(e.target.value)}
@@ -829,14 +818,7 @@ export default function DialogForm() {
                   </>
                 )}
               </div>
-              {programID && (
-                <div className="mt-3 flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                  <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                  <span className="font-medium">
-                    เลือกปัญหา: {programID.name}
-                  </span>
-                </div>
-              )}
+              
             </div>
 
             {/* ==================== TEXTAREA รายละเอียดปัญหา ====================*/}
@@ -854,11 +836,7 @@ export default function DialogForm() {
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
                     รายละเอียดปัญหา{" "}
-                    <span className="text-red-400 animate-pulse">*</span>
                   </Label>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                    อธิบายปัญหาให้ละเอียดเพื่อการแก้ไขที่รวดเร็ว
-                  </p>
                 </div>
               </div>
               <div className="space-y-4">
@@ -919,9 +897,6 @@ export default function DialogForm() {
                     <Label className="text-base sm:text-lg font-bold text-slate-100">
                       แนบรูปภาพประกอบ
                     </Label>
-                    <Badge className="text-xs bg-slate-600/50 text-slate-300 border-slate-500/50 px-3 py-1 rounded-full">
-                      ไม่บังคับ
-                    </Badge>
                   </div>
                   <p className="text-xs sm:text-sm text-slate-400 mt-1">
                     ถ่ายรูปหรือเลือกจากแกลเลอรี่ (สูงสุด 9 รูป)

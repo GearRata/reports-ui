@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import {
   DepartmentDataId,
   AddDepartment,
@@ -14,7 +14,9 @@ import type {
 } from "@/types/pagination/model";
 
 // Departments Hook with Pagination Support
-export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
+export function useDepartmentsPaginated(
+  params?: DepartmentsPaginationParams & { search?: string }
+) {
   const [state, setState] = useState<DepartmentsPaginationState>({
     departments: [],
     currentPage: params?.page || 1,
@@ -25,64 +27,108 @@ export function useDepartmentsPaginated(params?: DepartmentsPaginationParams) {
     error: null,
   });
 
-  const fetchDepartments = async (page: number = 1, limit: number = 10) => {
-    setState((prev) => ({ ...prev, loading: true, error: null }));
+  const [searchTerm, setSearchTerm] = useState(params?.search || "");
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-    try {
-      const url = new URL(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/listall`
-      );
-      url.searchParams.set("page", page.toString());
-      url.searchParams.set("limit", limit.toString());
+  const fetchDepartments = useCallback(
+    async (
+      page: number,
+      limit: number,
+      search: string = ""
+    ) => {
+      // ยกเลิก request เก่า
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
 
-      const response = await fetch(url.toString());
-      if (!response.ok) throw new Error("Failed to fetch departments");
+      // สร้าง AbortController ใหม่
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
 
-      const data: DepartmentsPaginationResponse = await response.json();
+      setState((prev) => ({ ...prev, loading: true, error: null }));
 
-      setState((prev) => ({
-        ...prev,
-        departments: data.data || [],
-        currentPage: data.pagination?.page || page,
-        pageSize: data.pagination?.limit || limit,
-        totalItems: data.pagination?.total || 0,
-        totalPages: data.pagination?.total_pages || 0,
-        loading: false,
-        error: null,
-      }));
-    } catch (err) {
-      setState((prev) => ({
-        ...prev,
-        loading: false,
-        error: err instanceof Error ? err.message : "Unknown error",
-      }));
-    }
-  };
+      try {
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/department/list`;
+        let url;
 
-  const goToPage = (page: number) => {
-    if (page >= 1 && page <= state.totalPages) {
-      fetchDepartments(page, state.pageSize);
-    }
-  };
+        if (search?.trim()) {
+          url = `${baseUrl}/${encodeURIComponent(
+            search.trim()
+          )}?page=${page}&limit=${limit}`;
+        } else {
+          url = `${baseUrl}?page=${page}&limit=${limit}`;
+        }
 
-  const changePageSize = (limit: number) => {
-    fetchDepartments(1, limit); // Reset to first page when changing page size
-  };
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("Failed to fetch departments");
 
-  const refreshDepartments = () => {
-    fetchDepartments(state.currentPage, state.pageSize);
-  };
+        const data: DepartmentsPaginationResponse = await response.json();
+
+        setState({
+          departments: data.data || [],
+          currentPage: data.pagination?.page || page,
+          pageSize: data.pagination?.limit || limit,
+          totalItems: data.pagination?.total || 0,
+          totalPages: data.pagination?.total_pages || 0,
+          loading: false,
+          error: null,
+        });
+      } catch (err) {
+        // ไม่ update state ถ้า request ถูกยกเลิก
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
+        }
+        setState((prev) => ({
+          ...prev,
+          loading: false,
+          error: err instanceof Error ? err.message : "Unknown error",
+        }));
+      }
+    },
+    []
+  );
+
+  const goToPage = useCallback(
+    (page: number) => {
+      fetchDepartments(page, state.pageSize, searchTerm);
+    },
+    [fetchDepartments, state.pageSize, searchTerm]
+  );
+
+  const changePageSize = useCallback(
+    (limit: number) => {
+      fetchDepartments(1, limit, searchTerm);
+    },
+    [fetchDepartments, searchTerm]
+  );
+
+  const changeSearch = useCallback(
+    (search: string) => {
+      setSearchTerm(search);
+      fetchDepartments(1, state.pageSize, search);
+    },
+    [fetchDepartments, state.pageSize]
+  );
+
+  const refreshDepartments = useCallback(() => {
+    fetchDepartments(state.currentPage, state.pageSize, searchTerm);
+  }, [fetchDepartments, state.currentPage, state.pageSize, searchTerm]);
 
   useEffect(() => {
-    fetchDepartments(state.currentPage, state.pageSize); // Initial fetch with default values
-  }, []); // Only run on mount
+    fetchDepartments(
+      params?.page || 1,
+      params?.limit || 10,
+      params?.search || ""
+    );
+  }, []);
 
   return {
     ...state,
-    fetchDepartments,
     goToPage,
     changePageSize,
+    changeSearch,
     refreshDepartments,
+    search: searchTerm,
   };
 }
 
