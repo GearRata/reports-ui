@@ -1,6 +1,6 @@
 "use client";
 import type React from "react";
-import { useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
@@ -13,10 +13,32 @@ import type { IPPhone } from "@/types/entities";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
-function Page() {
+// ——— แยกเนื้อหาออกมาเป็นคอมโพเนนต์ที่อยู่ใน Suspense ———
+function IPPhonesPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const lastSearchRef = useRef<string>("");
+
+  // ✅ อ่าน page & limit จาก URL
+  const initialPage = Math.max(
+    1,
+    parseInt(searchParams.get("page") ?? "1", 10)
+  );
+  const allowed = [10, 20, 50, 100];
+  const parsedLimit = parseInt(searchParams.get("limit") ?? "10", 10);
+  const initialLimit = allowed.includes(parsedLimit) ? parsedLimit : 10;
+
+  // debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchQuery), 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   const {
     ipPhones,
     currentPage,
@@ -28,10 +50,39 @@ function Page() {
     goToPage,
     changePageSize,
     refreshIPPhones,
-  } = useIPPhonesPaginated({ page: 1, limit: 10 });
+    changeSearch,
+  } = useIPPhonesPaginated({
+    page: initialPage, // ← ใช้ค่าจาก URL
+    limit: initialLimit, // ← ใช้ค่าจาก URL
+    search: debouncedSearch,
+  });
 
-  const [searchQuery, setSearchQuery] = useState("");
-  // Form states removed - using separate pages for create/edit
+  // ✅ เวลาเปลี่ยนหน้า ให้เขียนพารามิเตอร์กลับลง URL ด้วย
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", String(page));
+    params.set("limit", String(pageSize)); // คง limit เดิม
+    router.replace(`/phone?${params.toString()}`);
+    goToPage(page);
+  };
+
+  // ✅ เวลาเปลี่ยน page size ก็อัปเดต URL เช่นกัน
+  const handlePageSizeChange = (size: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("limit", String(size));
+    // ปกติควรรีเซ็ตไปหน้า 1
+    params.set("page", "1");
+    router.replace(`/phone?${params.toString()}`);
+    changePageSize(size);
+  };
+
+  // อัปเดต search ใน hook เมื่อ debounce เปลี่ยน
+  useEffect(() => {
+    if (debouncedSearch !== lastSearchRef.current) {
+      lastSearchRef.current = debouncedSearch;
+      changeSearch(debouncedSearch);
+    }
+  }, [debouncedSearch, changeSearch]);
 
   const handleAddIPPhone = () => {
     router.push("/phone/create");
@@ -51,15 +102,6 @@ function Page() {
       console.error("Error deleting IP phone:", error);
     }
   };
-
-  // Note: Server-side filtering will be implemented later
-  // For now, we'll use client-side filtering with paginated data
-  const filteredIPPhones = ipPhones.filter((ipPhone) =>
-    (ipPhone.number + "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (ipPhone.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (ipPhone.department_name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (ipPhone.branch_name || "").toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <SidebarProvider
@@ -81,7 +123,8 @@ function Page() {
                 <div className="flex items-center justify-between">
                   <div className="flex flex-1 items-center space-x-2">
                     <Input
-                      placeholder="Filter IP phones..."
+                      aria-label="ค้นหาโทรศัพท์ IP"
+                      placeholder="ค้นหา"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="h-8 w-[150px] lg:w-[450px]"
@@ -101,7 +144,7 @@ function Page() {
                 <div className="space-y-4">
                   <PaginationErrorBoundary onRetry={refreshIPPhones}>
                     <IPPhonesTable
-                      ipPhones={filteredIPPhones}
+                      ipPhones={ipPhones}
                       onEditIPPhone={handleEditIPPhone}
                       onDeleteIPPhone={handleDeleteIPPhone}
                       loading={loading}
@@ -114,8 +157,8 @@ function Page() {
                         pageSize={pageSize}
                         totalItems={totalItems}
                         totalPages={totalPages}
-                        onPageChange={goToPage}
-                        onPageSizeChange={changePageSize}
+                        onPageChange={handlePageChange} // ← เปลี่ยนเป็น handler ใหม่
+                        onPageSizeChange={handlePageSizeChange} // ← เปลี่ยนเป็น handler ใหม่
                         disabled={loading}
                         itemName="โทรศัพท์"
                         pageSizeOptions={[10, 20, 50, 100]}
@@ -134,4 +177,11 @@ function Page() {
   );
 }
 
-export default Page;
+export default function Page() {
+  // ห่อด้วย Suspense เพื่อรองรับ useSearchParams แบบไม่มี warning
+  return (
+    <Suspense fallback={<div className="p-4">Loading IP phones…</div>}>
+      <IPPhonesPageContent />
+    </Suspense>
+  );
+}
