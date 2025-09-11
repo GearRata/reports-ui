@@ -4,10 +4,12 @@ import * as React from "react";
 import QRCode from "qrcode";
 import { PDFDocument, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { buildQrUrl, DepartmentRow } from "@/app/api/qr-pdf";
+import { buildQrUrl } from "@/app/api/qr-pdf";
+import { DepartmentData } from "@/types/qr-code/model"
 import { Button } from "@/components/ui/button";
+import { QrCode } from 'lucide-react';
 
-// A4 portrait in points
+// กำหนดขนาดกระดาษ A4
 const A4 = { w: 595.28, h: 841.89 };
 // ขอบหน้า
 const MARGIN = 36; // 0.5 inch
@@ -34,7 +36,7 @@ function safeFilename(text: string) {
 }
 
 type Props = {
-  items: DepartmentRow[];
+  items: DepartmentData[];
   fileNamePrefix?: string;
   qrPixelSize?: number; // ความละเอียดของ PNG ที่ฝังใน PDF (px)
 };
@@ -55,7 +57,7 @@ export function DownloadQrPdfButton({
       pdf.registerFontkit(fontkit);
 
       // โหลดฟอนต์ไทยจาก public/fonts
-      const fontBytes = await fetch("/fonts/NotoSansThai-Light.ttf").then((r) =>
+      const fontBytes = await fetch("/fonts/NotoSansThai_SemiCondensed-Regular.ttf").then((r) =>
         r.arrayBuffer()
       );
       const thaiFont = await pdf.embedFont(fontBytes, { subset: true });
@@ -129,13 +131,13 @@ export function DownloadQrPdfButton({
           });
 
           // 2.4) วางข้อความไทย: department + branch + id
-          const labelTop = qrY + qrPtSize + 6; // เส้นฐานตัวอักษรเหนือ QR
-          const txtSize = 11;
+          const labelTop = qrY + qrPtSize + 22; // เส้นฐานตัวอักษรเหนือ QR
+          const txtSize = 14;
 
           // แสดงชื่อแผนก
           draw(d.name, {
             x: x0 + pad,
-            y: Math.min(y0 + cellH - 18, labelTop),
+            y: Math.min(y0 + cellH, labelTop),
             size: txtSize,
             font: thaiFont,
             color: rgb(0, 0, 0),
@@ -144,23 +146,23 @@ export function DownloadQrPdfButton({
 
           // แสดงสาขา
           draw(`สาขา: ${d.branch_name}`, {
-            x: x0 + pad,
-            y: y0 + 18,
-            size: 10,
+            x: x0 + 145,
+            y: Math.min(y0 + cellH, labelTop),
+            size: txtSize,
             font: thaiFont,
             color: rgb(0.15, 0.15, 0.15),
             maxWidth: cellW - pad * 2,
           });
 
-          // แสดงรหัส (เล็ก ๆ)
-          draw(`ID: ${d.id}`, {
-            x: x0 + cellW - pad - 100,
-            y: y0 + 18,
-            size: 9,
-            font: thaiFont,
-            color: rgb(0.35, 0.35, 0.35),
-            maxWidth: 100,
-          });
+          // แสดงรหัส
+          // draw(`ID: ${d.id}`, {
+          //   x: x0 + cellW - pad - 160,
+          //   y: y0 + 18,
+          //   size: 9,
+          //   font: thaiFont,
+          //   color: rgb(0.35, 0.35, 0.35),
+          //   maxWidth: 100,
+          // });
         }
       }
 
@@ -186,8 +188,10 @@ export function DownloadQrPdfButton({
   };
 
   return (
-    <Button onClick={handleDownload} disabled={busy}>
-      {busy ? "กำลังสร้าง PDF..." : "ดาวน์โหลด QR PDF"}
+    <Button onClick={handleDownload} disabled={busy} className="bg-linear-to-r/srgb from-indigo-500 to-teal-400">
+      {busy ? "กำลังสร้าง PDF..." 
+      : <span className="flex justify-center items-center gap-2 text-white s">
+        <QrCode className="h-5 w-5" />All QR Code</span>}
     </Button>
   );
 }

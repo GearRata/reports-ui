@@ -8,6 +8,7 @@ import type { Department } from "@/types/entities";
 // ✅ เพิ่มบรรทัดนี้ (ใช้ named import ให้ตรงกับ component)
 import { DownloadQrPdfButton } from "@/components/qrcode/DownloadQrPdfButton";
 import { RowQrButton } from "@/components/qrcode/RowQrButton";
+import { useDepartment } from "@/app/api/qr-pdf";
 
 interface DepartmentsTableProps {
   departments: Department[];
@@ -27,6 +28,9 @@ export function DepartmentsTable({
   // ตารางนี้มี 5 คอลัมน์: ID, Name, Branch, QR PDF (หัวตาราง), Actions
   const COLS = 5;
 
+  const { allDepartment } = useDepartment();
+
+  console.log("Department", allDepartment)
   return (
     <div className="rounded-md border">
       <Table>
@@ -35,23 +39,19 @@ export function DepartmentsTable({
             <TableHead>ID</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Branch</TableHead>
-
-            {/* ✅ ปุ่มดาวน์โหลด QR ของ "รายการที่โชว์อยู่ในตาราง" */}
-            <TableHead className="text-right">
-              <DownloadQrPdfButton
-                items={departments}
-                fileNamePrefix="nopadol-dept-qr"
+            <TableHead></TableHead>
+            <TableHead className="w-[110px] text-right ">
+            <DownloadQrPdfButton
+                items={allDepartment}
+                fileNamePrefix="all-dept-qr"
               />
             </TableHead>
-
-            <TableHead className="w-[110px] text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {loading ? (
             <TableRow>
-              {/* ✅ colSpan ให้ตรงกับจำนวนคอลัมน์ */}
               <TableCell colSpan={COLS} className="h-24 text-center">
                 <div className="flex items-center justify-center gap-2">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
