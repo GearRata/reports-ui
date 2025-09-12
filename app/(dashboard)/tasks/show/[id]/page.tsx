@@ -42,7 +42,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, X } from "lucide-react";
 import { useAssign } from "@/app/api/assign";
 
 function ShowTaskPage() {
@@ -590,7 +590,7 @@ function ShowTaskPage() {
                                                 }`}
                                                 className="w-full h-full object-cover rounded-md border border-blue-300"
                                               />
-                                              <div className="absolute top-1 right-1 bg-blue-500 text-white text-xs px-1 rounded">
+                                              <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">
                                                 เดิม
                                               </div>
                                               <button
@@ -600,10 +600,10 @@ function ShowTaskPage() {
                                                     index
                                                   )
                                                 }
-                                                className="absolute top-1 left-1 bg-red-500 text-white text-xs px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs p-1 rounded-full hover:bg-red-600"
                                                 title="ลบรูปภาพนี้"
                                               >
-                                                ×
+                                                <X className="h-4 w-4"/>
                                               </button>
                                             </div>
                                           )

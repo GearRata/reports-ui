@@ -6,6 +6,7 @@ import { useRef, useState, useEffect } from "react";
 import { CiCirclePlus } from "react-icons/ci";
 import { FaCamera } from "react-icons/fa";
 import { AiFillPicture } from "react-icons/ai";
+import { X } from 'lucide-react';
 
 interface CameraPickerProps {
   onImagesCapture?: (images: string[]) => void;
@@ -207,7 +208,7 @@ export default function CameraPicker({
               }}
               className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm font-bold shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 border-2 border-white/20 backdrop-blur-sm"
             >
-              ×
+              <X className="h-4 w-4"/>
             </button>
             {/* Image Number Badge */}
           </div>
