@@ -43,7 +43,6 @@ import {
   CircuitBoard,
   MessageCircle,
   Phone,
-  Check,
   ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -411,30 +410,15 @@ export default function DialogForm() {
                     value={reportby}
                     onChange={(e) => setReportBy(e.target.value)}
                     className={cn(
-                      "h-14 sm:h-16 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-12",
+                      "h-14 sm:h-16 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
                       "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-400",
                       "shadow-xl hover:shadow-2xl",
-                      reportby.trim()
-                        ? "border-green-400/60 focus:border-green-400 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
-                        : "border-slate-600/40 focus:border-blue-400 hover:border-slate-500/60 focus:ring-2 focus:ring-blue-400/30",
+                      "border-slate-600/40 focus:border-blue-400 hover:border-slate-500/60 focus:ring-2 focus:ring-blue-400/30",
                       "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
                     )}
                     required
                   />
-                  {reportby.trim() && (
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                      <CheckCircle2 className="h-5 w-5 text-green-400 animate-pulse" />
-                    </div>
-                  )}
                 </div>
-                {reportby.trim() && (
-                  <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                    <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                    <span className="font-medium">
-                      กรอกชื่อผู้แจ้งเรียบร้อย
-                    </span>
-                  </div>
-                )}
               </div>
             </div>
 
@@ -453,7 +437,7 @@ export default function DialogForm() {
                     htmlFor="phone"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    IP Phone{" "}
+                    IP Phone
                   </Label>
                 </div>
               </div>
@@ -461,10 +445,17 @@ export default function DialogForm() {
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
                     <Button
+                      type="button"
                       variant="outline"
                       role="combobox"
                       aria-expanded={open}
-                      className="w-[50%] justify-between"
+                      className={cn(
+                        "w-full justify-start sm:h-14 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
+                        "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-400",
+                        "shadow-xl hover:shadow-2xl",
+                        "border-slate-600/40 focus:border-blue-400 hover:border-slate-500/60 focus:ring-2 focus:ring-blue-400/30",
+                        "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                      )}
                     >
                       {phoneID
                         ? `${phoneID.number} - ${phoneID.name}`
@@ -496,12 +487,7 @@ export default function DialogForm() {
                             }}
                           >
                             ไม่ได้ระบุ Phone ID
-                            <Check
-                              className={cn(
-                                "ml-auto",
-                                !phoneID ? "opacity-100" : "opacity-0"
-                              )}
-                            />
+
                           </CommandItem>
                           {ipPhones.map((phone) => (
                             <CommandItem
@@ -513,14 +499,7 @@ export default function DialogForm() {
                               }}
                             >
                               {phone.number} - {phone.name}
-                              <Check
-                                className={cn(
-                                  "ml-auto",
-                                  phoneID?.id === phone.id
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
+
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -528,14 +507,7 @@ export default function DialogForm() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-                {phoneID && (
-                  <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                    <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                    <span className="font-medium">
-                      เลือก IP Phone: {phoneID.number} - {phoneID.name}
-                    </span>
-                  </div>
-                )}
+
               </div>
             </div>
 
@@ -570,11 +542,9 @@ export default function DialogForm() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
+                      "w-full h-16 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
                       "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
-                      typeID
-                        ? "border-green-400/60 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
-                        : "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
+                      "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
                       "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
                     )}
                   >
@@ -642,19 +612,12 @@ export default function DialogForm() {
                     )}
                   </SelectContent>
                 </Select>
-                {typeID && (
-                  <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                    <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                    <span className="font-medium">
-                      เลือกชนิด: {typeID.name}
-                    </span>
-                  </div>
-                )}
+
               </div>
             </div>
 
             {/* ==================== DROPDOWN เลือกปัญหา ====================*/}
-            <div className="space-y-5 grid grid-cols-2 gap-2 place-content-center max-md:grid-cols-1">
+            <div className="space-y-5 grid grid-cols-2 gap-4 place-content-center max-md:grid-cols-1">
               <div className="space-y-5 group">
                 <div className="flex items-center gap-4 ">
                   <div className="relative p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
@@ -687,11 +650,9 @@ export default function DialogForm() {
                   >
                     <SelectTrigger
                       className={cn(
-                        "h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
+                        "w-full h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
                         "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
-                        programID
-                          ? "border-green-400/60 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
-                          : "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
+                        "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
                         "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
                       )}
                     >
@@ -773,14 +734,6 @@ export default function DialogForm() {
                     </SelectContent>
                   </Select>
                 </div>
-                {programID && (
-                <div className="mt-3 flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                  <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                  <span className="font-medium">
-                    เลือกปัญหา: {programID.name}
-                  </span>
-                </div>
-              )}
               </div>
 
               {/* ==================== FIELD กรอกปัญหาเพิ่มเติม ====================*/}
@@ -799,12 +752,8 @@ export default function DialogForm() {
                           htmlFor="issue_else"
                           className="text-base sm:text-lg font-bold text-slate-100 block"
                         >
-                          ระบุปัญหาเพิ่มเติม{" "}
-                          <span className="text-red-400 animate-pulse">*</span>
+                          ระบุปัญหาเพิ่มเติม
                         </Label>
-                        <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                          กรอกรายละเอียดปัญหาที่ไม่อยู่ในรายการ
-                        </p>
                       </div>
                     </div>
                     <input
@@ -849,9 +798,7 @@ export default function DialogForm() {
                       "min-h-[140px] sm:min-h-[160px] text-base sm:text-lg border-2 rounded-2xl transition-all duration-500 resize-none p-4",
                       "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-400",
                       "shadow-xl hover:shadow-2xl",
-                      text.trim()
-                        ? "border-green-400/60 focus:border-green-400 bg-green-900/20 shadow-green-500/20 ring-2 ring-green-400/20"
-                        : "border-slate-600/40 focus:border-orange-400 hover:border-slate-500/60 focus:ring-2 focus:ring-orange-400/30",
+                      "border-slate-600/40 focus:border-orange-400 hover:border-slate-500/60 focus:ring-2 focus:ring-orange-400/30",
                       "transform hover:scale-[1.01] focus:scale-[1.01] transition-transform duration-300"
                     )}
                     placeholder="📝 อธิบายปัญหาที่พบ"
@@ -874,12 +821,7 @@ export default function DialogForm() {
                   </div>
                 </div>
 
-                {text.trim() && (
-                  <div className="flex items-center gap-3 text-green-400 text-sm bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                    <CheckCircle2 className="h-4 w-4 animate-bounce" />
-                    <span className="font-medium">กรอกรายละเอียดเรียบร้อย</span>
-                  </div>
-                )}
+
               </div>
             </div>
 

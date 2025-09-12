@@ -293,12 +293,12 @@ export function TasksNewTable({
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={
-                      assignTo
-                        .find((a) => a.name === task.assign_to)
-                        ?.id.toString() || ""
+                      task.status === 0 
+                        ? (assignTo.find((a) => a.name === task.assign_to)?.id.toString() || "unassigned")
+                        : (assignTo.find((a) => a.name === task.assign_to)?.id.toString() || "completed")
                     }
                     onValueChange={(value) => {
-                      if (onAssignChange) {
+                      if (onAssignChange && value !== "unassigned") {
                         const selectedAssign = assignTo.find(
                           (a) => a.id.toString() === value
                         );
@@ -314,28 +314,32 @@ export function TasksNewTable({
                       <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
                     <SelectContent>
-                      {task.status === 0 ? (assignTo && assignTo.length > 0 ? (
-                        assignTo.map((assign) => (
-                          <SelectItem
-                            key={assign.id}
-                            value={assign.id.toString()}
-                          >
-                            {assign.name}
+                      {task.status === 0 ? (
+                        <>
+                          <SelectItem  value="unassigned" disabled>
+                            <span className="text-(--muted-foreground)">เลือกผู้รับผิดชอบ</span> 
                           </SelectItem>
-                        ))
+                          {assignTo && assignTo.length > 0 ? (
+                            assignTo.map((assign) => (
+                              <SelectItem
+                                key={assign.id}
+                                value={assign.id.toString()}
+                              >
+                                {assign.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="no-data" disabled>
+                              ไม่มีข้อมูลผู้รับผิดชอบ
+                            </SelectItem>
+                          )}
+                        </>
                       ) : (
-                        <SelectItem value="0" disabled>
-                          ไม่มีข้อมูลผู้รับผิดชอบ
+                        <SelectItem disabled value={assignTo.find((a) => a.name === task.assign_to)?.id.toString() || "completed"}>
+                          {task.assign_to || "เสร็จสิ้นแล้ว"}
                         </SelectItem>
-                      )) : (
-                        <SelectItem disabled value={assignTo.find((a) => a.name === task.assign_to)?.id.toString() || ""}>
-                           {assignTo
-                        .find((a) => a.name === task.assign_to)
-                        ?.name || ""}
-                        </SelectItem>
+                        
                       )}
-                      
-                      
                     </SelectContent>
                   </Select>
                 </TableCell>
