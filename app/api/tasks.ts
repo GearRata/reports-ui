@@ -52,7 +52,7 @@ export function useTasksNewPaginated(
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`;
+        const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list/sort/status/0`;
         let url;
 
         // Add status filter if not "all"
@@ -60,7 +60,7 @@ export function useTasksNewPaginated(
           const statusValue =
             status === "pending" ? "0" : status === "done" ? "1" : "";
           if (statusValue) {
-            url = `${baseUrl}/status/${statusValue}?page=${page}&limit=${limit}`;
+            url = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list/status/${statusValue}?page=${page}&limit=${limit}`;
           } else {
             url = search?.trim()
               ? `${baseUrl}/${encodeURIComponent(

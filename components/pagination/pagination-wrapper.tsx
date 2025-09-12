@@ -40,7 +40,7 @@ export function PaginationWrapper({
   };
 
   return (
-    <div className="flex flex-wrap justify-between">
+    <div className="flex flex-wrap justify-between items-center">
       <div>
         {showInfo && (
           <PaginationInfo
