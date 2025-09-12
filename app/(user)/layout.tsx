@@ -67,7 +67,7 @@ export default function UserLayout({
         className="min-h-screen w-full"
       >
         <div className="items-center justify-center">
-          <div className="text-center space-y-6 px-4 mt-20">{children}</div>
+          <div className="space-y-6 px-4 mt-20">{children}</div>
         </div>
       </GridBeams>
       </>

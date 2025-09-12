@@ -223,7 +223,7 @@ function ShowTaskPage() {
       await updateTaskAssignTo(Number(taskId), {
         assignedto_id: assignToId,
         assign_to: assignName,
-        update_telegram: true,
+        update_telegram: false,
       });
 
       // await new Promise(resolve => setTimeout(resolve, 500));

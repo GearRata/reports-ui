@@ -79,6 +79,7 @@ export async function updateSolution(
     formData.append("solution", solutionData.solution);
     formData.append("assignedto_id", solutionData.assignedto_id.toString());
     formData.append("assignto", solutionData.assignto || "");
+    formData.append("update_telegram", "false");
 
     // เพิ่มรูปภาพใหม่ (ถ้ามี)
     if (solutionData.images && solutionData.images.length > 0) {

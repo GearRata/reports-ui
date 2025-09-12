@@ -223,8 +223,6 @@ export default function DialogForm() {
     loadDepartment();
   }, [loadDepartment]);
 
-
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -313,7 +311,6 @@ export default function DialogForm() {
       setIsSubmitting(false);
     }
   };
-
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -406,12 +403,12 @@ export default function DialogForm() {
                   <Input
                     type="text"
                     id="report_by"
-                    placeholder="เช่น นายสมชาย ใจดี"
+                    placeholder="นายเมาคลี ล่าสัตว์ ฆ่าแชร์คลาน ถลกหนังมันออกมาหมด"
                     value={reportby}
                     onChange={(e) => setReportBy(e.target.value)}
                     className={cn(
                       "h-14 sm:h-16 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
-                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-400",
+                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600 placeholder:text-xl",
                       "shadow-xl hover:shadow-2xl",
                       "border-slate-600/40 focus:border-blue-400 hover:border-slate-500/60 focus:ring-2 focus:ring-blue-400/30",
                       "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
@@ -450,23 +447,23 @@ export default function DialogForm() {
                       role="combobox"
                       aria-expanded={open}
                       className={cn(
-                        "w-full justify-start sm:h-14 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
-                        "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-400",
+                        "w-full py-7 justify-start  text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
+                        "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600",
                         "shadow-xl hover:shadow-2xl",
                         "border-slate-600/40 focus:border-blue-400 hover:border-slate-500/60 focus:ring-2 focus:ring-blue-400/30",
                         "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
                       )}
                     >
-                      {phoneID
-                        ? `${phoneID.number} - ${phoneID.name}`
-                        : loadingPhone ? (
-                          <div className="flex items-center gap-3 text-slate-400">
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                            <span>กำลังโหลด...</span>
-                          </div>
-                        ) : (
-                          <span className="text-slate-400">เลือก IP Phone</span>
-                        )}
+                      {phoneID ? (
+                        `${phoneID.number} - ${phoneID.name}`
+                      ) : loadingPhone ? (
+                        <div className="flex items-center gap-3 text-slate-400">
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <span>กำลังโหลด...</span>
+                        </div>
+                      ) : (
+                        <span className="text-slate-600">เลือก IP Phone</span>
+                      )}
                       <ChevronsUpDown className="opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -487,7 +484,6 @@ export default function DialogForm() {
                             }}
                           >
                             ไม่ได้ระบุ Phone ID
-
                           </CommandItem>
                           {ipPhones.map((phone) => (
                             <CommandItem
@@ -499,7 +495,6 @@ export default function DialogForm() {
                               }}
                             >
                               {phone.number} - {phone.name}
-
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -507,7 +502,6 @@ export default function DialogForm() {
                     </Command>
                   </PopoverContent>
                 </Popover>
-
               </div>
             </div>
 
@@ -525,7 +519,7 @@ export default function DialogForm() {
                     htmlFor="type"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    Type 
+                    Type
                   </Label>
                 </div>
               </div>
@@ -542,19 +536,20 @@ export default function DialogForm() {
                 >
                   <SelectTrigger
                     className={cn(
-                      "w-full h-16 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
+                      "w-full py-7 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
                       "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
                       "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
-                      "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                      "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300",
+                      "data-[placeholder]:text-slate-600"
                     )}
                   >
-                    <SelectValue
+                    <SelectValue 
                       placeholder={
                         loadingType ? "กำลังโหลด..." : "เลือกชนิดปัญหา"
                       }
                     >
                       {loadingType ? (
-                        <div className="flex items-center gap-3 text-slate-400">
+                        <div className="flex items-center gap-3 text-slate-600">
                           <Loader2 className="h-5 w-5 animate-spin" />
                           <span>กำลังโหลด...</span>
                         </div>
@@ -562,7 +557,7 @@ export default function DialogForm() {
                         <span
                           className={cn(
                             "flex items-center gap-3",
-                            typeID ? "text-slate-100" : "text-slate-400"
+                            typeID ? "text-slate-100" : "text-slate-600"
                           )}
                         >
                           {typeID && (
@@ -612,7 +607,6 @@ export default function DialogForm() {
                     )}
                   </SelectContent>
                 </Select>
-
               </div>
             </div>
 
@@ -629,7 +623,7 @@ export default function DialogForm() {
                       htmlFor="program"
                       className="text-base sm:text-lg font-bold text-slate-100 block"
                     >
-                      ปัญหา{" "}
+                      ระบบที่เกิดปัญหา
                     </Label>
                   </div>
                 </div>
@@ -650,10 +644,11 @@ export default function DialogForm() {
                   >
                     <SelectTrigger
                       className={cn(
-                        "w-full h-14 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
+                        "w-full py-7 sm:h-16 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500",
                         "bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl",
                         "border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30",
-                        "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                        "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300",
+                        "data-[placeholder]:text-slate-600"
                       )}
                     >
                       <SelectValue
@@ -759,15 +754,20 @@ export default function DialogForm() {
                     <input
                       type="text"
                       id="issue_else"
-                      className="w-full h-10 sm:h-9 text-base sm:text-lg border-2 rounded-2xl transition-all duration-500 bg-slate-700/40 backdrop-blur-xl text-slate-100 shadow-xl hover:shadow-2xl border-slate-600/40 hover:border-slate-500/60 focus:ring-2 focus:ring-purple-400/30 px-4"
                       placeholder="ระบุปัญหาที่พบ..."
                       value={issue}
                       onChange={(e) => setIssue(e.target.value)}
+                      className={cn(
+                        "w-full h-16 sm:h-15 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
+                        "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600",
+                        "shadow-xl hover:shadow-2xl",
+                        "border-slate-600/40 focus:border-blue-400 hover:border-slate-500/60 focus:ring-2 focus:ring-blue-400/30",
+                        "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                      )}
                     />
                   </>
                 )}
               </div>
-              
             </div>
 
             {/* ==================== TEXTAREA รายละเอียดปัญหา ====================*/}
@@ -795,8 +795,8 @@ export default function DialogForm() {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     className={cn(
-                      "min-h-[140px] sm:min-h-[160px] text-base sm:text-lg border-2 rounded-2xl transition-all duration-500 resize-none p-4",
-                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-400",
+                      "min-h-[140px] sm:min-h-[160px] sm:text-xl border-2 rounded-2xl transition-all duration-500 resize-none p-4",
+                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600 placeholder:text-lg",
                       "shadow-xl hover:shadow-2xl",
                       "border-slate-600/40 focus:border-orange-400 hover:border-slate-500/60 focus:ring-2 focus:ring-orange-400/30",
                       "transform hover:scale-[1.01] focus:scale-[1.01] transition-transform duration-300"
@@ -820,8 +820,6 @@ export default function DialogForm() {
                     </div>
                   </div>
                 </div>
-
-
               </div>
             </div>
 
