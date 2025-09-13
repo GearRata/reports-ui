@@ -67,15 +67,11 @@ function EditTaskPage() {
               ? taskData.system_id.toString()
               : "null"
           );
-          setType(
-            taskData.issue_type ? taskData.issue_type.toString() : ""
-          );
-          setIssue(
-            taskData.issue_else ? taskData.issue_else.toString() : ""
-          );
+          setType(taskData.issue_type ? taskData.issue_type.toString() : "");
+          setIssue(taskData.issue_else ? taskData.issue_else.toString() : "");
           setText(taskData.text);
           setStatus(taskData.status.toString());
-          setAssignId(taskData.assignedto_id)
+          setAssignId(taskData.assignedto_id);
           // Find assign ID from assign name
           const assignPerson = assignTo.find(
             (p) => p.name === taskData.assign_to
@@ -92,9 +88,6 @@ function EditTaskPage() {
 
     loadTask();
   }, [taskId, assignTo]);
-
-console.log("AssignID", assignId)
-  console.log("taskData", task)
 
   const filteredPrograms = useMemo(() => {
     if (!type) return [];
@@ -167,6 +160,8 @@ console.log("AssignID", assignId)
     );
   }
 
+  console.log("Task data:", task?.status);
+
   if (!task) {
     return (
       <SidebarProvider
@@ -190,7 +185,6 @@ console.log("AssignID", assignId)
       </SidebarProvider>
     );
   }
-
 
   return (
     <SidebarProvider
@@ -354,6 +348,7 @@ console.log("AssignID", assignId)
                         </div>
 
                         {/* Assign To Selection */}
+
                         <div className="space-y-2">
                           <Label htmlFor="assign_to">Assign To</Label>
                           <Select
@@ -364,14 +359,27 @@ console.log("AssignID", assignId)
                               <SelectValue placeholder="Select AssignTo" />
                             </SelectTrigger>
                             <SelectContent>
-                              {assignTo.map((assign) => (
+                              {task?.status === 0 ? (
+                                assignTo.map((assign) => (
+                                  <SelectItem
+                                    key={assign.id}
+                                    value={assign.id.toString()}
+                                  >
+                                    {assign.name}
+                                  </SelectItem>
+                                ))
+                              ) : (
                                 <SelectItem
-                                  key={assign.id}
-                                  value={assign.id.toString()}
+                                  disabled
+                                  value={
+                                    assignTo
+                                      .find((a) => a.name === task.assign_to)
+                                      ?.id.toString() || "completed"
+                                  }
                                 >
-                                  {assign.name}
+                                  {task?.assign_to || "Completed"}
                                 </SelectItem>
-                              ))}
+                              )}
                             </SelectContent>
                           </Select>
                         </div>

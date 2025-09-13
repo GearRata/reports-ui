@@ -193,10 +193,24 @@ export default function DialogForm() {
   useEffect(() => {
     const branchParam = params.branch;
     const departmentParam = params.department;
+    
+    // เช็คและแปลงค่า branch
     const branchId = Number(branchParam);
+    if (!isNaN(branchId) && branchId > 0) {
+      setBranchID(branchId);
+    } else {
+      console.warn('Invalid branch parameter:', branchParam);
+      setBranchID(0);
+    }
+    
+    // เช็คและแปลงค่า department
     const departmentId = Number(departmentParam);
-    setBranchID(branchId);
-    setDepartmentID(departmentId);
+    if (!isNaN(departmentId) && departmentId > 0) {
+      setDepartmentID(departmentId);
+    } else {
+      console.warn('Invalid department parameter:', departmentParam);
+      setDepartmentID(0);
+    }
   }, [params]);
 
   useEffect(() => {

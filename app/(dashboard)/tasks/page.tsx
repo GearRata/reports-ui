@@ -29,8 +29,8 @@ function TasksPageContent() {
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "done">(
     "all"
   );
-  const lastSearchRef = useRef<string>("");
 
+  const lastSearchRef = useRef<string>("");
   // ✅ อ่าน page & limit จาก URL
   const initialPage = Math.max(
     1,

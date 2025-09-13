@@ -52,8 +52,13 @@ export function useTasksNewPaginated(
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
       try {
-        const baseUrl = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list/sort/status/0`;
         let url;
+
+        // เลือก base URL ตามการมี search term
+        const hasSearch = search?.trim();
+        const baseUrl = hasSearch 
+          ? `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list`
+          : `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list/sort/status/0`;
 
         // Add status filter if not "all"
         if (status && status !== "all") {
@@ -62,14 +67,14 @@ export function useTasksNewPaginated(
           if (statusValue) {
             url = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list/status/${statusValue}?page=${page}&limit=${limit}`;
           } else {
-            url = search?.trim()
+            url = hasSearch
               ? `${baseUrl}/${encodeURIComponent(
                   search.trim()
                 )}?page=${page}&limit=${limit}`
               : `${baseUrl}?page=${page}&limit=${limit}`;
           }
         } else {
-          url = search?.trim()
+          url = hasSearch
             ? `${baseUrl}/${encodeURIComponent(
                 search.trim()
               )}?page=${page}&limit=${limit}`
