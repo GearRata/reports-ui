@@ -140,6 +140,8 @@ export function TasksNewTable({
     return out.join("");
   };
 
+  console.log("report", tasks)
+
   return (
     <div className="rounded-md border">
       <Table>

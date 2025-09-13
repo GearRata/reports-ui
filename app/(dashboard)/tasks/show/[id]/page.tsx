@@ -33,9 +33,9 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
-import CameraPicker from "@/components/camera";
+import CameraPicker from "@/components/imagesComponents/images";
 import { useRouter, useParams } from "next/navigation";
-import TaskImageViewer from "@/components/images-viewer";
+import TaskImageViewer from "@/components/imagesComponents/images-viewer";
 import {
   DropdownMenu,
   DropdownMenuTrigger,

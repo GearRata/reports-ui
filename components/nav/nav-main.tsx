@@ -9,7 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import Version from "@/components/Version";
+import Version from "@/components/version/Version";
 
 export function NavMain({
   items,
