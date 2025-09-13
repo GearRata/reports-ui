@@ -7,7 +7,7 @@ import type {
   UpdateTask,
   DeleteTask,
   updateTaskAssignTo,
-} from "@/types/task/model";
+} from "@/types/Task/model";
 // TaskWithPhone type is used in pagination state
 import type {
   TasksPaginationParams,
