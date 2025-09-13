@@ -61,7 +61,6 @@ export default function DialogForm() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [typeID, setTypeID] = useState<Type | undefined>();
   const [types, setTypes] = useState<Type[]>([]);
-  const [loadingPhone, setLoadingPhone] = useState(false);
   const [loadingPrograms, setLoadingPrograms] = useState(false);
   const [loadingType, setLoadingType] = useState(false);
   const [loadingBranch, setLoadingBranch] = useState(false);
@@ -85,24 +84,6 @@ export default function DialogForm() {
   const handleFilesCapture = (files: File[]) => {
     setCapturedFiles(files);
   };
-
-  const loadIpPhone = useCallback(async () => {
-    setLoadingPhone(true);
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/ipphone/list`
-      );
-      const data = await response.json();
-      if (!data.data || data.data.length === 0) {
-        setPhoneID(undefined);
-      }
-    } catch (error) {
-      console.error("Error loading ipphone:", error);
-      setPhoneID(undefined);
-    } finally {
-      setLoadingPhone(false);
-    }
-  }, []);
 
   // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
   const loadProgram = useCallback(async () => {
@@ -219,9 +200,6 @@ export default function DialogForm() {
     }
   }, [params, branchID, departmentID]);
 
-  useEffect(() => {
-    loadIpPhone();
-  }, [loadIpPhone]);
 
   // useEffect สำหรับโหลดข้อมูล programs (โหลดครั้งเดียวตอน mount)
   useEffect(() => {
@@ -461,11 +439,6 @@ export default function DialogForm() {
                     >
                       {phoneID ? (
                         `${phoneID.number} - ${phoneID.name}`
-                      ) : loadingPhone ? (
-                        <div className="flex items-center gap-3 text-slate-400">
-                          <Loader2 className="h-5 w-5 animate-spin" />
-                          <span>กำลังโหลด...</span>
-                        </div>
                       ) : (
                         <span className="text-slate-600">เลือก IP Phone</span>
                       )}
