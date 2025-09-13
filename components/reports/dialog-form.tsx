@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { Label } from "../../ui/label";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../ui/select";
+} from "../ui/select";
 import {
   Command,
   CommandEmpty,
@@ -20,16 +20,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Textarea } from "../../ui/textarea";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
-import { Badge } from "../../ui/badge";
+import { Textarea } from "../ui/textarea";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Badge } from "../ui/badge";
 import { useParams } from "next/navigation";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
 import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
-import CameraPicker from "@/components/camera";
+import CameraPicker from "@/components/imagesComponents/images";
 import {
   User,
   Building2,
@@ -196,7 +196,10 @@ export default function DialogForm() {
     
     // เช็คและแปลงค่า branch
     const branchId = Number(branchParam);
-    if (!isNaN(branchId) && branchId > 0) {
+    if (!isNaN(branchId) && branchId === branchID) {
+      return; // ค่าเท่ากัน ไม่ต้องอัปเดต
+    }
+    if (!isNaN(branchId)) {
       setBranchID(branchId);
     } else {
       console.warn('Invalid branch parameter:', branchParam);
@@ -205,13 +208,16 @@ export default function DialogForm() {
     
     // เช็คและแปลงค่า department
     const departmentId = Number(departmentParam);
-    if (!isNaN(departmentId) && departmentId > 0) {
+    if (!isNaN(departmentId) && departmentId === departmentID) {
+      return; // ค่าเท่ากัน ไม่ต้องอัปเดต
+    }
+    if (!isNaN(departmentId)) {
       setDepartmentID(departmentId);
     } else {
       console.warn('Invalid department parameter:', departmentParam);
       setDepartmentID(0);
     }
-  }, [params]);
+  }, [params, branchID, departmentID]);
 
   useEffect(() => {
     loadIpPhone();
@@ -333,18 +339,6 @@ export default function DialogForm() {
         {/* Enhanced Header Section */}
         <CardHeader className="bg-gradient-to-br from-blue-600/90 via-purple-600/90 to-pink-600/90 text-white pb-8 sm:pb-12 relative overflow-hidden p-4 rounded-2xl">
           {/* Animated Background Elements */}
-          <div className="absolute inset-0">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20"></div>
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse"></div>
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-white/10 rounded-full blur-2xl animate-pulse delay-1000"></div>
-          </div>
-
-          {/* Floating Particles */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-white/30 rounded-full animate-bounce delay-300"></div>
-            <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-white/40 rounded-full animate-bounce delay-700"></div>
-            <div className="absolute top-1/2 right-1/3 w-1.5 h-1.5 bg-white/20 rounded-full animate-bounce delay-1000"></div>
-          </div>
 
           <div className="relative z-10 text-center space-y-4 sm:space-y-6">
             {/* Icon with Enhanced Animation */}
@@ -362,9 +356,6 @@ export default function DialogForm() {
               <CardTitle className="text-2xl sm:text-4xl lg:text-5xl font-bold mb-3 drop-shadow-2xl bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
                 แจ้งปัญหาระบบ IT
               </CardTitle>
-              <p className="text-white/90 text-sm sm:text-lg font-medium max-w-2xl mx-auto leading-relaxed">
-                กรุณากรอกข้อมูลให้ครบถ้วนเพื่อความรวดเร็วในการแก้ไข
-              </p>
             </div>
 
             <div className="flex items-center justify-center gap-3 sm:gap-4 flex-wrap pt-4">
@@ -862,36 +853,6 @@ export default function DialogForm() {
                 <div className="border-2 border-dashed border-slate-600/40 rounded-2xl p-4 sm:p-8 hover:border-slate-500/60 transition-all duration-500 bg-slate-700/20 backdrop-blur-xl group-hover:bg-slate-700/30">
                   <CameraPicker onFilesCapture={handleFilesCapture} />
                 </div>
-
-                {/* Enhanced File Counter */}
-                {capturedFiles.length > 0 && (
-                  <div className="mt-4 flex items-center justify-between gap-4 text-sm text-green-400 bg-green-900/30 px-4 py-3 rounded-xl border border-green-500/30 backdrop-blur-sm animate-fadeIn">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-500/20 rounded-lg">
-                        <Camera className="h-4 w-4 text-green-400" />
-                      </div>
-                      <div>
-                        <span className="font-medium">
-                          แนบรูปภาพแล้ว {capturedFiles.length} ไฟล์
-                        </span>
-                        <p className="text-xs text-green-300/80 mt-0.5">
-                          ขนาดต้นฉบับ:{" "}
-                          {(
-                            capturedFiles.reduce(
-                              (total, file) => total + file.size,
-                              0
-                            ) / 1024
-                          ).toFixed(1)}{" "}
-                          KB → จะส่งแบบบีบอัด
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span className="text-xs text-green-300">พร้อมส่ง</span>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 

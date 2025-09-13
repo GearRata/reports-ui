@@ -1,24 +1,3 @@
-/**
- * Authentication Hook
- * 
- * This custom hook manages user authentication state and operations.
- * Features include:
- * 
- * - User login with username/password
- * - User logout functionality
- * - Persistent authentication state using localStorage
- * - Role-based access control (admin/user)
- * - Integration with middleware for route protection
- * 
- * Authentication Flow:
- * 1. Login via API call to /authEntry/login
- * 2. Store user data in localStorage
- * 3. Middleware checks authentication for protected routes
- * 4. Logout clears localStorage and resets state
- * 
-
- */
-
 import { useState } from "react";
 import type { User } from "@/types/user";
 
@@ -76,5 +55,3 @@ export function useAuth() {
   return { user, login, logout };
 }
 
-// ไม่ต้องใช้ useAuth สำหรับ role guard อีกต่อไป (middleware จะจัดการแทน)
-// สามารถใช้ login/logout สำหรับจัดการ auth ฝั่ง client ได้เหมือนเดิม

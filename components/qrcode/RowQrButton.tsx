@@ -157,7 +157,7 @@ export function RowQrButton({ row }: { row: Row }) {
       size="icon"                                    // ขนาดปุ่มแบบไอคอน
       variant="secondary"                            // สไตล์ปุ่มแบบ secondary
       className="mr-2"                               // margin-right
-      title="ดาวน์โหลด QR (แถวนี้)"                    // tooltip text
+      title="ดาวน์โหลด QR "                    // tooltip text
       disabled={busy}                               // ปิดการใช้งานเมื่อกำลังประมวลผล
       onClick={async (e) => {
         e.stopPropagation();                        // หยุดการ bubble up ของ event
