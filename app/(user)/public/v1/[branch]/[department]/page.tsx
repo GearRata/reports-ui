@@ -4,7 +4,7 @@ import DialogForm from "@/components/reports/dialog-form";
 
 function Page() {
   return (
-    <div className="w-full">
+    <div>
       <DialogForm />
     </div>
   );
