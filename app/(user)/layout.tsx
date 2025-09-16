@@ -42,19 +42,6 @@ export default function UserLayout({
         }}
       />
 
-      {/* <div className="relative z-10 flex min-h-screen items-center justify-center p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-4xl">
-          <BlurFade delay={0.2} inView>
-            <GridBeams>
-              <div className="flex h-full items-center justify-center">
-            {children}
-            </div>
-            </GridBeams>
-          </BlurFade>
-        </div>
-      </div>
-    </div> */}
-
       <GridBeams
         gridSize={0}
         gridColor="rgba(255, 255, 255, 0.2)"

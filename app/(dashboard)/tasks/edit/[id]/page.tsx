@@ -271,6 +271,7 @@ function EditTaskPage() {
                             ))}
                           </SelectContent>
                         </Select>
+                        <input type="hidden" name="type" value={type} required />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
@@ -279,7 +280,6 @@ function EditTaskPage() {
                           <Select
                             value={programID}
                             onValueChange={(value) => setProgramID(value)}
-                            required
                           >
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="Select Program" />
@@ -296,6 +296,7 @@ function EditTaskPage() {
                               ))}
                             </SelectContent>
                           </Select>
+                          <input type="hidden" name="program_id" value={programID} required />
                         </div>
 
                         <div>
@@ -345,6 +346,7 @@ function EditTaskPage() {
                               <SelectItem value="1">Done</SelectItem>
                             </SelectContent>
                           </Select>
+                          <input type="hidden" name="status" value={status} required />
                         </div>
 
                         {/* Assign To Selection */}
@@ -382,6 +384,7 @@ function EditTaskPage() {
                               )}
                             </SelectContent>
                           </Select>
+                          <input type="hidden" name="assign_to" value={assignId} required />
                         </div>
                       </div>
 

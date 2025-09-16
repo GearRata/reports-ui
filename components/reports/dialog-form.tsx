@@ -25,7 +25,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
 import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
@@ -49,6 +49,7 @@ import { cn } from "@/lib/utils";
 
 export default function DialogForm() {
   const params = useParams();
+  const router = useRouter();
   const { ipPhones } = useIPPhonesForDropdown();
   const [reportby, setReportBy] = useState<string>("");
   const [branchID, setBranchID] = useState(0);
@@ -70,6 +71,31 @@ export default function DialogForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [issue, setIssue] = useState<string>("");
   const [open, setOpen] = React.useState(false);
+  
+
+  // Check if form has unsaved changes
+  const hasUnsavedChanges = useMemo(() => {
+    return (
+      reportby.trim() !== "" ||
+      phoneID !== undefined ||
+      text.trim() !== "" ||
+      (programID?.id === 0 && issue.trim() !== "") ||
+      capturedFiles.length > 0
+    );
+  }, [reportby, phoneID, text, programID, issue, capturedFiles]);
+
+  // Handle browser navigation warning
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && !isSubmitting && !isSuccess) {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasUnsavedChanges, isSubmitting, isSuccess]);
+
 
   useEffect(() => {
     setProgramID(undefined); // ล้างโปรแกรมเดิม
@@ -290,17 +316,22 @@ export default function DialogForm() {
       console.log("Create API Response:", result);
       setIsSuccess(true);
       toast.success("แจ้งปัญหาเรียบร้อยแล้ว");
+      router.push("/public/success");
+      // // reset form after success animation
+      // setTimeout(() => {
+      //   setText("");
+      //   setReportBy("");
+      //   setCapturedFiles([]);
+      //   setIsSuccess(false);
+      // }, 500);
 
-      // reset form after success animation
-      setTimeout(() => {
-        setText("");
-        setReportBy("");
-        setCapturedFiles([]);
-        setIsSuccess(false);
-      }, 500);
-
-      // optionally refresh page or navigate
-      setTimeout(() => window.location.reload(), 500);
+      // // optionally refresh page or navigate
+      // setTimeout(() => {
+      //   // Clear unsaved changes flag before reload to prevent warning
+      //   window.removeEventListener('beforeunload', () => {});
+      //   window.location.reload();
+      // }, 500);
+      
       return result;
     } catch (err) {
       console.error("Error creating task:", err);
@@ -879,6 +910,7 @@ export default function DialogForm() {
           </form>
         </CardContent>
       </Card>
+
     </div>
   );
 }
