@@ -16,7 +16,7 @@ import {
 import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Trash, CircleEllipsis } from "lucide-react";
 // import type { TaskData } from "@/types/Task/model";
 import type { TaskWithPhone } from "@/types/entities";
 import { LuClock } from "react-icons/lu";
@@ -51,12 +51,14 @@ interface TasksNewTableProps {
 
 const statusColors: Record<number, string> = {
   0: "bg-linear-to-r from-orange-500 to-yellow-500 rounded-full font-medium text-white flex items-center gap-2",
-  1: "bg-linear-to-r from-lime-500 to-emerald-500 rounded-full font-medium text-white flex items-center gap-2",
+  1: "bg-linear-to-r from-cyan-500 to-sky-500 rounded-full font-medium text-white flex items-center gap-2",
+  2: "bg-linear-to-r from-lime-500 to-emerald-500 rounded-full font-medium text-white flex items-center gap-2",
 };
 
 const statusLabels: Record<number, string> = {
   0: "Pending",
-  1: "Done",
+  1: "Progress",
+  2: "Done",
 };
 
 export function TasksNewTable({
@@ -84,9 +86,9 @@ export function TasksNewTable({
   // Function to format time in Thai timezone
   const formatTimeAgo = (dateString: string) => {
     // แปลง UTC timestamp เป็น Bangkok timezone
-    const taskTime = moment.utc(dateString).tz('Asia/Bangkok');
-    const now = moment.tz('Asia/Bangkok');
-    
+    const taskTime = moment.utc(dateString).tz("Asia/Bangkok");
+    const now = moment.tz("Asia/Bangkok");
+
     const diffInMinutes = now.diff(taskTime, "minutes");
     const diffInHours = now.diff(taskTime, "hours");
     const diffInDays = now.diff(taskTime, "days");
@@ -110,9 +112,11 @@ export function TasksNewTable({
 
   // Function to format fixed time (for completed tasks)
   const formatFixedTime = (dateString: string) => {
-    const thaiLand =moment.utc(dateString).tz('Asia/Bangkok');
+    const thaiLand = moment.utc(dateString).tz("Asia/Bangkok");
     return thaiLand.format("DD MMMM YYYY HH:mm");
   };
+
+  
 
   const filterAlphabet = (str: string): string => {
     const wantMap: Record<string, string[]> = {
@@ -140,8 +144,6 @@ export function TasksNewTable({
     return out.join("");
   };
 
-  console.log("report", tasks)
-
   return (
     <div className="rounded-md border">
       <Table>
@@ -160,18 +162,20 @@ export function TasksNewTable({
               <div className="flex items-center gap-2">
                 <span>
                   {statusFilter === "all" ? (
-                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-cyan-500 to-blue-500">
+                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-gray-500 to-zinc-600">
                       Status
                     </Badge>
                   ) : statusFilter === "pending" ? (
                     <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-orange-500 to-yellow-500">
                       Pending
                     </Badge>
-                  ) : (
-                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-lime-500 to-emerald-500">
-                      Done
+                  ) : statusFilter === "progress" ? (
+                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-cyan-500 to-blue-500">
+                      Progress
                     </Badge>
-                  )}
+                  ) : <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-lime-500 to-emerald-500">
+                      Done
+                    </Badge>}
                 </span>
 
                 <DropdownMenu>
@@ -198,6 +202,14 @@ export function TasksNewTable({
                     >
                       Pending
                       {statusFilter === "pending" && (
+                        <Check className="ml-auto h-4 w-4" />
+                      )}
+                    </DropdownMenuItem>
+                     <DropdownMenuItem
+                      onClick={() => handleStatusChange("progress")}
+                    >
+                      Progress
+                      {statusFilter === "progress" && (
                         <Check className="ml-auto h-4 w-4" />
                       )}
                     </DropdownMenuItem>
@@ -267,16 +279,32 @@ export function TasksNewTable({
                   {task.text}
                 </TableCell>
                 <TableCell>
-                  <Badge className={statusColors[task.status ? 1 : 0]}>
+                  <Badge
+                    className={
+                      statusColors[
+                        task.status === 0 ? 0 : task.status === 1 ? 1 : 2
+                      ]
+                    }
+                  >
                     <div className="flex items-center gap-2 h-5 font-bold">
-                      {statusLabels[task.status ? 1 : 0]}
+                      {
+                        statusLabels[
+                          task.status === 0 ? 0 : task.status === 1 ? 1 : 2
+                        ]
+                      }
                     </div>
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge className={statusColors[task.status ? 1 : 0]}>
+                  <Badge
+                    className={
+                      statusColors[
+                        task.status === 0 ? 0 : task.status === 1 ? 1 : 2
+                      ]
+                    }
+                  >
                     <div className="flex items-center gap-1 h-5">
-                      {task.status ? (
+                      {/* {task.status ? (
                         <SquareCheckBig className="w-4" />
                       ) : (
                         <LuClock className="w-3 h-3" />
@@ -287,7 +315,28 @@ export function TasksNewTable({
                           : "-"
                         : task.created_at
                         ? formatTimeAgo(task.created_at)
-                        : "-"}
+                        : "-"} */}
+                      {task.status === 0 ? (
+                        <LuClock className="w-4 h-4" />
+                      ) : task.status === 1 ? (
+                        <CircleEllipsis className="w-4 h-4" />
+                      ) : (
+                        <SquareCheckBig className="w-4 h-4" />
+                      )}
+                      {/* {task.status
+                        ? task.updated_at
+                          ? formatFixedTime(task.updated_at)
+                          : "-"
+                        : task.created_at
+                        ? formatTimeAgo(task.created_at)
+                        : "-"} */}
+                        {task.status === 0 ? (
+                          formatTimeAgo(task.created_at)
+                        ) : task.status === 1 ? (
+                          formatTimeAgo(task.updated_at)
+                        ) : (
+                          formatFixedTime(task.updated_at)
+                        )}
                     </div>
                   </Badge>
                 </TableCell>
@@ -295,9 +344,13 @@ export function TasksNewTable({
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={
-                      task.status === 0 
-                        ? (assignTo.find((a) => a.name === task.assign_to)?.id.toString() || "unassigned")
-                        : (assignTo.find((a) => a.name === task.assign_to)?.id.toString() || "completed")
+                      task.status === 0
+                        ? assignTo
+                            .find((a) => a.name === task.assign_to)
+                            ?.id.toString() || "unassigned"
+                        : assignTo
+                            .find((a) => a.name === task.assign_to)
+                            ?.id.toString() || "completed"
                     }
                     onValueChange={(value) => {
                       if (onAssignChange && value !== "unassigned") {
@@ -318,8 +371,10 @@ export function TasksNewTable({
                     <SelectContent>
                       {task.status === 0 ? (
                         <>
-                          <SelectItem  value="unassigned" disabled>
-                            <span className="text-(--muted-foreground)">เลือกผู้รับผิดชอบ</span> 
+                          <SelectItem value="unassigned" disabled>
+                            <span className="text-(--muted-foreground)">
+                              เลือกผู้รับผิดชอบ
+                            </span>
                           </SelectItem>
                           {assignTo && assignTo.length > 0 ? (
                             assignTo.map((assign) => (
@@ -337,10 +392,16 @@ export function TasksNewTable({
                           )}
                         </>
                       ) : (
-                        <SelectItem disabled value={assignTo.find((a) => a.name === task.assign_to)?.id.toString() || "completed"}>
+                        <SelectItem
+                          disabled
+                          value={
+                            assignTo
+                              .find((a) => a.name === task.assign_to)
+                              ?.id.toString() || "completed"
+                          }
+                        >
                           {task.assign_to || "เสร็จสิ้นแล้ว"}
                         </SelectItem>
-                        
                       )}
                     </SelectContent>
                   </Select>

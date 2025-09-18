@@ -343,7 +343,8 @@ function EditTaskPage() {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="0">Pending</SelectItem>
-                              <SelectItem value="1">Done</SelectItem>
+                              <SelectItem value="1">Progress</SelectItem>
+                              <SelectItem value="2">Done</SelectItem>
                             </SelectContent>
                           </Select>
                           <input type="hidden" name="status" value={status} required />

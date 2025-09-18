@@ -91,7 +91,7 @@ function ShowTaskPage() {
   // Load solution only if task is completed (status === 1)
   useEffect(() => {
     const loadSolution = async () => {
-      if (task && task.status === 1) {
+      if (task && task.status === 2) {
         try {
           const solutionData = await getSolutionById(Number(taskId));
           setSoltuion(solutionData);
@@ -196,14 +196,6 @@ function ShowTaskPage() {
         : null;
       const assignName = assignPerson ? assignPerson.name : null;
       const assignToId = assignPerson ? assignPerson.id : 0;
-      console.log("Assign Data", assignTo);
-      console.log("Assign Person:", editAssign);
-      console.log("Assign to ID:", assignToId);
-      console.log("Assign to Name", assignName);
-
-      console.log("Updating solution with:");
-      console.log("- Existing images:", existingSolutionImages);
-      console.log("- New images:", editSolutionFiles);
 
       // ส่งลิงค์รูปภาพเดิมไปให้ backend จัดการแทน (แก้ปัญหา CORS)
       console.log(
@@ -269,7 +261,7 @@ function ShowTaskPage() {
     }
   };
 
-  if (loadTask || (task && task.status === 1 && loadSolution)) {
+  if (loadTask || (task && task.status === 2 && loadSolution)) {
     return (
       <SidebarProvider
         style={
@@ -373,15 +365,17 @@ function ShowTaskPage() {
                             </div>
                             <div className="max-md:flex ">
                               <span
-                                className={`px-2 py-1 rounded-full text-sm font-medium ${
+                                className={`px-2 py-1 rounded-md text-sm font-medium ${
                                   task.status === 0
-                                    ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 text-center"
-                                    : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-center"
+                                    ? "bg-linear-to-r from-amber-500 to-amber-600 text-white text-center"
+                                    : task.status === 1 ?
+                                    "bg-linear-to-r from-cyan-500 to-sky-600 text-white text-center" :
+                                    "bg-linear-to-r from-green-500 to-green-600 text-white text-center"
                                 }`}
                               >
                                 {task.status === 0
-                                  ? "รอดำเนินการ"
-                                  : "เสร็จแล้ว"}
+                                  ? "Pending" : task.status === 1 ? "Progress"
+                                  : "Done"}
                               </span>
                             </div>
                           </div>
@@ -484,7 +478,7 @@ function ShowTaskPage() {
 
                   {/*================ วิธีแก้ไขปัญหา ================*/}
                   <TabsContent value="solution">
-                    {task.status === 1 && solution ? (
+                    {task.status === 2 && solution ? (
                       // Task is completed and solution exists - Show solution (read-only)
                       <Card>
                         <CardHeader>
@@ -676,7 +670,7 @@ function ShowTaskPage() {
                           </div>
                         </CardContent>
                       </Card>
-                    ) : task.status === 1 && !solution ? (
+                    ) : task.status === 2 && !solution ? (
                       // Task is completed but no solution exists - Show message
                       <Card>
                         <CardHeader>

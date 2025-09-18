@@ -66,6 +66,7 @@ export interface TaskWithPhone {
 export interface TaskStats {
   total: number
   pending: number
+  progress: number
   done: number
 }
 
