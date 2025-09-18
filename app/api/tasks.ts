@@ -63,7 +63,7 @@ export function useTasksNewPaginated(
         // Add status filter if not "all"
         if (status && status !== "all") {
           const statusValue =
-            status === "pending" ? "0" : status === "done" ? "1" : "";
+            status === "pending" ? "0" : status === "progress" ? "1" : status === "done" ? "2" : "";
           if (statusValue) {
             url = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/list/status/${statusValue}?page=${page}&limit=${limit}`;
           } else {

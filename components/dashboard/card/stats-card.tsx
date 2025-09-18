@@ -13,10 +13,12 @@ export function StatsCards({ stats }: StatsProps) {
   // ——— คำนวณให้เห็นชัด ———
   const total = Math.max(0, stats?.total ?? 0);
   const pending = Math.max(0, stats?.pending ?? 0);
+  const progress = Math.max(0, stats?.progress ?? 0);
   const done = Math.max(0, stats?.done ?? 0);
 
   const pct = (n: number) => (total ? Math.round((n / total) * 100) : 0);
   const pendingPct = pct(pending);
+  const progressPct = pct(progress);
   const donePct = pct(done);
 
   type StatItem = {
@@ -71,7 +73,24 @@ export function StatsCards({ stats }: StatsProps) {
       footer: `${pendingPct}% pending`,
     },
     {
-      title: "Solved",
+      title: "Progress",
+      value: progress,
+      percent: progressPct,
+      icon: CheckCircle,
+      tone: {
+        ring: "ring-green-400/60",
+        text: "text-green-700 dark:text-green-200",
+        icon: "text-green-500",
+        gradientCard: "from-green-400/35 via-green-300/20 to-green-200/10",
+        gradientBar: "from-green-500 to-green-300",
+        badgeBg: "bg-green-500/15",
+        badgeText: "text-green-400",
+      },
+      href: "/tasks?status=done",
+      footer: `${progressPct}% solved`,
+    },
+    {
+      title: "Done",
       value: done,
       percent: donePct,
       icon: CheckCircle,
@@ -87,11 +106,12 @@ export function StatsCards({ stats }: StatsProps) {
       href: "/tasks?status=done",
       footer: `${donePct}% solved`,
     },
+
   ];
 
   return (
     // ✅ equal height: ให้ grid ยืด item เต็มแทร็ค + ให้ลูก h-full
-    <div className="grid grid-cols-1 gap-5 px-1 lg:grid-cols-3 items-stretch">
+    <div className="grid grid-cols-1 gap-5 px-1 lg:grid-cols-2 items-stretch">
       {items.map((it) => {
         const Icon = it.icon;
         const widthPct = it.title === "Total Tasks" ? 100 : (it.percent ?? 0);

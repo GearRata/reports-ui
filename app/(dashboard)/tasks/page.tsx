@@ -26,7 +26,7 @@ function TasksPageContent() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "done">(
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "progress" | "done">(
     "all"
   );
 
@@ -48,8 +48,8 @@ function TasksPageContent() {
       urlStatusRef.current = currentStatus;
       const raw = (currentStatus || "all").toLowerCase();
       const normalized =
-        raw === "pending" || raw === "done"
-          ? (raw as "pending" | "done")
+        raw === "pending" || raw === "progress" || raw === "done"
+          ? (raw as "pending" | "progress" | "done" )
           : "all";
       setStatusFilter(normalized);
     }
@@ -207,7 +207,7 @@ function TasksPageContent() {
                       onAssignChange={handleAssignChange}
                       onStatusFilterChange={(s) => {
                         // เมื่อเปลี่ยนจาก dropdown ก็ยิง GET เหมือนเดิม (ผ่าน changeStatus)
-                        setStatusFilter(s as "all" | "pending" | "done");
+                        setStatusFilter(s as "all" | "pending" | "progress" |"done");
 
                         // อัปเดต URL ให้ตรงกัน (optional แต่แนะนำ)
                         const params = new URLSearchParams(

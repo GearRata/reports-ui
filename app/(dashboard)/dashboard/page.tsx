@@ -165,8 +165,9 @@ function Page() {
   const status: TaskStats = useMemo(() => {
     const total = filteredTasks.length;
     const pending = filteredTasks.filter((t) => t.status === 0).length;
-    const done = filteredTasks.filter((t) => t.status === 1).length;
-    return { total, pending, done };
+    const progress = filteredTasks.filter((t) => t.status === 1).length;
+    const done = filteredTasks.filter((t) => t.status === 2).length;
+    return { total, pending, progress, done };
   }, [filteredTasks]);
 
   // Callback functions for filters
@@ -491,7 +492,10 @@ function Page() {
                 </div>
 
                 {/* StatsCard show Status of tasks */}
-                <StatsCards stats={status} />
+                <div className="grid grid-cols-2">
+                 <StatsCards stats={status} />
+                </div>
+                {/* <StatsCards stats={status} /> */}
 
                 {/* Charts Grid */}
 
