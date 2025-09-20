@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import { Label } from "../ui/label";
 import {
   Select,
@@ -29,7 +35,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
 import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
-import CameraPicker from "@/components/imagesComponents/images";
+import ImageCompressor from "@/components/images/ImageCompressor";
+import CameraButton from "@/components/images/CameraButton";
+import GalleryButton from "@/components/images/GalleryButton";
 import {
   User,
   Building2,
@@ -66,12 +74,95 @@ export default function DialogForm() {
   const [loadingType, setLoadingType] = useState(false);
   const [loadingBranch, setLoadingBranch] = useState(false);
   const [loadingDepartment, setLoadingDepartment] = useState(false);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [issue, setIssue] = useState<string>("");
   const [open, setOpen] = React.useState(false);
-  
+
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const [processing, setProcessing] = useState(false);
+
+  const compressImage = (
+    file: File,
+    maxWidth: number = 400,
+    quality: number = 0.3
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      const img = new Image();
+
+      img.onload = () => {
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(compressedDataUrl);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleCamera = () => {
+    cameraRef.current?.click();
+  };
+
+  const handleGallery = () => {
+    galleryRef.current?.click();
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    setProcessing(true);
+
+    try {
+      const fileArray = Array.from(selectedFiles);
+      const compressedImages: string[] = [];
+
+      for (const file of fileArray) {
+        const compressed = await compressImage(file);
+        if (compressed.length > 200 * 1024) {
+          const superCompressed = await compressImage(file, 300, 0.2);
+          compressedImages.push(superCompressed);
+        } else {
+          compressedImages.push(compressed);
+        }
+      }
+
+      const updatedImages = [...selectedImages, ...compressedImages];
+      const updatedFiles = [...capturedFiles, ...fileArray];
+      const finalImages = updatedImages.slice(0, 9);
+      const finalFiles = updatedFiles.slice(0, 9);
+
+      if (updatedImages.length > 9) {
+        toast.error("สามารถเลือกได้สูงสุด 9 รูปเท่านั้น");
+      }
+
+      setSelectedImages(finalImages);
+      setCapturedFiles(finalFiles);
+
+      if (cameraRef.current) cameraRef.current.value = "";
+      if (galleryRef.current) galleryRef.current.value = "";
+    } catch (error) {
+      console.error("Error processing images:", error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleImagesChange = (images: string[], files: File[]) => {
+    setSelectedImages(images);
+    setCapturedFiles(files);
+  };
+
+
 
   // Check if form has unsaved changes
   const hasUnsavedChanges = useMemo(() => {
@@ -92,10 +183,9 @@ export default function DialogForm() {
       }
     };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [hasUnsavedChanges, isSubmitting, isSuccess]);
-
 
   useEffect(() => {
     setProgramID(undefined); // ล้างโปรแกรมเดิม
@@ -106,10 +196,6 @@ export default function DialogForm() {
     if (!typeID) return [];
     return (programs || []).filter((p) => p.type_id === typeID.id);
   }, [programs, typeID]);
-
-  const handleFilesCapture = (files: File[]) => {
-    setCapturedFiles(files);
-  };
 
   // useCallback เพื่อป้องกันการสร้างฟังก์ชันใหม่ใน re-render
   const loadProgram = useCallback(async () => {
@@ -200,7 +286,7 @@ export default function DialogForm() {
   useEffect(() => {
     const branchParam = params.branch;
     const departmentParam = params.department;
-    
+
     // เช็คและแปลงค่า branch
     const branchId = Number(branchParam);
     if (!isNaN(branchId) && branchId === branchID) {
@@ -209,10 +295,10 @@ export default function DialogForm() {
     if (!isNaN(branchId)) {
       setBranchID(branchId);
     } else {
-      console.warn('Invalid branch parameter:', branchParam);
+      console.warn("Invalid branch parameter:", branchParam);
       setBranchID(0);
     }
-    
+
     // เช็คและแปลงค่า department
     const departmentId = Number(departmentParam);
     if (!isNaN(departmentId) && departmentId === departmentID) {
@@ -221,11 +307,10 @@ export default function DialogForm() {
     if (!isNaN(departmentId)) {
       setDepartmentID(departmentId);
     } else {
-      console.warn('Invalid department parameter:', departmentParam);
+      console.warn("Invalid department parameter:", departmentParam);
       setDepartmentID(0);
     }
   }, [params, branchID, departmentID]);
-
 
   // useEffect สำหรับโหลดข้อมูล programs (โหลดครั้งเดียวตอน mount)
   useEffect(() => {
@@ -248,6 +333,7 @@ export default function DialogForm() {
   }, [loadDepartment]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (!text.trim() && selectedImages.length === 0) return;
     e.preventDefault();
 
     if (!reportby.trim()) {
@@ -331,7 +417,7 @@ export default function DialogForm() {
       //   window.removeEventListener('beforeunload', () => {});
       //   window.location.reload();
       // }, 500);
-      
+
       return result;
     } catch (err) {
       console.error("Error creating task:", err);
@@ -552,7 +638,7 @@ export default function DialogForm() {
                       "data-[placeholder]:text-slate-600"
                     )}
                   >
-                    <SelectValue 
+                    <SelectValue
                       placeholder={
                         loadingType ? "กำลังโหลด..." : "เลือกชนิดปัญหา"
                       }
@@ -842,22 +928,56 @@ export default function DialogForm() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 flex-wrap">
-                    <Label className="text-base sm:text-lg font-bold text-slate-100">
-                      แนบรูปภาพประกอบ
-                    </Label>
-                  </div>
+                  <Label className="text-base sm:text-lg font-bold text-slate-100">
+                    แนบรูปภาพประกอบ
+                  </Label>
                   <p className="text-xs sm:text-sm text-slate-400 mt-1">
                     ถ่ายรูปหรือเลือกจากแกลเลอรี่ (สูงสุด 9 รูป)
                   </p>
                 </div>
               </div>
-
-              <div className="relative">
-                <div className="border-2 border-dashed border-slate-600/40 rounded-2xl p-4 sm:p-8 hover:border-slate-500/60 transition-all duration-500 bg-slate-700/20 backdrop-blur-xl group-hover:bg-slate-700/30">
-                  <CameraPicker onFilesCapture={handleFilesCapture} />
+              
+              {/* Camera and Gallery Buttons */}
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <CameraButton
+                    onClick={handleCamera}
+                    disabled={processing || selectedImages.length >= 9}
+                  />
+                </div>
+                <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <GalleryButton
+                    onClick={handleGallery}
+                    disabled={processing || selectedImages.length >= 9}
+                  />
                 </div>
               </div>
+
+              <ImageCompressor
+                selectedImages={selectedImages}
+                capturedFiles={capturedFiles}
+                onImagesChange={handleImagesChange}
+                processing={processing}
+              />
+
+              {/* Hidden File Inputs */}
+              <input
+                ref={cameraRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              <input
+                ref={galleryRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </div>
 
             {/* Enhanced Submit Button */}
@@ -910,7 +1030,6 @@ export default function DialogForm() {
           </form>
         </CardContent>
       </Card>
-
     </div>
   );
 }

@@ -120,7 +120,7 @@ export function useDepartmentsPaginated(
       params?.limit || 10,
       params?.search || ""
     );
-  }, []);
+  }, [fetchDepartments, params?.limit, params?.page, params?.search]);
 
   return {
     ...state,

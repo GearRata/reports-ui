@@ -121,7 +121,7 @@ export function useIPPhonesPaginated(
       params?.limit || 10,
       params?.search || ""
     );
-  }, []);
+  }, [fetchIPPhones, params?.limit, params?.page, params?.search]);
 
   return {
     ...state,

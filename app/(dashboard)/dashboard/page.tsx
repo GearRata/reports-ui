@@ -254,33 +254,7 @@ function Page() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto space-y-6">
-                {selectedDate ? (
-                  format(selectedDate, "PPP", { locale: th })
-                ) : selectedRange ? (
-                  <div className="flex justify-between items-center border font-bold text-2xl bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full h-16 drop-shadow-xl text-white px-4">
-                    {selectedRange.from && selectedRange.to ? (
-                      <>
-                        <div className="border-2 border-red-500 w-[50%]">
-                          {format(selectedRange.from, "dd MMM yyyy", {
-                            locale: th,
-                          })}
-                        </div>
-                        
-                        <div className="border-2 border-red-500 w-[50%]">
-                          {format(subDays(selectedRange.to, 1), "dd MMM yyyy", {
-                            locale: th,
-                          })}
-                        </div>
-                      </>
-                    ) : (
-                      "ช่วงที่เลือก"
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex justify-center items-center border">
-                    วันที่จะสแดง
-                  </div>
-                )}
+               
                 {/* Dashboard Filters */}
                 <div className="grid grid-cols-2 gap-2 p-4 bg-card rounded-lg border max-md:grid-cols-1">
                   {/* Date Filter */}
