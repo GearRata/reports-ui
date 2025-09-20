@@ -9,7 +9,7 @@ import type {
   DeleteBranch,
 } from "@/types/branch/model";
 
-// Branches Hook
+// Chat Hook
 export function useBranches() {
   const [branches, setBranches] = useState<BranchData[]>([]);
   const [loading, setLoading] = useState(true);

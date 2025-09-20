@@ -344,7 +344,7 @@ export function TasksNewTable({
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={
-                      task.status === 0
+                      task.status === 0 || 1
                         ? assignTo
                             .find((a) => a.name === task.assign_to)
                             ?.id.toString() || "unassigned"
@@ -369,12 +369,11 @@ export function TasksNewTable({
                       <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
                     <SelectContent>
-                      {task.status === 0 ? (
+                      {task.status === 0 || 1 ? (
                         <>
                           <SelectItem value="unassigned" disabled>
-                            <span className="text-(--muted-foreground)">
-                              เลือกผู้รับผิดชอบ
-                            </span>
+           
+                              <span className="text-(--muted-foreground)">เลือกผู้รับผิดชอบ</span>
                           </SelectItem>
                           {assignTo && assignTo.length > 0 ? (
                             assignTo.map((assign) => (

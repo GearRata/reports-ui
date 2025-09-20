@@ -1,7 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import * as React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -38,8 +40,8 @@ export default function ImagesViewer({
     setOpen(true);
   };
 
-  const prev = () => setIndex((i) => (i - 1 + images.length) % images.length);
-  const next = () => setIndex((i) => (i + 1) % images.length);
+  const prev = useCallback(() => setIndex((i) => (i - 1 + images.length) % images.length), [images.length]);
+  const next = useCallback(() => setIndex((i) => (i + 1) % images.length), [images.length]);
 
   useEffect(() => {
     if (!open) return;
@@ -50,7 +52,7 @@ export default function ImagesViewer({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open, images.length]);
+  }, [open, images.length, next, prev]);
 
   const safeTask = useMemo(() => dedupe(valid(taskImages)), [taskImages]);
   const safeSolution = useMemo(

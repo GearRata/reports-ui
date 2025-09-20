@@ -2,7 +2,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,9 +33,10 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
-import CameraPicker from "@/components/imagesComponents/images";
+import CameraButton from "@/components/images/CameraButton";
+import GalleryButton from "@/components/images/GalleryButton";
 import { useRouter, useParams } from "next/navigation";
-import TaskImageViewer from "@/components/imagesComponents/images-viewer";
+import TaskImageViewer from "@/components/images/images-viewer";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -43,6 +44,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Pencil, Trash, X } from "lucide-react";
+import toast from "react-hot-toast";
 import { useAssign } from "@/app/api/assign";
 
 function ShowTaskPage() {
@@ -55,6 +57,8 @@ function ShowTaskPage() {
   const [solution, setSoltuion] = useState<SolutionData | null>(null);
   const { assignTo: assignTo } = useAssign();
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [processing, setProcessing] = useState(false);
   const [loadTask, setLoadTask] = useState(true);
   const [loadSolution, setLoadSolution] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,10 +66,16 @@ function ShowTaskPage() {
   const [editSolutionText, setEditSolutionText] = useState("");
   const [editAssign, setEditAssign] = useState("");
   const [editSolutionFiles, setEditSolutionFiles] = useState<File[]>([]);
+  const [editSelectedImages, setEditSelectedImages] = useState<string[]>([]);
+  const [editProcessing, setEditProcessing] = useState(false);
   const [existingSolutionImages, setExistingSolutionImages] = useState<
     string[]
   >([]);
   const [assignId, setAssignId] = useState<string>("");
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const editCameraRef = useRef<HTMLInputElement>(null);
+  const editGalleryRef = useRef<HTMLInputElement>(null);
   const taskImages = Object.values(task?.file_paths || {}) as string[];
   const solutionImages = Object.values(solution?.file_paths || {}) as string[];
 
@@ -143,6 +153,7 @@ function ShowTaskPage() {
       // Clear form
       setText("");
       setCapturedFiles([]);
+      setSelectedImages([]);
 
       setTimeout(() => {
         window.location.reload();
@@ -155,12 +166,139 @@ function ShowTaskPage() {
     }
   };
 
-  const handleFilesCapture = (files: File[]) => {
-    setCapturedFiles(files);
+  const compressImage = (
+    file: File,
+    maxWidth: number = 400,
+    quality: number = 0.3
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      const img = new Image();
+
+      img.onload = () => {
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(compressedDataUrl);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
   };
 
-  const handleEditSolutionFilesCapture = (files: File[]) => {
-    setEditSolutionFiles(files);
+  const handleCamera = () => {
+    cameraRef.current?.click();
+  };
+
+  const handleGallery = () => {
+    galleryRef.current?.click();
+  };
+
+  const handleEditCamera = () => {
+    editCameraRef.current?.click();
+  };
+
+  const handleEditGallery = () => {
+    editGalleryRef.current?.click();
+  };
+
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    setProcessing(true);
+
+    try {
+      const fileArray = Array.from(selectedFiles);
+      const compressedImages: string[] = [];
+
+      for (const file of fileArray) {
+        const compressed = await compressImage(file);
+        if (compressed.length > 200 * 1024) {
+          const superCompressed = await compressImage(file, 300, 0.2);
+          compressedImages.push(superCompressed);
+        } else {
+          compressedImages.push(compressed);
+        }
+      }
+
+      const updatedImages = [...selectedImages, ...compressedImages];
+      const updatedFiles = [...capturedFiles, ...fileArray];
+      const finalImages = updatedImages.slice(0, 9);
+      const finalFiles = updatedFiles.slice(0, 9);
+
+      if (updatedImages.length > 9) {
+        toast.error("สามารถเลือกได้สูงสุด 9 รูปเท่านั้น");
+      }
+
+      setSelectedImages(finalImages);
+      setCapturedFiles(finalFiles);
+
+      if (cameraRef.current) cameraRef.current.value = "";
+      if (galleryRef.current) galleryRef.current.value = "";
+    } catch (error) {
+      console.error("Error processing images:", error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const onEditFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    setEditProcessing(true);
+
+    try {
+      const fileArray = Array.from(selectedFiles);
+      const compressedImages: string[] = [];
+
+      for (const file of fileArray) {
+        const compressed = await compressImage(file);
+        if (compressed.length > 200 * 1024) {
+          const superCompressed = await compressImage(file, 300, 0.2);
+          compressedImages.push(superCompressed);
+        } else {
+          compressedImages.push(compressed);
+        }
+      }
+
+      const updatedImages = [...editSelectedImages, ...compressedImages];
+      const updatedFiles = [...editSolutionFiles, ...fileArray];
+      const finalImages = updatedImages.slice(0, 9);
+      const finalFiles = updatedFiles.slice(0, 9);
+
+      if (updatedImages.length > 9) {
+        toast.error("สามารถเลือกได้สูงสุด 9 รูปเท่านั้น");
+      }
+
+      setEditSelectedImages(finalImages);
+      setEditSolutionFiles(finalFiles);
+
+      if (editCameraRef.current) editCameraRef.current.value = "";
+      if (editGalleryRef.current) editGalleryRef.current.value = "";
+    } catch (error) {
+      console.error("Error processing images:", error);
+    } finally {
+      setEditProcessing(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newFiles = capturedFiles.filter((_, i) => i !== index);
+    setSelectedImages(newImages);
+    setCapturedFiles(newFiles);
+  };
+
+  const removeEditImage = (index: number) => {
+    const newImages = editSelectedImages.filter((_, i) => i !== index);
+    const newFiles = editSolutionFiles.filter((_, i) => i !== index);
+    setEditSelectedImages(newImages);
+    setEditSolutionFiles(newFiles);
   };
 
   const handleEditSolution = () => {
@@ -181,6 +319,7 @@ function ShowTaskPage() {
     setIsEditingSolution(false);
     setEditSolutionText("");
     setEditSolutionFiles([]);
+    setEditSelectedImages([]);
     setExistingSolutionImages([]);
   };
 
@@ -228,6 +367,7 @@ function ShowTaskPage() {
       setIsEditingSolution(false);
       setEditSolutionText("");
       setEditSolutionFiles([]);
+      setEditSelectedImages([]);
       setExistingSolutionImages([]);
 
       console.log("Solution updated successfully");
@@ -606,13 +746,80 @@ function ShowTaskPage() {
                                     </div>
                                   )}
 
-                                  <div className="space-y-2">
+                                  <div className="space-y-4">
                                     <Label>เพิ่มรูปภาพใหม่</Label>
-                                    <CameraPicker
-                                      onFilesCapture={
-                                        handleEditSolutionFilesCapture
-                                      }
+                                    
+                                    {/* Hidden File Inputs */}
+                                    <input
+                                      ref={editCameraRef}
+                                      type="file"
+                                      accept="image/*"
+                                      capture="environment"
+                                      multiple
+                                      onChange={onEditFileChange}
+                                      className="hidden"
                                     />
+                                    <input
+                                      ref={editGalleryRef}
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={onEditFileChange}
+                                      className="hidden"
+                                    />
+
+                                    {/* Camera and Gallery Buttons */}
+                                    <div className="flex gap-4 mb-4">
+                                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                        <CameraButton onClick={handleEditCamera} disabled={editProcessing || editSelectedImages.length >= 9} />
+                                      </div>
+                                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                        <GalleryButton onClick={handleEditGallery} disabled={editProcessing || editSelectedImages.length >= 9} />
+                                      </div>
+                                      {editProcessing && (
+                                        <div className="flex items-center gap-2 text-blue-600">
+                                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                                          <span className="text-sm">บีบอัด...</span>
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* Image Grid Display */}
+                                    {editSelectedImages.length > 0 && (
+                                      <div className="grid grid-cols-3 gap-3">
+                                        {editSelectedImages.map((src, i) => (
+                                          <div key={i} className="relative aspect-square group">
+                                            <img
+                                              src={src}
+                                              alt={`preview-${i}`}
+                                              className="w-full h-full object-cover rounded-lg border-2 border-green-300 shadow-sm"
+                                            />
+                                            <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 rounded">
+                                              ใหม่
+                                            </div>
+                                            <button
+                                              type="button"
+                                              onClick={() => removeEditImage(i)}
+                                              className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                                            >
+                                              <X className="h-3 w-3" />
+                                            </button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* File Size Summary */}
+                                    {editSelectedImages.length > 0 && !editProcessing && (
+                                      <div className="text-center py-2">
+                                        <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                          <span className="text-sm font-medium">
+                                            เลือกแล้ว {editSelectedImages.length} จาก 9 รูป
+                                          </span>
+                                        </div>
+                                      </div>
+                                    )}
                                   </div>
 
                                   <div className="flex justify-end gap-2">
@@ -733,11 +940,77 @@ function ShowTaskPage() {
                             </div>
 
                             {/* Camera Section */}
-                            <div className="space-y-2">
+                            <div className="space-y-4">
                               <Label>เพิ่มรูปภาพ</Label>
-                              <CameraPicker
-                                onFilesCapture={handleFilesCapture}
+                              
+                              {/* Hidden File Inputs */}
+                              <input
+                                ref={cameraRef}
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                multiple
+                                onChange={onFileChange}
+                                className="hidden"
                               />
+                              <input
+                                ref={galleryRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={onFileChange}
+                                className="hidden"
+                              />
+
+                              {/* Camera and Gallery Buttons */}
+                              <div className="flex gap-4 mb-4">
+                                <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                  <CameraButton onClick={handleCamera} disabled={processing || selectedImages.length >= 9} />
+                                </div>
+                                <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                  <GalleryButton onClick={handleGallery} disabled={processing || selectedImages.length >= 9} />
+                                </div>
+                                {processing && (
+                                  <div className="flex items-center gap-2 text-blue-600">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                                    <span className="text-sm">บีบอัด...</span>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Image Grid Display */}
+                              {selectedImages.length > 0 && (
+                                <div className="grid grid-cols-3 gap-3">
+                                  {selectedImages.map((src, i) => (
+                                    <div key={i} className="relative aspect-square group">
+                                      <img
+                                        src={src}
+                                        alt={`preview-${i}`}
+                                        className="w-full h-full object-cover rounded-lg border-2 border-slate-300 shadow-sm transition-all duration-300 group-hover:border-slate-400"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => removeImage(i)}
+                                        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* File Size Summary */}
+                              {selectedImages.length > 0 && !processing && (
+                                <div className="text-center py-2">
+                                  <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    <span className="text-sm font-medium">
+                                      เลือกแล้ว {selectedImages.length} จาก 9 รูป
+                                    </span>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                             <div className="flex justify-end gap-4">
                               <Button

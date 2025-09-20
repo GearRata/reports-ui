@@ -76,7 +76,7 @@ export function useProgramsPaginated(params?: ProgramsPaginationParams) {
 
   useEffect(() => {
     fetchPrograms(state.currentPage, state.pageSize); // Initial fetch with default values
-  }, []); // Only run on mount
+  }, [state.currentPage, state.pageSize]); // Only run on mount
 
   return {
     ...state,

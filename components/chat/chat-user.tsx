@@ -1,143 +1,91 @@
-// 'use client';
+/* eslint-disable @next/next/no-img-element */
+"use client";
+import { useEffect, useRef } from "react";
+import { useChatID } from "@/app/api/chat";
+import { useParams } from "next/navigation";
+import { MessageCircle } from "lucide-react";
+import { Badge } from "../ui/badge";
+import { Wrench } from 'lucide-react';
 
-// import { useState } from 'react';
-// import { Message, MessageContent } from '@/components/ui/ai-elements/message';
-// import {
-//   Conversation,
-//   ConversationContent,
-// } from '@/components/ui/ai-elements/conversation';
-// import { Loader } from '@/components/ui/ai-elements/loader';
-// // import { Suggestions, Suggestion } from '@/components/ai-elements/suggestion';
+export default function ChatUserPage() {
+  const taskId = Number(useParams().id);
+  const { Chat, loading, error } = useChatID(taskId);
+  const listRef = useRef<HTMLDivElement>(null);
 
-// interface Chat {
-//   id: string;
-//   demo: string;
-// }
+  useEffect(() => {
+    listRef.current?.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [Chat.length]);
 
-// export default function ChatUser() {
-//   const [message, setMessage] = useState('');
-//   const [currentChat, setCurrentChat] = useState<Chat | null>(null);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [chatHistory, setChatHistory] = useState<
-//     Array<{
-//       type: 'user' | 'assistant';
-//       content: string;
-//     }>
-//   >([]);
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        กำลังโหลด...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-screen text-red-500">
+        เกิดข้อผิดพลาด: {error}
+      </div>
+    );
 
-// //   const handleSendMessage = async (promptMessage: PromptInputMessage) => {
-// //     const hasText = Boolean(promptMessage.text);
-// //     const hasAttachments = Boolean(promptMessage.files?.length);
-    
-// //     if (!(hasText || hasAttachments) || isLoading) return;
+  return (
+    <div className="flex items-center justify-center min-h-screen p-2">
+      <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between border-b px-4 py-3">
+          <div className="flex gap-2 text-lg font-semibold ">
+            Chat# {Chat.length > 0 ? Chat[0].ticket_no : `TASK-${taskId}`}
+            {Chat.length > 0 && Chat[0].assignto && (
+              <Badge><Wrench/> {Chat[0].assignto}</Badge>
+            )}
+          </div>
 
-// //     const userMessage = promptMessage.text?.trim() || 'Sent with attachments';
-// //     setMessage('');
-// //     setIsLoading(true);
-
-// //     setChatHistory((prev) => [...prev, { type: 'user', content: userMessage }]);
-
-// //     try {
-// //       const response = await fetch('/api/chat', {
-// //         method: 'POST',
-// //         headers: {
-// //           'Content-Type': 'application/json',
-// //         },
-// //         body: JSON.stringify({
-// //           message: userMessage,
-// //           chatId: currentChat?.id,
-// //         }),
-// //       });
-
-// //       if (!response.ok) {
-// //         throw new Error('Failed to create chat');
-// //       }
-
-// //       const chat: Chat = await response.json();
-// //       setCurrentChat(chat);
-
-// //       setChatHistory((prev) => [
-// //         ...prev,
-// //         {
-// //           type: 'assistant',
-// //           content: 'Generated new app preview. Check the preview panel!',
-// //         },
-// //       ]);
-// //     } catch (error) {
-// //       console.error('Error:', error);
-// //       setChatHistory((prev) => [
-// //         ...prev,
-// //         {
-// //           type: 'assistant',
-// //           content:
-// //             'Sorry, there was an error creating your app. Please try again.',
-// //         },
-// //       ]);
-// //     } finally {
-// //       setIsLoading(false);
-// //     }
-// //   };
-
-//   return (
-//     <div className="h-screen flex">
-//       {/* Chat Panel */}
-//       <div className="w-full flex flex-col border-r">
-//         {/* Header */}
-//         <div className="border-b p-3 h-14 flex items-center justify-between">
-//           <h1 className="text-lg font-semibold">Task</h1>
-//         </div>
-
-//         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-//           {chatHistory.length === 0 ? (
-//             <div className="text-center font-semibold mt-8">
-//               <p className="text-3xl mt-4">ยังไม่มีอะไรอัปเดต 😔</p>
-//             </div>
-//           ) : (
-//             <>
-//               <Conversation>
-//                 <ConversationContent>
-//                   {chatHistory.map((msg, index) => (
-//                     <Message from={msg.type} key={index}>
-//                       <MessageContent>{msg.content}</MessageContent>
-//                     </Message>
-//                   ))}
-//                 </ConversationContent>
-//               </Conversation>
-//               {isLoading && (
-//                 <Message from="assistant">
-//                   <MessageContent>
-//                     <div className="flex items-center gap-2">
-//                       <Loader />
-//                       Creating your app...
-//                     </div>
-//                   </MessageContent>
-//                 </Message>
-//               )}
-//             </>
-//           )}
-//         </div>
-
-//         {/* Input */}
-//         {/* <div className="border-t p-4">
-//           <div className="flex gap-2">
-//             <PromptInput
-//               onSubmit={handleSendMessage}
-//               className="mt-4 w-full  mx-auto relative"
-//             >
-//               <PromptInputTextarea
-//                 onChange={(e) => setMessage(e.target.value)}
-//                 value={message}
-//                 className="pr-12 min-h-[60px]"
-//               />
-//               <PromptInputSubmit
-//                 className="absolute bottom-3 rounded-full right-1"
-//                 disabled={!message}
-//                 status={isLoading ? 'streaming' : 'ready'}
-//               />
-//             </PromptInput>
-//           </div>
-//         </div> */}
-//       </div>
-//     </div>
-//   );
-// }
+          <div className="flex relative ">
+            <MessageCircle className="w-8 h-8" />
+            <div className="flex items-center justify-center absolute -top-1 -right-1 bg-red-500 size-5 rounded-full animate-bounce  ">
+              {Chat.length}
+            </div>
+          </div>
+        </div>
+        <div ref={listRef} className="h-[520px] overflow-auto p-4">
+          <div className="flex flex-col gap-3">
+            {Chat.map((chat) => (
+              <div key={chat.id} className="flex w-full gap-2">
+                <div className="max-w-full rounded-2xl px-3 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800">
+                  <div className="whitespace-pre-wrap break-words">
+                    {chat.text}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {chat.file_paths &&
+                      Object.entries(chat.file_paths).map(([key, url]) => (
+                        <img
+                          key={key}
+                          src={url}
+                          alt="attachment"
+                          className=" mt-2 rounded-lg max-w-full h-auto"
+                        />
+                      ))}
+                  </div>
+                  <div className="mt-1 text-[14px] opacity-70 text-gray-500 dark:text-gray-400">
+                    {new Date(chat.created_at).toLocaleTimeString("th-TH", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {Chat.length === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                ยังไม่มีความคืบหน้า
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

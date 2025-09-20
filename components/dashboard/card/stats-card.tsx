@@ -10,7 +10,7 @@ interface StatsProps {
 }
 
 export function StatsCards({ stats }: StatsProps) {
-  // ——— คำนวณให้เห็นชัด ———
+  // ——— คำนวณ ———
   const total = Math.max(0, stats?.total ?? 0);
   const pending = Math.max(0, stats?.pending ?? 0);
   const progress = Math.max(0, stats?.progress ?? 0);
@@ -45,13 +45,13 @@ export function StatsCards({ stats }: StatsProps) {
       value: total,
       icon: ListTodo,
       tone: {
-        ring: "ring-blue-400/60",
-        text: "text-blue-700 dark:text-blue-200",
-        icon: "text-blue-500",
-        gradientCard: "from-blue-400/35 via-blue-300/20 to-blue-200/10",
-        gradientBar: "from-blue-500 to-blue-300",
-        badgeBg: "bg-blue-500/15",
-        badgeText: "text-blue-400",
+        ring: "ring-gray-400/60",
+        text: "text-gray-700 dark:text-gray-200",
+        icon: "text-gray-500",
+        gradientCard: "from-blue-gray/35 via-gray-300/20 to-gray-200/10",
+        gradientBar: "from-gray-500 to-gray-300",
+        badgeBg: "bg-gray-500/15",
+        badgeText: "text-gray-400",
       },
       href: "/tasks",
     },
@@ -78,15 +78,15 @@ export function StatsCards({ stats }: StatsProps) {
       percent: progressPct,
       icon: CheckCircle,
       tone: {
-        ring: "ring-green-400/60",
-        text: "text-green-700 dark:text-green-200",
-        icon: "text-green-500",
-        gradientCard: "from-green-400/35 via-green-300/20 to-green-200/10",
-        gradientBar: "from-green-500 to-green-300",
-        badgeBg: "bg-green-500/15",
-        badgeText: "text-green-400",
+        ring: "ring-blue-400/60",
+        text: "text-blue-700 dark:text-blue-200",
+        icon: "text-blue-500",
+        gradientCard: "from-blue-400/35 via-blue-300/20 to-blue-200/10",
+        gradientBar: "from-blue-500 to-blue-300",
+        badgeBg: "bg-blue-500/15",
+        badgeText: "text-blue-400",
       },
-      href: "/tasks?status=done",
+      href: "/tasks?status=progress",
       footer: `${progressPct}% solved`,
     },
     {
@@ -110,7 +110,7 @@ export function StatsCards({ stats }: StatsProps) {
   ];
 
   return (
-    // ✅ equal height: ให้ grid ยืด item เต็มแทร็ค + ให้ลูก h-full
+
     <div className="grid grid-cols-1 gap-5 px-1 lg:grid-cols-2 items-stretch">
       {items.map((it) => {
         const Icon = it.icon;

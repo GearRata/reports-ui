@@ -151,7 +151,7 @@ export function useTasksNewPaginated(
       params?.search || "",
       params?.status || "all"
     );
-  }, []);
+  }, [fetchTasks, params?.limit, params?.page, params?.search, params?.status]);
 
   return {
     ...state,

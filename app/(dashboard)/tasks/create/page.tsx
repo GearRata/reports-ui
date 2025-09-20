@@ -40,7 +40,7 @@ import { addTaskNew } from "@/app/api/tasks";
 import { useType } from "@/app/api/type";
 import { useProgramsForDropdown } from "@/app/api/programs";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
-import CameraPicker from "@/components/imagesComponents/images";
+import CameraPicker from "@/components/images/images";
 import { cn } from "@/lib/utils";
 import { ChevronsUpDown, Check } from "lucide-react";
 

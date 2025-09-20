@@ -4,8 +4,6 @@
 
 import { useRef, useState, useEffect } from "react";
 import { CiCirclePlus } from "react-icons/ci";
-import { FaCamera } from "react-icons/fa";
-import { AiFillPicture } from "react-icons/ai";
 import { X } from 'lucide-react';
 
 interface CameraPickerProps {
@@ -22,40 +20,20 @@ export default function CameraPicker({
   const [previews, setPreviews] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [processing, setProcessing] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+
   const [compressedSizes, setCompressedSizes] = useState<number[]>([]);
 
   const openCamera = () => {
-    setShowMenu(false);
     cameraRef.current?.click();
   };
 
   const openGallery = () => {
-    setShowMenu(false);
     galleryRef.current?.click();
   };
 
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
 
-  // ปิดเมนูเมื่อคลิกข้างนอก
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Element;
-      if (showMenu && !target.closest(".camera-menu-container")) {
-        setShowMenu(false);
-      }
-    };
 
-    if (showMenu) {
-      document.addEventListener("click", handleClickOutside, true);
-    }
 
-    return () => {
-      document.removeEventListener("click", handleClickOutside, true);
-    };
-  }, [showMenu]);
 
   // ฟังก์ชันบีบอัดรูปภาพ (บีบอัดมากขึ้น)
   const compressImage = (
@@ -214,60 +192,7 @@ export default function CameraPicker({
           </div>
         ))}
 
-        {/* Enhanced Add Button */}
-        {previews.length < 9 && (
-          <div className="relative aspect-square animate-scaleIn camera-menu-container ">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleMenu();
-              }}
-              className="w-full h-full flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-500/40 hover:border-slate-400/60 bg-slate-700/20 hover:bg-slate-600/30 shadow-xl transition-all duration-500 hover:scale-105 active:scale-95 group backdrop-blur-sm"
-              aria-label="Add image"
-              type="button"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
-                <CiCirclePlus
-                  size={24}
-                  className="relative text-slate-400 group-hover:text-slate-300 transition-all duration-300 group-hover:rotate-90"
-                />
-              </div>
-              <span className="text-sm text-slate-400 group-hover:text-slate-300 mt-2 font-medium transition-colors duration-300">
-                เพิ่มรูป
-              </span>
-              <span className="text-xs text-slate-500 group-hover:text-slate-400 mt-1 transition-colors duration-300">
-                {9 - previews.length} รูปที่เหลือ
-              </span>
-            </button>
-
-            {/* Compact Dropdown Menu */}
-            {showMenu && (
-              <div className="absolute top-full left-0 mt-2 bg-slate-800/95 border border-slate-600/50 rounded-xl shadow-2xl z-[9999] min-w-[140px] backdrop-blur-xl overflow-hidden animate-slideUp">
-                <button
-                  onClick={openCamera}
-                  className="w-full px-3 py-2.5 text-left hover:bg-slate-700/70 flex items-center gap-2 border-b border-slate-600/30 text-slate-200 hover:text-white transition-all duration-300 group"
-                  type="button"
-                >
-                  <div className="p-1.5 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition-colors duration-300">
-                    <FaCamera size={12} className="text-blue-400" />
-                  </div>
-                  <span className="text-sm font-medium">ถ่ายรูป</span>
-                </button>
-                <button
-                  onClick={openGallery}
-                  className="w-full px-3 py-2.5 text-left hover:bg-slate-700/70 flex items-center gap-2 text-slate-200 hover:text-white transition-all duration-300 group"
-                  type="button"
-                >
-                  <div className="p-1.5 bg-green-500/20 rounded-lg group-hover:bg-green-500/30 transition-colors duration-300">
-                    <AiFillPicture size={12} className="text-green-400" />
-                  </div>
-                  <span className="text-sm font-medium">เลือกรูป</span>
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+     
       </div>
 
       {/* Enhanced Processing Status */}
