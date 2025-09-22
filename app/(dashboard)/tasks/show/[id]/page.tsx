@@ -470,7 +470,13 @@ function ShowTaskPage() {
                 <Tabs defaultValue="show">
                   <TabsList>
                     <TabsTrigger value="show">ปัญหา</TabsTrigger>
-                    <TabsTrigger value="solution">วิธีแก้ไขปัญหา</TabsTrigger>
+                    <TabsTrigger 
+                      value="solution" 
+                      disabled={task.status !== 1 && task.status !== 2}
+                      className={task.status !== 1 && task.status !== 2 ? "opacity-50 cursor-not-allowed" : ""}
+                    >
+                      วิธีแก้ไขปัญหา
+                    </TabsTrigger>
                   </TabsList>
 
                   {/* แสดงข้อมูล */}
@@ -806,18 +812,6 @@ function ShowTaskPage() {
                                             </button>
                                           </div>
                                         ))}
-                                      </div>
-                                    )}
-
-                                    {/* File Size Summary */}
-                                    {editSelectedImages.length > 0 && !editProcessing && (
-                                      <div className="text-center py-2">
-                                        <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                          <span className="text-sm font-medium">
-                                            เลือกแล้ว {editSelectedImages.length} จาก 9 รูป
-                                          </span>
-                                        </div>
                                       </div>
                                     )}
                                   </div>
