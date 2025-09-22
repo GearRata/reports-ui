@@ -144,6 +144,8 @@ function TasksPageContent() {
     router.push(`/tasks/edit/${task.id}`);
   const handleShow = (task: TaskWithPhone) =>
     router.push(`/tasks/show/${task.id}`);
+  const handleChat = (task: TaskWithPhone) => 
+     router.push(`/tasks/chat/admin/${task.id}`);
   // const handleSolution = () => router.push("solution/create");
 
   return (
@@ -203,6 +205,7 @@ function TasksPageContent() {
                         refreshTasks();
                       }}
                       onShowTask={handleShow}
+                      onChat={handleChat}
                       // onSolution={handleSolution}
                       onAssignChange={handleAssignChange}
                       onStatusFilterChange={(s) => {

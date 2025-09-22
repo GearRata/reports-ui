@@ -3,10 +3,10 @@
 import { useEffect, useState, useRef } from "react";
 import { useChatID } from "@/app/api/chat";
 import { useParams } from "next/navigation";
-import { Send, X, MoreHorizontal, Pencil, Trash, Wrench } from 'lucide-react';
-import CameraButton from '@/components/images/CameraButton';
-import GalleryButton from '@/components/images/GalleryButton';
-import { addChatNew, updateChat, deleteChat } from '@/app/api/chat';
+import { Send, X, MoreHorizontal, Pencil, Trash, Wrench } from "lucide-react";
+import CameraButton from "@/components/images/CameraButton";
+import GalleryButton from "@/components/images/GalleryButton";
+import { addChatNew, updateChat, deleteChat } from "@/app/api/chat";
 import toast from "react-hot-toast";
 import {
   DropdownMenu,
@@ -15,12 +15,12 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Badge  } from "../ui/badge";
+import { Badge } from "../ui/badge";
 
 export default function ChatAdminPage() {
   const taskId = Number(useParams().id);
   const { Chat, loading, error, refreshChat } = useChatID(taskId);
-  const [ input, setInput ] = useState("");
+  const [input, setInput] = useState("");
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,8 +109,8 @@ export default function ChatAdminPage() {
   };
 
   const removeImage = (index: number) => {
-    setSelectedImages(prev => prev.filter((_, i) => i !== index));
-    setCapturedFiles(prev => prev.filter((_, i) => i !== index));
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
+    setCapturedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleEditCamera = () => {
@@ -121,7 +121,9 @@ export default function ChatAdminPage() {
     editGalleryRef.current?.click();
   };
 
-  const handleEditImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditImageChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
 
@@ -163,20 +165,26 @@ export default function ChatAdminPage() {
   };
 
   const removeEditImage = (index: number) => {
-    setEditSelectedImages(prev => prev.filter((_, i) => i !== index));
-    setEditCapturedFiles(prev => prev.filter((_, i) => i !== index));
+    setEditSelectedImages((prev) => prev.filter((_, i) => i !== index));
+    setEditCapturedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const removeExistingImage = (index: number) => {
-    setExistingImages(prev => prev.filter((_, i) => i !== index));
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleEditChat = (chat: { id: number; text: string; file_paths?: Record<string, string> }) => {
+  const handleEditChat = (chat: {
+    id: number;
+    text: string;
+    file_paths?: Record<string, string>;
+  }) => {
     setEditingChatId(chat.id);
     setEditText(chat.text);
     setEditSelectedImages([]);
     setEditCapturedFiles([]);
-    const existing = chat.file_paths ? Object.values(chat.file_paths) as string[] : [];
+    const existing = chat.file_paths
+      ? (Object.values(chat.file_paths) as string[])
+      : [];
     setExistingImages(existing);
   };
 
@@ -189,7 +197,12 @@ export default function ChatAdminPage() {
   };
 
   const handleUpdateChat = async () => {
-    if (!editText.trim() && editSelectedImages.length === 0 && existingImages.length === 0) return;
+    if (
+      !editText.trim() &&
+      editSelectedImages.length === 0 &&
+      existingImages.length === 0
+    )
+      return;
 
     setIsSubmitting(true);
     try {
@@ -197,7 +210,7 @@ export default function ChatAdminPage() {
         id: editingChatId!,
         text: editText,
         images: editCapturedFiles,
-        existing_images: existingImages
+        existing_images: existingImages,
       });
       handleCancelEdit();
       refreshChat();
@@ -236,7 +249,7 @@ export default function ChatAdminPage() {
       await addChatNew(taskId, {
         id: taskId,
         text: input,
-        images: capturedFiles
+        images: capturedFiles,
       });
       setInput("");
       setSelectedImages([]);
@@ -250,12 +263,18 @@ export default function ChatAdminPage() {
     }
   };
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    listRef.current?.scrollTo({
-      top: listRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    // Scroll to input area at the bottom with delay for initial load
+    const timer = setTimeout(() => {
+      inputRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [Chat.length]);
 
   if (loading)
@@ -278,15 +297,20 @@ export default function ChatAdminPage() {
           <div className="flex gap-2 text-lg font-semibold">
             Chat ({Chat.length > 0 ? Chat[0].ticket_no : `TASK-${taskId}`})
             {Chat.length > 0 && Chat[0].assignto && (
-              <Badge> <Wrench/> {Chat[0].assignto}</Badge>
+              <Badge>
+                {" "}
+                <Wrench /> {Chat[0].assignto}
+              </Badge>
             )}
           </div>
         </div>
         <div ref={listRef} className="h-[520px] overflow-auto p-4">
           <div className="flex flex-col gap-3">
             {Chat.map((chat) => (
-              <div key={chat.id} className="flex w-full gap-2">
-                <div className="max-w-full rounded-2xl px-3 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800 relative group">
+              <div key={chat.id} className="flex justify-end w-full gap-2">
+                <div className="max-w-full rounded-2xl px-3 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800 relative group
+                ">
+                  <div className="absolute bottom-1 -right-2 border-solid border-l-zinc-800 border-l-20 border-y-transparent border-y-12 border-r-0"></div>
                   {editingChatId === chat.id ? (
                     // Edit Mode
                     <div className="space-y-3">
@@ -307,7 +331,7 @@ export default function ChatAdminPage() {
                         onChange={handleEditImageChange}
                         className="hidden"
                       />
-                      
+
                       <textarea
                         value={editText}
                         onChange={(e) => setEditText(e.target.value)}
@@ -315,14 +339,19 @@ export default function ChatAdminPage() {
                         rows={2}
                         placeholder="แก้ไขข้อความ..."
                       />
-                      
+
                       {/* Existing Images */}
                       {existingImages.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-xs text-gray-600 dark:text-gray-400">รูปภาพเดิม:</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            รูปภาพเดิม:
+                          </div>
                           <div className="grid grid-cols-3 gap-2">
                             {existingImages.map((url, index) => (
-                              <div key={index} className="relative aspect-square">
+                              <div
+                                key={index}
+                                className="relative aspect-square"
+                              >
                                 <img
                                   src={url}
                                   alt={`existing-${index}`}
@@ -340,14 +369,19 @@ export default function ChatAdminPage() {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* New Images */}
                       {editSelectedImages.length > 0 && (
                         <div className="space-y-2">
-                          <div className="text-xs text-gray-600 dark:text-gray-400">รูปภาพใหม่:</div>
+                          <div className="text-xs text-gray-600 dark:text-gray-400">
+                            รูปภาพใหม่:
+                          </div>
                           <div className="grid grid-cols-3 gap-2">
                             {editSelectedImages.map((src, index) => (
-                              <div key={index} className="relative aspect-square">
+                              <div
+                                key={index}
+                                className="relative aspect-square"
+                              >
                                 <img
                                   src={src}
                                   alt={`new-${index}`}
@@ -365,15 +399,21 @@ export default function ChatAdminPage() {
                           </div>
                         </div>
                       )}
-                      
+
                       {/* Edit Controls */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="p-1 bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
-                            <CameraButton onClick={handleEditCamera} disabled={editProcessing} />
+                            <CameraButton
+                              onClick={handleEditCamera}
+                              disabled={editProcessing}
+                            />
                           </div>
                           <div className="p-1 bg-blue-100 dark:bg-blue-900 rounded hover:bg-blue-200 dark:hover:bg-blue-800">
-                            <GalleryButton onClick={handleEditGallery} disabled={editProcessing} />
+                            <GalleryButton
+                              onClick={handleEditGallery}
+                              disabled={editProcessing}
+                            />
                           </div>
                           {editProcessing && (
                             <div className="flex items-center gap-1 text-blue-600">
@@ -393,7 +433,12 @@ export default function ChatAdminPage() {
                           <button
                             type="button"
                             onClick={handleUpdateChat}
-                            disabled={isSubmitting || (!editText.trim() && editSelectedImages.length === 0 && existingImages.length === 0)}
+                            disabled={
+                              isSubmitting ||
+                              (!editText.trim() &&
+                                editSelectedImages.length === 0 &&
+                                existingImages.length === 0)
+                            }
                             className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
                           >
                             {isSubmitting ? "บันทึก..." : "บันทึก"}
@@ -426,13 +471,17 @@ export default function ChatAdminPage() {
                       </div>
                     </>
                   )}
-                  
+
                   {/* Action Menu */}
                   {editingChatId !== chat.id && (
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                          >
                             <MoreHorizontal className="h-3 w-3" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -464,7 +513,10 @@ export default function ChatAdminPage() {
               </div>
             )}
             {/* Input */}
-            <div className="border-t border-gray-200 dark:border-zinc-800 pt-3">
+            <div
+              ref={inputRef}
+              className="border-t border-gray-200 dark:border-zinc-800 pt-3"
+            >
               {selectedImages.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mb-3">
                   {selectedImages.map((src, index) => (
@@ -488,10 +540,20 @@ export default function ChatAdminPage() {
               <form onSubmit={handleSubmit} className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
-                    <CameraButton onClick={handleCamera} disabled={processing || isSubmitting || selectedImages.length >= 9} />
+                    <CameraButton
+                      onClick={handleCamera}
+                      disabled={
+                        processing || isSubmitting || selectedImages.length >= 9
+                      }
+                    />
                   </div>
                   <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
-                    <GalleryButton onClick={handleGallery} disabled={processing || isSubmitting || selectedImages.length >= 9} />
+                    <GalleryButton
+                      onClick={handleGallery}
+                      disabled={
+                        processing || isSubmitting || selectedImages.length >= 9
+                      }
+                    />
                   </div>
                   {processing && (
                     <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
@@ -527,10 +589,13 @@ export default function ChatAdminPage() {
                 />
                 <button
                   type="submit"
-                  disabled={(!input.trim() && selectedImages.length === 0) || isSubmitting}
+                  disabled={
+                    (!input.trim() && selectedImages.length === 0) ||
+                    isSubmitting
+                  }
                   className="h-10 px-4 rounded-xl bg-blue-600 text-white text-sm font-medium disabled:opacity-50 hover:bg-blue-700"
                 >
-                  {isSubmitting ? "กำลังส่ง..." : <Send/>}
+                  {isSubmitting ? "กำลังส่ง..." : <Send />}
                 </button>
               </form>
             </div>

@@ -37,6 +37,7 @@ interface TasksNewTableProps {
   onEditTask: (task: TaskWithPhone) => void;
   onDeleteTask: (taskId: number) => void;
   onShowTask: (task: TaskWithPhone) => void;
+  onChat: (task: TaskWithPhone) => void;
   // onSolution:
   onAssignChange?: (
     taskId: number,
@@ -66,6 +67,7 @@ export function TasksNewTable({
   onEditTask,
   onDeleteTask,
   onShowTask,
+  onChat,
   onAssignChange,
   onStatusFilterChange,
   statusFilter = "all",
@@ -259,6 +261,7 @@ export function TasksNewTable({
               <TableRow
                 key={task.id}
                 onClick={() => onShowTask(task)}
+                onDoubleClick={() => onChat(task)}
                 className="cursor-pointer"
               >
                 {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
