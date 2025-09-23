@@ -87,7 +87,11 @@ function ShowTaskPage() {
           const taskData = await getTaskNewById(Number(taskId));
           setTask(taskData);
           // Only set assignId if it's not 0 (unassigned)
-          setAssignId(taskData.assignedto_id && taskData.assignedto_id !== 0 ? taskData.assignedto_id.toString() : "");
+          setAssignId(
+            taskData.assignedto_id && taskData.assignedto_id !== 0
+              ? taskData.assignedto_id.toString()
+              : ""
+          );
           setLoadTask(false);
         } catch (error) {
           console.error("Error loading task:", error);
@@ -124,6 +128,26 @@ function ShowTaskPage() {
       loadSolution();
     }
   }, [task, taskId]);
+
+  const handleAssignChange = async (
+    assignToId: number,
+    assignToName: string
+  ) => {
+    try {
+      await updateTaskAssignTo(Number(taskId), {
+        assignedto_id: assignToId,
+        assign_to: assignToName || null,
+        update_telegram: true,
+      });
+      // Reload task data
+      const taskData = await getTaskNewById(Number(taskId));
+      setTask(taskData);
+      toast.success("อัปเดตผู้รับผิดชอบเรียบร้อยแล้ว");
+    } catch (error) {
+      console.error("Error updating assignment:", error);
+      toast.error("ไม่สามารถอัปเดตผู้รับผิดชอบได้");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -470,10 +494,14 @@ function ShowTaskPage() {
                 <Tabs defaultValue="show">
                   <TabsList>
                     <TabsTrigger value="show">ปัญหา</TabsTrigger>
-                    <TabsTrigger 
-                      value="solution" 
+                    <TabsTrigger
+                      value="solution"
                       disabled={task.status !== 1 && task.status !== 2}
-                      className={task.status !== 1 && task.status !== 2 ? "opacity-50 cursor-not-allowed" : ""}
+                      className={
+                        task.status !== 1 && task.status !== 2
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }
                     >
                       วิธีแก้ไขปัญหา
                     </TabsTrigger>
@@ -486,7 +514,7 @@ function ShowTaskPage() {
                         <div className="flex items-center justify-between ">
                           {/* แสดงรายละเอียดของ  Ticket */}
                           <div>
-                            <CardTitle>
+                            <CardTitle className="cursor-pointer hover:underline" onClick={() => router.push(`/tasks/chat/admin/${task.id}`)}>
                               Task #{task.ticket_no || task.id}
                             </CardTitle>
                             <CardDescription>
@@ -514,13 +542,15 @@ function ShowTaskPage() {
                                 className={`px-2 py-1 rounded-md text-sm font-medium ${
                                   task.status === 0
                                     ? "bg-linear-to-r from-amber-500 to-amber-600 text-white text-center"
-                                    : task.status === 1 ?
-                                    "bg-linear-to-r from-cyan-500 to-sky-600 text-white text-center" :
-                                    "bg-linear-to-r from-green-500 to-green-600 text-white text-center"
+                                    : task.status === 1
+                                    ? "bg-linear-to-r from-cyan-500 to-sky-600 text-white text-center"
+                                    : "bg-linear-to-r from-green-500 to-green-600 text-white text-center"
                                 }`}
                               >
                                 {task.status === 0
-                                  ? "Pending" : task.status === 1 ? "Progress"
+                                  ? "Pending"
+                                  : task.status === 1
+                                  ? "Progress"
                                   : "Done"}
                               </span>
                             </div>
@@ -609,9 +639,58 @@ function ShowTaskPage() {
                             <Label className="font-bold text-[16px]">
                               มอบหมายงานให้กับ
                             </Label>
-                            <p className="text-muted-foreground">
-                              {task.assign_to || "ไม่ได้ระบุ"}
-                            </p>
+                            {task.status === 0 ? (
+                              <Select
+                                value={
+                                  assignTo
+                                    .find((a) => a.name === task.assign_to)
+                                    ?.id.toString() || "unassigned"
+                                }
+                                onValueChange={(value) => {
+                                  if (value !== "unassigned") {
+                                    const selectedAssign = assignTo.find(
+                                      (a) => a.id.toString() === value
+                                    );
+                                    const assignName = selectedAssign
+                                      ? selectedAssign.name
+                                      : "";
+                                    const assignId = selectedAssign
+                                      ? selectedAssign.id
+                                      : 0;
+                                    handleAssignChange(assignId, assignName);
+                                  }
+                                }}
+                              >
+                                <SelectTrigger className="">
+                                  <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="unassigned" disabled>
+                                    <span className="text-muted-foreground">
+                                      เลือกผู้รับผิดชอบ
+                                    </span>
+                                  </SelectItem>
+                                  {assignTo && assignTo.length > 0 ? (
+                                    assignTo.map((assign) => (
+                                      <SelectItem
+                                        key={assign.id}
+                                        value={assign.id.toString()}
+                                      >
+                                        {assign.name}
+                                      </SelectItem>
+                                    ))
+                                  ) : (
+                                    <SelectItem value="no-data" disabled>
+                                      ไม่มีข้อมูลผู้รับผิดชอบ
+                                    </SelectItem>
+                                  )}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <p className="text-muted-foreground">
+                                {task.assign_to || "ไม่ได้ระบุ"}
+                              </p>
+                            )}
                           </div>
 
                           {/* แสดงรูปภาพที่มีอยู่ */}
@@ -684,7 +763,9 @@ function ShowTaskPage() {
 
                                   {/* Edit Assign Data */}
                                   <div className="space-y-2">
-                                    <Label htmlFor="assign_to">มอบหมายงานให้กับ</Label>
+                                    <Label htmlFor="assign_to">
+                                      มอบหมายงานให้กับ
+                                    </Label>
                                     <Select
                                       value={editAssign}
                                       onValueChange={(value) =>
@@ -743,7 +824,7 @@ function ShowTaskPage() {
                                                 className="absolute -top-2 -right-2 bg-red-500 text-white text-xs p-1 rounded-full hover:bg-red-600"
                                                 title="ลบรูปภาพนี้"
                                               >
-                                                <X className="h-4 w-4"/>
+                                                <X className="h-4 w-4" />
                                               </button>
                                             </div>
                                           )
@@ -754,7 +835,7 @@ function ShowTaskPage() {
 
                                   <div className="space-y-4">
                                     <Label>เพิ่มรูปภาพใหม่</Label>
-                                    
+
                                     {/* Hidden File Inputs */}
                                     <input
                                       ref={editCameraRef}
@@ -777,15 +858,29 @@ function ShowTaskPage() {
                                     {/* Camera and Gallery Buttons */}
                                     <div className="flex gap-4 mb-4">
                                       <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                        <CameraButton onClick={handleEditCamera} disabled={editProcessing || editSelectedImages.length >= 9} />
+                                        <CameraButton
+                                          onClick={handleEditCamera}
+                                          disabled={
+                                            editProcessing ||
+                                            editSelectedImages.length >= 9
+                                          }
+                                        />
                                       </div>
                                       <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                        <GalleryButton onClick={handleEditGallery} disabled={editProcessing || editSelectedImages.length >= 9} />
+                                        <GalleryButton
+                                          onClick={handleEditGallery}
+                                          disabled={
+                                            editProcessing ||
+                                            editSelectedImages.length >= 9
+                                          }
+                                        />
                                       </div>
                                       {editProcessing && (
                                         <div className="flex items-center gap-2 text-blue-600">
                                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                                          <span className="text-sm">บีบอัด...</span>
+                                          <span className="text-sm">
+                                            บีบอัด...
+                                          </span>
                                         </div>
                                       )}
                                     </div>
@@ -794,7 +889,10 @@ function ShowTaskPage() {
                                     {editSelectedImages.length > 0 && (
                                       <div className="grid grid-cols-3 gap-3">
                                         {editSelectedImages.map((src, i) => (
-                                          <div key={i} className="relative aspect-square group">
+                                          <div
+                                            key={i}
+                                            className="relative aspect-square group"
+                                          >
                                             <img
                                               src={src}
                                               alt={`preview-${i}`}
@@ -912,7 +1010,9 @@ function ShowTaskPage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label htmlFor="assign_to">มอบหมายงานให้กับ</Label>
+                              <Label htmlFor="assign_to">
+                                มอบหมายงานให้กับ
+                              </Label>
                               <Select
                                 value={assignId}
                                 onValueChange={(value) => setAssignId(value)}
@@ -936,7 +1036,7 @@ function ShowTaskPage() {
                             {/* Camera Section */}
                             <div className="space-y-4">
                               <Label>เพิ่มรูปภาพ</Label>
-                              
+
                               {/* Hidden File Inputs */}
                               <input
                                 ref={cameraRef}
@@ -959,10 +1059,20 @@ function ShowTaskPage() {
                               {/* Camera and Gallery Buttons */}
                               <div className="flex gap-4 mb-4">
                                 <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                  <CameraButton onClick={handleCamera} disabled={processing || selectedImages.length >= 9} />
+                                  <CameraButton
+                                    onClick={handleCamera}
+                                    disabled={
+                                      processing || selectedImages.length >= 9
+                                    }
+                                  />
                                 </div>
                                 <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                  <GalleryButton onClick={handleGallery} disabled={processing || selectedImages.length >= 9} />
+                                  <GalleryButton
+                                    onClick={handleGallery}
+                                    disabled={
+                                      processing || selectedImages.length >= 9
+                                    }
+                                  />
                                 </div>
                                 {processing && (
                                   <div className="flex items-center gap-2 text-blue-600">
@@ -976,7 +1086,10 @@ function ShowTaskPage() {
                               {selectedImages.length > 0 && (
                                 <div className="grid grid-cols-3 gap-3">
                                   {selectedImages.map((src, i) => (
-                                    <div key={i} className="relative aspect-square group">
+                                    <div
+                                      key={i}
+                                      className="relative aspect-square group"
+                                    >
                                       <img
                                         src={src}
                                         alt={`preview-${i}`}
@@ -1000,7 +1113,8 @@ function ShowTaskPage() {
                                   <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
                                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                                     <span className="text-sm font-medium">
-                                      เลือกแล้ว {selectedImages.length} จาก 9 รูป
+                                      เลือกแล้ว {selectedImages.length} จาก 9
+                                      รูป
                                     </span>
                                   </div>
                                 </div>

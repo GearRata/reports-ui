@@ -32,7 +32,7 @@ export default function ImageCompressor({
               <img
                 src={src}
                 alt={`preview-${index}`}
-                className="w-full h-full object-cover rounded border-2 border-gray-200 dark:border-zinc-700"
+                className="w-full h-full object-cover rounded- border-2 border-gray-200 dark:border-zinc-700"
               />
               <button
                 type="button"

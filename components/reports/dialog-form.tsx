@@ -162,8 +162,6 @@ export default function DialogForm() {
     setCapturedFiles(files);
   };
 
-
-
   // Check if form has unsaved changes
   const hasUnsavedChanges = useMemo(() => {
     return (
@@ -935,21 +933,20 @@ export default function DialogForm() {
                     ถ่ายรูปหรือเลือกจากแกลเลอรี่ (สูงสุด 9 รูป)
                   </p>
                 </div>
-              </div>
-              
-              {/* Camera and Gallery Buttons */}
-              <div className="flex gap-4">
-                <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                  <CameraButton
-                    onClick={handleCamera}
-                    disabled={processing || selectedImages.length >= 9}
-                  />
-                </div>
-                <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                  <GalleryButton
-                    onClick={handleGallery}
-                    disabled={processing || selectedImages.length >= 9}
-                  />
+                {/* Camera and Gallery Buttons */}
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <GalleryButton
+                      onClick={handleGallery}
+                      disabled={processing || selectedImages.length >= 9}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <CameraButton
+                      onClick={handleCamera}
+                      disabled={processing || selectedImages.length >= 9}
+                    />
+                  </div>
                 </div>
               </div>
 

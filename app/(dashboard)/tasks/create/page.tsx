@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,9 +40,12 @@ import { addTaskNew } from "@/app/api/tasks";
 import { useType } from "@/app/api/type";
 import { useProgramsForDropdown } from "@/app/api/programs";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
-import CameraPicker from "@/components/images/images";
+import CameraButton from "@/components/images/CameraButton";
+import GalleryButton from "@/components/images/GalleryButton";
+import ImageCompressor from "@/components/images/ImageCompressor";
 import { cn } from "@/lib/utils";
 import { ChevronsUpDown, Check } from "lucide-react";
+import toast from "react-hot-toast";
 
 function CreateTaskPage() {
   const router = useRouter();
@@ -56,8 +59,12 @@ function CreateTaskPage() {
   const [text, setText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [reportBy, setReportBy] = useState<string>("");
   const [open, setOpen] = React.useState(false);
+  const [processing, setProcessing] = useState(false);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const galleryRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setProgramID("");
@@ -104,7 +111,81 @@ function CreateTaskPage() {
     router.push("/tasks");
   };
 
-  const handleFilesCapture = (files: File[]) => {
+
+    const handleCamera = () => {
+    cameraRef.current?.click();
+  };
+
+  const handleGallery = () => {
+    galleryRef.current?.click();
+  };
+
+  const compressImage = (
+    file: File,
+    maxWidth: number = 400,
+    quality: number = 0.3
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      const img = new Image();
+
+      img.onload = () => {
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(compressedDataUrl);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles || selectedFiles.length === 0) return;
+
+    setProcessing(true);
+
+    try {
+      const fileArray = Array.from(selectedFiles);
+      const compressedImages: string[] = [];
+
+      for (const file of fileArray) {
+        const compressed = await compressImage(file);
+        if (compressed.length > 200 * 1024) {
+          const superCompressed = await compressImage(file, 300, 0.2);
+          compressedImages.push(superCompressed);
+        } else {
+          compressedImages.push(compressed);
+        }
+      }
+
+      const updatedImages = [...selectedImages, ...compressedImages];
+      const updatedFiles = [...capturedFiles, ...fileArray];
+      const finalImages = updatedImages.slice(0, 9);
+      const finalFiles = updatedFiles.slice(0, 9);
+
+      if (updatedImages.length > 9) {
+        toast.error("สามารถเลือกได้สูงสุด 9 รูปเท่านั้น");
+      }
+
+      setSelectedImages(finalImages);
+      setCapturedFiles(finalFiles);
+
+      if (cameraRef.current) cameraRef.current.value = "";
+      if (galleryRef.current) galleryRef.current.value = "";
+    } catch (error) {
+      console.error("Error processing images:", error);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleImagesChange = (images: string[], files: File[]) => {
+    setSelectedImages(images);
     setCapturedFiles(files);
   };
 
@@ -301,9 +382,54 @@ function CreateTaskPage() {
                         />
                       </div>
                       {/* Camera Section */}
-                      <div className="space-y-2">
+                      <div className="space-y-4">
                         <Label>Add image</Label>
-                        <CameraPicker onFilesCapture={handleFilesCapture} />
+                        <div className="flex gap-4">
+                          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                            <CameraButton
+                              onClick={handleCamera}
+                              disabled={processing || selectedImages.length >= 9}
+                            />
+                          </div>
+                          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                            <GalleryButton
+                              onClick={handleGallery}
+                              disabled={processing || selectedImages.length >= 9}
+                            />
+                          </div>
+                          {processing && (
+                            <div className="flex items-center gap-2 text-blue-600">
+                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                              <span className="text-sm">บีบอัด...</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <ImageCompressor
+                          selectedImages={selectedImages}
+                          capturedFiles={capturedFiles}
+                          onImagesChange={handleImagesChange}
+                          processing={processing}
+                        />
+                        
+                        {/* Hidden File Inputs */}
+                        <input
+                          ref={cameraRef}
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          multiple
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
+                        <input
+                          ref={galleryRef}
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageChange}
+                          className="hidden"
+                        />
                       </div>
                       {/* Form Actions */}
                       <div className="flex justify-end gap-4">
