@@ -214,6 +214,8 @@ export default function ChatAdminPage() {
       });
       handleCancelEdit();
       refreshChat();
+      // Additional refresh to ensure data is up to date
+      window.location.reload();
       toast.success("แก้ไขข้อความเรียบร้อยแล้ว");
     } catch (error) {
       console.error("Error updating chat:", error);
@@ -307,10 +309,41 @@ export default function ChatAdminPage() {
         <div ref={listRef} className="h-[520px] overflow-auto p-4">
           <div className="flex flex-col gap-3">
             {Chat.map((chat) => (
-              <div key={chat.id} className="flex justify-end w-full gap-2">
-                <div className="max-w-full rounded-2xl px-3 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800 relative group
-                ">
+              <div
+                key={chat.id}
+                className="flex justify-end max-w-full gap-2 "
+              >
+                <div className="flex flex-1 justify-end items-center opacity-0 hover:opacity-100 ">
+                  {editingChatId !== chat.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 flex"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditChat(chat)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          แก้ไข
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteChat(chat.id)}
+                          className="text-red-600"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          ลบ
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                </div>
+                <div className="relative rounded-2xl px-4 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800">
                   <div className="absolute bottom-1 -right-2 border-solid border-l-zinc-800 border-l-20 border-y-transparent border-y-12 border-r-0"></div>
+
                   {editingChatId === chat.id ? (
                     // Edit Mode
                     <div className="space-y-3">
@@ -449,60 +482,31 @@ export default function ChatAdminPage() {
                   ) : (
                     // View Mode
                     <>
-                      <div className="whitespace-pre-wrap break-words">
+                      <div className="flex justify-end mb-2 whitespace-pre-wrap break-words">
                         {chat.text}
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {chat.file_paths &&
-                          Object.entries(chat.file_paths).map(([key, url]) => (
-                            <img
-                              key={key}
-                              src={url}
-                              alt="attachment"
-                              className="mt-2 rounded-lg max-w-full h-auto"
-                            />
-                          ))}
+                      <div className="">
+                        <div className="flex flex-1 flex-row-reverse flex-wrap gap-2">
+                          {chat.file_paths &&
+                            Object.entries(chat.file_paths).map(
+                              ([key, url]) => (
+                                <img
+                                  key={key}
+                                  src={url}
+                                  alt="attachment"
+                                  className="rounded-md w-34 h-34 object-cover"
+                                />
+                              )
+                            )}
+                        </div>
                       </div>
-                      <div className="mt-1 text-[14px] opacity-70 text-gray-500 dark:text-gray-400">
+                      <div className="mt-1 text-[12px] opacity-70 text-gray-500 dark:text-gray-400 ">
                         {new Date(chat.created_at).toLocaleTimeString("th-TH", {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
                       </div>
                     </>
-                  )}
-
-                  {/* Action Menu */}
-                  {editingChatId !== chat.id && (
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-6 w-6 p-0"
-                          >
-                            <MoreHorizontal className="h-3 w-3" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => handleEditChat(chat)}
-                            className="flex items-center cursor-pointer"
-                          >
-                            <Pencil className="mr-2 h-3 w-3" />
-                            แก้ไข
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteChat(chat.id)}
-                            className="text-red-600 flex items-center cursor-pointer"
-                          >
-                            <Trash className="mr-2 h-3 w-3" />
-                            ลบ
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
                   )}
                 </div>
               </div>
@@ -539,7 +543,7 @@ export default function ChatAdminPage() {
               )}
               <form onSubmit={handleSubmit} className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
+                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg hover:scale-110">
                     <CameraButton
                       onClick={handleCamera}
                       disabled={
@@ -547,7 +551,7 @@ export default function ChatAdminPage() {
                       }
                     />
                   </div>
-                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg">
+                  <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg hover:scale-110">
                     <GalleryButton
                       onClick={handleGallery}
                       disabled={
@@ -569,7 +573,7 @@ export default function ChatAdminPage() {
                   capture="environment"
                   multiple
                   onChange={handleImageChange}
-                  className="hidden"
+                  className=" hidden"
                 />
                 <input
                   ref={galleryRef}
@@ -595,7 +599,11 @@ export default function ChatAdminPage() {
                   }
                   className="h-10 px-4 rounded-xl bg-blue-600 text-white text-sm font-medium disabled:opacity-50 hover:bg-blue-700"
                 >
-                  {isSubmitting ? "กำลังส่ง..." : <Send />}
+                  {isSubmitting ? (
+                    "กำลังส่ง..."
+                  ) : (
+                    <Send className="transition-transform duration-300 hover:rotate-360" />
+                  )}
                 </button>
               </form>
             </div>
