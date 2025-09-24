@@ -260,8 +260,7 @@ export function TasksNewTable({
             tasks.map((task) => (
               <TableRow
                 key={task.id}
-                onClick={() => onShowTask(task)}
-                onDoubleClick={() => onChat(task)}
+                onClick={() => onChat(task)}
                 className="cursor-pointer"
               >
                 {/* <TableCell className="font-medium">{index + 1}</TableCell> */}
@@ -270,7 +269,7 @@ export function TasksNewTable({
                     {filterAlphabet(task.system_type)}
                   </Badge>
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium hover:underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onShowTask(task); }}>
                   {task.ticket_no || `#${task.id}`}
                 </TableCell>
                 <TableCell>{task.reported_by}</TableCell>
@@ -307,18 +306,6 @@ export function TasksNewTable({
                     }
                   >
                     <div className="flex items-center gap-1 h-5">
-                      {/* {task.status ? (
-                        <SquareCheckBig className="w-4" />
-                      ) : (
-                        <LuClock className="w-3 h-3" />
-                      )}
-                      {task.status
-                        ? task.updated_at
-                          ? formatFixedTime(task.updated_at)
-                          : "-"
-                        : task.created_at
-                        ? formatTimeAgo(task.created_at)
-                        : "-"} */}
                       {task.status === 0 ? (
                         <LuClock className="w-4 h-4" />
                       ) : task.status === 1 ? (
@@ -326,13 +313,6 @@ export function TasksNewTable({
                       ) : (
                         <SquareCheckBig className="w-4 h-4" />
                       )}
-                      {/* {task.status
-                        ? task.updated_at
-                          ? formatFixedTime(task.updated_at)
-                          : "-"
-                        : task.created_at
-                        ? formatTimeAgo(task.created_at)
-                        : "-"} */}
                         {task.status === 0 ? (
                           formatTimeAgo(task.created_at)
                         ) : task.status === 1 ? (
