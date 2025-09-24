@@ -23,16 +23,17 @@ export function useAuth() {
       const data = await res.json();
       console.log("Login Response:", data);
 
-      if (!res.ok || !data.data) {
+      if (!res.ok || !data.success || !data.data?.data) {
         console.error("Login failed:", data);
         return null;
       }
 
+      const userData = data.data.data; // Access nested data
       const userObj: User = {
-        id: data.data.id || "",
-        username: data.data.username,
+        id: userData.id || "",
+        username: userData.username,
         password: "", // never store password
-        role: data.data.role,
+        role: userData.role,
       };
       setUser(userObj);
       if (typeof window !== "undefined") {

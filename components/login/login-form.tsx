@@ -75,8 +75,6 @@ export function LoginForm({
             required
             ref={passwordRef}
             autoComplete="current-password"
-            onPaste={(e) => e.preventDefault()}
-            onCopy={(e) => e.preventDefault()}
             onCut={(e) => e.preventDefault()}
             onDragStart={(e) => e.preventDefault()}
             onDrop={(e) => e.preventDefault()}
