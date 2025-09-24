@@ -466,9 +466,9 @@ function Page() {
                 </div>
 
                 {/* StatsCard show Status of tasks */}
-                <div className="grid grid-cols-2">
+               
                  <StatsCards stats={status} />
-                </div>
+                
                 {/* <StatsCards stats={status} /> */}
 
                 {/* Charts Grid */}

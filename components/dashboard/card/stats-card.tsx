@@ -111,7 +111,7 @@ export function StatsCards({ stats }: StatsProps) {
 
   return (
 
-    <div className="grid grid-cols-1 gap-5 px-1 lg:grid-cols-2 items-stretch">
+    <div className="grid grid-cols-1 gap-5 px-1 lg:grid-cols-4 items-stretch">
       {items.map((it) => {
         const Icon = it.icon;
         const widthPct = it.title === "Total Tasks" ? 100 : (it.percent ?? 0);

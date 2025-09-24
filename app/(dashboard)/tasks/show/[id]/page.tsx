@@ -43,7 +43,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash, X } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, X, MessageCircle  } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAssign } from "@/app/api/assign";
 
@@ -514,7 +514,7 @@ function ShowTaskPage() {
                         <div className="flex items-center justify-between ">
                           {/* แสดงรายละเอียดของ  Ticket */}
                           <div>
-                            <CardTitle className="cursor-pointer hover:underline" onClick={() => router.push(`/tasks/chat/admin/${task.id}`)}>
+                            <CardTitle >
                               Task #{task.ticket_no || task.id}
                             </CardTitle>
                             <CardDescription>
@@ -523,8 +523,22 @@ function ShowTaskPage() {
                           </div>
 
                           <div className="grid place-items-center md:flex gap-2 max-sm:grid max-md:gap-3 ">
+                            {/* Icon สำหรับแชท */}
+                            <div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  router.push(`/tasks/chat/admin/${task.id}`)
+                                }
+                                className="flex items-center gap-2"
+                              >
+                                <MessageCircle  className="h-4 w-4" />
+                                แชท
+                              </Button>
+                            </div>
                             {/* Icon สำหรับไว้แก้ไขข้อมูล */}
-                            <div className="">
+                            <div>
                               <Button
                                 variant="outline"
                                 size="sm"

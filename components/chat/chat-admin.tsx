@@ -297,11 +297,10 @@ export default function ChatAdminPage() {
       <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <div className="flex gap-2 text-lg font-semibold">
-            Chat ({Chat.length > 0 ? Chat[0].ticket_no : `TASK-${taskId}`})
-            {Chat.length > 0 && Chat[0].assignto && (
-              <Badge>
-                {" "}
-                <Wrench /> {Chat[0].assignto}
+            {Chat.length > 0 ? Chat[0].ticket_no : `TASK-${taskId}`}
+            {Chat.length > 0 && (
+              <Badge className="bg-(--input) text-white">
+                <Wrench /> {Chat[0].assignto || "ยังไม่มีผู้รับผิดชอบงานนี้"}
               </Badge>
             )}
           </div>

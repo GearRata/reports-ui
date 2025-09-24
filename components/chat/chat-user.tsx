@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChatID } from "@/app/api/chat";
 import { useParams } from "next/navigation";
 import { MessageCircle } from "lucide-react";
@@ -11,6 +11,28 @@ export default function ChatUserPage() {
   const taskId = Number(useParams().id);
   const { Chat, loading, error } = useChatID(taskId);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const [ticketNo, setTicketNo] = useState("");
+
+   useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/${taskId}`
+          );
+          const data = await response.json();
+  
+          if (data.data) {
+            setTicketNo(data.data.ticket_no || `TASK-${taskId}`);
+          }
+        } catch (error) {
+          console.error("Error fetching ticket:", error);
+        }
+      };
+  
+      fetchData();
+    }, [taskId]);
+  
 
   useEffect(() => {
     listRef.current?.scrollTo({
@@ -37,10 +59,10 @@ export default function ChatUserPage() {
       <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <div className="flex gap-2 text-lg font-semibold ">
-            Chat# {Chat.length > 0 ? Chat[0].ticket_no : `TASK-${taskId}`}
-            {Chat.length > 0 && Chat[0].assignto && (
-              <Badge>
-                <Wrench /> {Chat[0].assignto}
+             {ticketNo}
+            {Chat.length > 0 && (
+              <Badge className="bg-(--input) text-white">
+                <Wrench /> {Chat[0].assignto || "ยังไม่มีผู้รับผิดชอบงานนี้"}
               </Badge>
             )}
           </div>
@@ -62,7 +84,7 @@ export default function ChatUserPage() {
                         {chat.text}
                       </div>
                     <div className="flex justify-start mt-1">
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-3 gap-2 max-md:grid-cols-2  max-sm:grid-cols-1" >
                         {chat.file_paths &&
                           Object.entries(chat.file_paths).map(([key, url]) => (
                             <img
