@@ -135,7 +135,7 @@ function IPPhonesPageContent() {
                   <Button
                   onClick={exportFilePhone}
                   size="sm"
-                  className="text-white bg-linear-to-r from-violet-500 to-pink-500"
+                  className="text-white bg-linear-to-r from-violet-500 to-pink-500  hover:scale-110"
                 >
                     <FileDown />
                   </Button>
@@ -143,7 +143,7 @@ function IPPhonesPageContent() {
                   <Button
                     onClick={handleAddIPPhone}
                     size="sm"
-                    className="bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white"
+                    className="bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white  hover:scale-110"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add IP Phone

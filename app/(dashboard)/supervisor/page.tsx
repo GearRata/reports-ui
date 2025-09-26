@@ -57,7 +57,7 @@ function Page() {
                   <Button
                     onClick={handleAddAssignTo}
                     size="sm"
-                    className="ml-auto h-8 text-white"
+                    className="ml-auto h-8 bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white hover:scale-110"
                   >
                     <Plus className="h-4 w-4 mr-2 " />
                     Add Supervisor

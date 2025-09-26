@@ -90,21 +90,45 @@ export default function DialogForm() {
     maxWidth: number = 400,
     quality: number = 0.3
   ): Promise<string> => {
-    return new Promise((resolve) => {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d")!;
-      const img = new Image();
+    return new Promise((resolve, reject) => {
+      try {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
+        }
+        
+        const img = new Image();
+        const objectUrl = URL.createObjectURL(file);
 
-      img.onload = () => {
-        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-        canvas.width = img.width * ratio;
-        canvas.height = img.height * ratio;
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve(compressedDataUrl);
-      };
+        img.onload = () => {
+          try {
+            const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+            canvas.width = img.width * ratio;
+            canvas.height = img.height * ratio;
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+            
+            // Clean up object URL
+            URL.revokeObjectURL(objectUrl);
+            resolve(compressedDataUrl);
+          } catch (error) {
+            URL.revokeObjectURL(objectUrl);
+            reject(error);
+          }
+        };
+        
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          reject(new Error(`Failed to load image: ${file.name}`));
+        };
 
-      img.src = URL.createObjectURL(file);
+        img.src = objectUrl;
+      } catch (error) {
+        reject(error);
+      }
     });
   };
 
@@ -120,24 +144,37 @@ export default function DialogForm() {
     const selectedFiles = e.target.files;
     if (!selectedFiles || selectedFiles.length === 0) return;
 
+    console.log(`📷 Selected ${selectedFiles.length} files`);
     setProcessing(true);
 
     try {
       const fileArray = Array.from(selectedFiles);
       const compressedImages: string[] = [];
+      const processedFiles: File[] = [];
 
-      for (const file of fileArray) {
-        const compressed = await compressImage(file);
-        if (compressed.length > 200 * 1024) {
-          const superCompressed = await compressImage(file, 300, 0.2);
-          compressedImages.push(superCompressed);
-        } else {
-          compressedImages.push(compressed);
+      for (let i = 0; i < fileArray.length; i++) {
+        const file = fileArray[i];
+        console.log(`🔄 Processing file ${i + 1}/${fileArray.length}: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`);
+        
+        try {
+          const compressed = await compressImage(file);
+          if (compressed.length > 200 * 1024) {
+            console.log(`🔄 File too large, super compressing...`);
+            const superCompressed = await compressImage(file, 300, 0.2);
+            compressedImages.push(superCompressed);
+          } else {
+            compressedImages.push(compressed);
+          }
+          processedFiles.push(file);
+          console.log(`✅ Successfully processed file ${i + 1}`);
+        } catch (error) {
+          console.error(`❌ Error processing file ${i + 1}:`, error);
+          toast.error(`ไม่สามารถประมวลผลรูปภาพ ${file.name} ได้`);
         }
       }
 
       const updatedImages = [...selectedImages, ...compressedImages];
-      const updatedFiles = [...capturedFiles, ...fileArray];
+      const updatedFiles = [...capturedFiles, ...processedFiles];
       const finalImages = updatedImages.slice(0, 9);
       const finalFiles = updatedFiles.slice(0, 9);
 
@@ -145,13 +182,15 @@ export default function DialogForm() {
         toast.error("สามารถเลือกได้สูงสุด 9 รูปเท่านั้น");
       }
 
+      console.log(`📊 Final result: ${finalImages.length} images, ${finalFiles.length} files`);
       setSelectedImages(finalImages);
       setCapturedFiles(finalFiles);
 
       if (cameraRef.current) cameraRef.current.value = "";
       if (galleryRef.current) galleryRef.current.value = "";
     } catch (error) {
-      console.error("Error processing images:", error);
+      console.error("❌ Error processing images:", error);
+      toast.error("เกิดข้อผิดพลาดขณะประมวลผลรูปภาพ");
     } finally {
       setProcessing(false);
     }
@@ -340,7 +379,8 @@ export default function DialogForm() {
     }
 
     if (!phoneID) {
-      toast.error("กรุณาเลือก");
+      toast.error("กรุณาเลือก IP Phone");
+      return;
     }
 
     if (!text.trim()) {
@@ -372,14 +412,27 @@ export default function DialogForm() {
         fd.append("issue_else", issue.trim());
       fd.append("telegram", String(true));
 
-      // Attach captured files (images)
+      // Attach captured files (images) - ใช้ field name แยกตาม index
       if (capturedFiles && capturedFiles.length > 0) {
+        console.log(`📸 Attaching ${capturedFiles.length} images to FormData`);
         capturedFiles.forEach((image, index) => {
-          // Use same field name 'images' to send multiple files
-          fd.append(`image_${index}`, image);
+          console.log(`📎 Adding image ${index + 1}: ${image.name || `image_${index}.jpg`} (${(image.size / 1024).toFixed(2)}KB)`);
+          // ใช้ field name แยกตาม index เช่น image_0, image_1, image_2
+          fd.append(`image_${index}`, image, `image_${index}.jpg`);
         });
       }
-      console.log("Sending problem create request with FormData");
+      
+      // Debug FormData contents
+      console.log("📋 FormData contents:");
+      for (const [key, value] of fd.entries()) {
+        if (value instanceof File) {
+          console.log(`${key}: ${value.name} (${(value.size / 1024).toFixed(2)}KB)`);
+        } else {
+          console.log(`${key}: ${value}`);
+        }
+      }
+      
+      console.log(`🚀 Sending problem create request with FormData (${capturedFiles.length} images)`);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`,
@@ -935,13 +988,13 @@ export default function DialogForm() {
                 </div>
                 {/* Camera and Gallery Buttons */}
                 <div className="flex gap-4">
-                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                     <GalleryButton
                       onClick={handleGallery}
                       disabled={processing || selectedImages.length >= 9}
                     />
                   </div>
-                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                     <CameraButton
                       onClick={handleCamera}
                       disabled={processing || selectedImages.length >= 9}

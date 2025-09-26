@@ -164,10 +164,10 @@ function TasksPageContent() {
         </div>
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
               <div className="container mx-auto space-y-6">
                 {/* Header */}
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-3">
                   <div className="flex flex-1 items-center space-x-2">
                     <Input
                       aria-label="ค้นหารายการงาน"
@@ -180,14 +180,14 @@ function TasksPageContent() {
                   <Button 
                     onClick={exportFileTask}
                     size="sm"
-                    className="text-white bg-linear-to-r from-violet-500 to-pink-500"
+                    className="text-white bg-linear-to-r from-violet-500 to-pink-500 hover:scale-110"
                   >
                     <FileDown className="h-4 w-4"/>
                   </Button>
                   <Button
                     onClick={handleAddTask}
                     size="sm"
-                    className="bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white"
+                    className="bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white hover:scale-110"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Add Task

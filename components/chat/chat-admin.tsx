@@ -21,6 +21,9 @@ export default function ChatAdminPage() {
   const taskId = Number(useParams().id);
   const { Chat, loading, error, refreshChat } = useChatID(taskId);
   const [input, setInput] = useState("");
+  const [ticketNo, setTicketNo] = useState("");
+  const [assign, setAssign] = useState("");
+  const [status, setStatus] = useState(0);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,6 +38,28 @@ export default function ChatAdminPage() {
   const galleryRef = useRef<HTMLInputElement>(null);
   const editCameraRef = useRef<HTMLInputElement>(null);
   const editGalleryRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/${taskId}`
+        );
+        const data = await response.json();
+
+        if (data.data) {
+          setTicketNo(data.data.ticket_no || `TASK-${taskId}`);
+          setStatus(data.data.status);
+          setAssign(data.data.assign_to);
+        }
+        return data.data;
+      } catch (error) {
+        console.error("Error fetching ticket:", error);
+      }
+    };
+
+    fetchData();
+  }, [taskId]);
 
   const compressImage = (
     file: File,
@@ -296,22 +321,27 @@ export default function ChatAdminPage() {
     <div className="flex items-center justify-center min-h-screen p-2">
       <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b px-4 py-3">
-          <div className="flex gap-2 text-lg font-semibold">
-            {Chat.length > 0 ? Chat[0].ticket_no : `TASK-${taskId}`}
-            {Chat.length > 0 && (
-              <Badge className="bg-(--input) text-white">
-                <Wrench /> {Chat[0].assignto || "ยังไม่มีผู้รับผิดชอบงานนี้"}
+          <div className="flex-cols gap-2 text-lg font-semibold ">
+            <div className="flex pb-3">{ticketNo}</div>
+            <div className="flex gap-2">
+              <Badge className="bg-(--input) text-white p-1">
+                <Wrench /> {assign || "ยังไม่มีผู้รับผิดชอบงานนี้"}
               </Badge>
-            )}
+
+              {status === 2 ? (
+                <Badge className="bg-green-500 text-white">เสร็จสิ้น</Badge>
+              ) : status === 1 ? (
+                <Badge className="bg-cyan-500 text-white">กำลังดำเนินการ</Badge>
+              ) : (
+                <Badge className="bg-yellow-500 text-white">รอดำเนินการ</Badge>
+              )}
+            </div>
           </div>
         </div>
         <div ref={listRef} className="h-[520px] overflow-auto p-4">
           <div className="flex flex-col gap-3">
             {Chat.map((chat) => (
-              <div
-                key={chat.id}
-                className="flex justify-end max-w-full gap-2 "
-              >
+              <div key={chat.id} className="flex justify-end max-w-full gap-2 ">
                 <div className="flex flex-1 justify-end items-center opacity-0 hover:opacity-100 ">
                   {editingChatId !== chat.id && (
                     <DropdownMenu>
@@ -510,7 +540,13 @@ export default function ChatAdminPage() {
                 </div>
               </div>
             ))}
-            {Chat.length === 0 && (
+
+            {Chat.length === 0 && status === 0 && (
+              <div className="text-center text-gray-500 py-8">
+                ต้องมีผู้รับผิดชอบงานนี้
+              </div>
+            )}
+            {Chat.length === 0 && status === 1 && (
               <div className="text-center text-gray-500 py-8">
                 ยังไม่มีความคืบหน้า
               </div>
@@ -541,7 +577,8 @@ export default function ChatAdminPage() {
                 </div>
               )}
               <form onSubmit={handleSubmit} className="flex items-center gap-2">
-                <div className="flex items-center gap-2">
+                {status === 1 && (
+                  <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded-lg hover:scale-110">
                     <CameraButton
                       onClick={handleCamera}
@@ -565,45 +602,51 @@ export default function ChatAdminPage() {
                     </div>
                   )}
                 </div>
-                <input
-                  ref={cameraRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  multiple
-                  onChange={handleImageChange}
-                  className=" hidden"
-                />
-                <input
-                  ref={galleryRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-                <input
-                  className="flex-1 h-10 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="พิมพ์ข้อความ... แล้วกด Enter"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  disabled={isSubmitting}
-                  required
-                />
-                <button
-                  type="submit"
-                  disabled={
-                    (!input.trim() && selectedImages.length === 0) ||
-                    isSubmitting
-                  }
-                  className="h-10 px-4 rounded-xl bg-blue-600 text-white text-sm font-medium disabled:opacity-50 hover:bg-blue-700"
-                >
-                  {isSubmitting ? (
-                    "กำลังส่ง..."
-                  ) : (
-                    <Send className="transition-transform duration-300 hover:rotate-360" />
-                  )}
-                </button>
+                )}
+
+                {status === 1 && (
+                  <>
+                    <input
+                      ref={cameraRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      multiple
+                      onChange={handleImageChange}
+                      className=" hidden"
+                    />
+                    <input
+                      ref={galleryRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <input
+                      className="flex-1 h-10 rounded-xl border border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="พิมพ์ข้อความ... แล้วกด Enter"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      disabled={isSubmitting}
+                      required
+                    />
+                    <button
+                      type="submit"
+                      disabled={
+                        (!input.trim() && selectedImages.length === 0) ||
+                        isSubmitting
+                      }
+                      className="h-10 px-4 rounded-xl bg-blue-600 text-white text-sm font-medium disabled:opacity-50 hover:bg-blue-700"
+                    >
+                      {isSubmitting ? (
+                        "กำลังส่ง..."
+                      ) : (
+                        <Send className="transition-transform duration-300 hover:rotate-360" />
+                      )}
+                    </button>
+                  </>
+                )}
               </form>
             </div>
           </div>
