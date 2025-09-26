@@ -111,8 +111,7 @@ function CreateTaskPage() {
     router.push("/tasks");
   };
 
-
-    const handleCamera = () => {
+  const handleCamera = () => {
     cameraRef.current?.click();
   };
 
@@ -189,7 +188,6 @@ function CreateTaskPage() {
     setCapturedFiles(files);
   };
 
-
   return (
     <SidebarProvider
       style={
@@ -240,14 +238,20 @@ function CreateTaskPage() {
                               aria-expanded={open}
                               className="w-full justify-between"
                             >
-                              {phoneId
-                                ? (() => {
-                                    const phone = ipPhones.find(
-                                      (phone) => phone.id.toString() === phoneId
-                                    );
-                                    return phone ? `${phone.number} - ${phone.name}` : "Select Phone ID...";
-                                  })()
-                                : <span className="text-muted-foreground">Select Phone IP</span>}
+                              {phoneId ? (
+                                (() => {
+                                  const phone = ipPhones.find(
+                                    (phone) => phone.id.toString() === phoneId
+                                  );
+                                  return phone
+                                    ? `${phone.number} - ${phone.name}`
+                                    : "Select Phone ID...";
+                                })()
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Select Phone IP
+                                </span>
+                              )}
                               <ChevronsUpDown className="opacity-50" />
                             </Button>
                           </PopoverTrigger>
@@ -301,7 +305,7 @@ function CreateTaskPage() {
                           </PopoverContent>
                         </Popover>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="type">Type</Label>
                         <Select
@@ -381,37 +385,38 @@ function CreateTaskPage() {
                           rows={4}
                         />
                       </div>
+
                       {/* Camera Section */}
                       <div className="space-y-4">
-                        <Label>Add image</Label>
-                        <div className="flex gap-4">
-                          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                            <CameraButton
-                              onClick={handleCamera}
-                              disabled={processing || selectedImages.length >= 9}
-                            />
-                          </div>
-                          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                            <GalleryButton
-                              onClick={handleGallery}
-                              disabled={processing || selectedImages.length >= 9}
-                            />
-                          </div>
-                          {processing && (
-                            <div className="flex items-center gap-2 text-blue-600">
-                              <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                              <span className="text-sm">บีบอัด...</span>
+                        <div className="flex items-center justify-between">
+                          <Label>Add image</Label>
+                          <div className="flex gap-3">
+                            <div className="flex items-center gap-2 bg-(--input) px-3 py-1.5 rounded-lg border hover:scale-120">
+                              <GalleryButton
+                                onClick={handleGallery}
+                                disabled={
+                                  processing || selectedImages.length >= 9
+                                }
+                              />
                             </div>
-                          )}
+                            <div className="flex items-center gap-2 bg-(--input) px-3 py-1.5 rounded-lg border hover:scale-120">
+                              <CameraButton
+                                onClick={handleCamera}
+                                disabled={
+                                  processing || selectedImages.length >= 9
+                                }
+                              />
+                            </div>
+                          </div>
                         </div>
-                        
+
                         <ImageCompressor
                           selectedImages={selectedImages}
                           capturedFiles={capturedFiles}
                           onImagesChange={handleImagesChange}
                           processing={processing}
                         />
-                        
+
                         {/* Hidden File Inputs */}
                         <input
                           ref={cameraRef}
@@ -431,6 +436,7 @@ function CreateTaskPage() {
                           className="hidden"
                         />
                       </div>
+
                       {/* Form Actions */}
                       <div className="flex justify-end gap-4">
                         <Button

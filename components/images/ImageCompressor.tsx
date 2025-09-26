@@ -37,9 +37,9 @@ export default function ImageCompressor({
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-red-600"
+                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
               >
-                <X className="h-2 w-2" />
+                <X className="h-3 w-2" />
               </button>
             </div>
           ))}

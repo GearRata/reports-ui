@@ -318,7 +318,7 @@ function ShowTaskPage() {
     setCapturedFiles(newFiles);
   };
 
-  const removeEditImage = (index: number) => {
+  const removeEditImage = (index: number): void => {
     const newImages = editSelectedImages.filter((_, i) => i !== index);
     const newFiles = editSolutionFiles.filter((_, i) => i !== index);
     setEditSelectedImages(newImages);
@@ -848,7 +848,38 @@ function ShowTaskPage() {
                                   )}
 
                                   <div className="space-y-4">
-                                    <Label>เพิ่มรูปภาพใหม่</Label>
+                                    <div className="flex items-center justify-between">
+                                      <Label>เพิ่มรูปภาพใหม่</Label>
+                                      
+                                      {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
+                                      <div className="flex gap-2">
+                                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                          <CameraButton
+                                            onClick={handleEditCamera}
+                                            disabled={
+                                              editProcessing ||
+                                              editSelectedImages.length >= 9
+                                            }
+                                          />
+                                        </div>
+                                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                          <GalleryButton
+                                            onClick={handleEditGallery}
+                                            disabled={
+                                              editProcessing ||
+                                              editSelectedImages.length >= 9
+                                            }
+                                          />
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {editProcessing && (
+                                      <div className="flex items-center gap-2 text-blue-600">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                                        <span className="text-sm">บีบอัด...</span>
+                                      </div>
+                                    )}
 
                                     {/* Hidden File Inputs */}
                                     <input
@@ -868,36 +899,6 @@ function ShowTaskPage() {
                                       onChange={onEditFileChange}
                                       className="hidden"
                                     />
-
-                                    {/* Camera and Gallery Buttons */}
-                                    <div className="flex gap-4 mb-4">
-                                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                        <CameraButton
-                                          onClick={handleEditCamera}
-                                          disabled={
-                                            editProcessing ||
-                                            editSelectedImages.length >= 9
-                                          }
-                                        />
-                                      </div>
-                                      <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                        <GalleryButton
-                                          onClick={handleEditGallery}
-                                          disabled={
-                                            editProcessing ||
-                                            editSelectedImages.length >= 9
-                                          }
-                                        />
-                                      </div>
-                                      {editProcessing && (
-                                        <div className="flex items-center gap-2 text-blue-600">
-                                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                                          <span className="text-sm">
-                                            บีบอัด...
-                                          </span>
-                                        </div>
-                                      )}
-                                    </div>
 
                                     {/* Image Grid Display */}
                                     {editSelectedImages.length > 0 && (
@@ -1049,9 +1050,46 @@ function ShowTaskPage() {
 
                             {/* Camera Section */}
                             <div className="space-y-4">
-                              <Label>เพิ่มรูปภาพ</Label>
+                              <div className="flex items-center justify-between">
+                                <Label>เพิ่มรูปภาพ</Label>
+                                
+                                {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
+                                <div className="flex gap-2">
+                                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                    <GalleryButton
+                                      onClick={handleGallery}
+                                      disabled={
+                                        processing || selectedImages.length >= 9
+                                      }
+                                    />
+                                  </div>
+                                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                    <CameraButton
+                                      onClick={handleCamera}
+                                      disabled={
+                                        processing || selectedImages.length >= 9
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {processing && (
+                                <div className="flex items-center gap-2 text-blue-600">
+                                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
+                                  <span className="text-sm">บีบอัด...</span>
+                                </div>
+                              )}
 
                               {/* Hidden File Inputs */}
+                               <input
+                                ref={galleryRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={onFileChange}
+                                className="hidden"
+                              />
                               <input
                                 ref={cameraRef}
                                 type="file"
@@ -1061,40 +1099,7 @@ function ShowTaskPage() {
                                 onChange={onFileChange}
                                 className="hidden"
                               />
-                              <input
-                                ref={galleryRef}
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={onFileChange}
-                                className="hidden"
-                              />
-
-                              {/* Camera and Gallery Buttons */}
-                              <div className="flex gap-4 mb-4">
-                                <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                  <CameraButton
-                                    onClick={handleCamera}
-                                    disabled={
-                                      processing || selectedImages.length >= 9
-                                    }
-                                  />
-                                </div>
-                                <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                  <GalleryButton
-                                    onClick={handleGallery}
-                                    disabled={
-                                      processing || selectedImages.length >= 9
-                                    }
-                                  />
-                                </div>
-                                {processing && (
-                                  <div className="flex items-center gap-2 text-blue-600">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
-                                    <span className="text-sm">บีบอัด...</span>
-                                  </div>
-                                )}
-                              </div>
+                             
 
                               {/* Image Grid Display */}
                               {selectedImages.length > 0 && (

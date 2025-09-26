@@ -38,13 +38,13 @@ export default function SuccessPage() {
       className="backdrop-opacity-10  bg-white/5
         w-full min-h-dvh max-w-4xl mx-auto rounded-2xl border  p-5 flex items-center justify-center opacity-100"
     >
-      <div className="grid grid-cols-2 gap-8 place-items-center">
+      <div className="grid grid-cols-2 gap-8 place-items-center max-md:grid-cols-1">
         <div className="text-center space-y-4">
           <div className="flex justify-center">
-            <Image src="/correct.png" alt="Success" width={100} height={100} className="object-contain" />
+            <Image src="/correct.png" alt="Success" width={150} height={150} className="object-contain" />
           </div>
-          <h1 className="text-lg font-semibold">
-            แจ้งสำเร็จเรียบร้อยสามารถดูผลดำเนินการได้โดยการสแกน QR CODE
+          <h1 className="text-xl font-semibold ml-3">
+            แจ้งปัญหาสำเร็จเรียบร้อยสามารถดูผลดำเนินการได้โดยการสแกน QR CODE ได้เลย!
           </h1>
         </div>
         <div className="text-center">
