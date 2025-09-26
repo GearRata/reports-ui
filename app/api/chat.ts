@@ -57,7 +57,7 @@ export async function addChatNew(id: number, chat: AddChat) {
         const blob = new Blob([byteArray], { type: "image/jpeg" });
         
         // ใช้ field name ที่ Backend ต้องการ
-         formData.append(`image_${index}`, blob, `image_${index}.jpg`);
+         formData.append(`image_${index}`, blob);
       });
     }
     // Debug FormData contents
@@ -114,7 +114,7 @@ export async function updateChat(
         }
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "image/jpeg" });
-        formData.append("images", blob, `image_${index}.jpg`);
+        formData.append(`image_${index}`, blob);
       });
     }
 

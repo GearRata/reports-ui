@@ -416,9 +416,9 @@ export default function DialogForm() {
       if (capturedFiles && capturedFiles.length > 0) {
         console.log(`📸 Attaching ${capturedFiles.length} images to FormData`);
         capturedFiles.forEach((image, index) => {
-          console.log(`📎 Adding image ${index + 1}: ${image.name || `image_${index}.jpg`} (${(image.size / 1024).toFixed(2)}KB)`);
+          console.log(`📎 Adding image ${index + 1}: ${image.name} (${(image.size / 1024).toFixed(2)}KB)`);
           // ใช้ field name แยกตาม index เช่น image_0, image_1, image_2
-          fd.append(`image_${index}`, image, `image_${index}.jpg`);
+          fd.append(`image_${index}`, image);
         });
       }
       
