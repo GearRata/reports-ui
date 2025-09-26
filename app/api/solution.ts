@@ -43,7 +43,7 @@ export async function addSolution(
         }
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "image/jpeg" });
-        formData.append("images", blob, `image_${index}.jpg`);
+        formData.append(`image_${index}`, blob);
       });
     }
 
@@ -99,7 +99,7 @@ export async function updateSolution(
         }
         const byteArray = new Uint8Array(byteNumbers);
         const blob = new Blob([byteArray], { type: "image/jpeg" });
-        formData.append("images", blob, `image_${index}.jpg`);
+        formData.append(`image_${index}`, blob);
       });
     }
 
