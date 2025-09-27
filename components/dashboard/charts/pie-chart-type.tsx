@@ -38,23 +38,10 @@ export const ChartPieType = React.memo(function ChartPieType({
   // Type colors
   const typeColors = React.useMemo(
     () => [
-      "#EC4899", // สีชมพู
-      "#154D71",
-      "#FFE100",
-      "#0046FF",
-      "#CC66DA",
-      "#8B5CF6", // สีม่วง
-      "#E4004B",
-      "#84CC16", // สีเขียวอ่อน
-      "#08CB00",
-      "#06B6D4", // สีฟ้า
-      "#3B82F6", // สีน้ำเงิน
-      "#10B981", // สีเขียว
-      "#F59E0B", // สีเหลือง
-      "#E43636", // สีแดง
-      "#1A2A80",
-      "#F97316", // สีส้ม
-      "#B4E50D",
+      "#F44336", // Blue
+      "#2196F3", // Red
+      "#84CC16", // Green
+   
     ],
     []
   );

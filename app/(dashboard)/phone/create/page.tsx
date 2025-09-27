@@ -6,13 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -39,17 +32,14 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
 import { addIPPhone } from "@/app/api/phones";
 import { cn } from "@/lib/utils";
-import { useBranchesForDropdown } from "@/app/api/branches";
 import { useDepartmentsForDropdown } from "@/app/api/departments";
 
 function CreatePhonePage() {
   const router = useRouter();
-  const { branches, loading: branchesLoading } = useBranchesForDropdown();
   const { departments } = useDepartmentsForDropdown();
 
   const [number, setNumber] = useState("");
   const [name, setName] = useState("");
-  const [branchId, setBranchId] = useState<string>("");
   const [departmentId, setDepartmentId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = React.useState(false);
@@ -62,7 +52,6 @@ function CreatePhonePage() {
       await addIPPhone({
         number: Number(number),
         name,
-        branch_id: Number(branchId),
         department_id: Number(departmentId),
       });
       // Navigate back to phones page
@@ -128,34 +117,7 @@ function CreatePhonePage() {
                           required
                         />
                       </div>
-
-                      {/* Branch Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="branch">Branch</Label>
-                        <Select
-                          value={branchId}
-                          onValueChange={(value) => setBranchId(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue
-                              placeholder={
-                                branchesLoading ? "Loading..." : "Select Branch"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {branches.map((branch) => (
-                              <SelectItem
-                                key={branch.id}
-                                value={branch.id.toString()}
-                              >
-                                {branch.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                     
 
                       <div className="space-y-2">
                         <Label htmlFor="phone_id">IP Phone</Label>
@@ -175,7 +137,7 @@ function CreatePhonePage() {
                                         departmentId
                                     );
                                     return department
-                                      ? `${department.number} - ${department.name}`
+                                      ? `${department.name}`
                                       : "Select Department...";
                                   })()
                                 : <span className="text-muted-foreground">Select Department</span>}
@@ -219,7 +181,7 @@ function CreatePhonePage() {
                                         setOpen(false);
                                       }}
                                     >
-                                      {department.number} - {department.name}
+                                       {department.name} - {department.branch_name}
                                       <Check
                                         className={cn(
                                           "ml-auto",
@@ -254,7 +216,6 @@ function CreatePhonePage() {
                             isSubmitting ||
                             !number ||
                             !name.trim() ||
-                            !branchId ||
                             !departmentId
                           }
                           className="text-white"

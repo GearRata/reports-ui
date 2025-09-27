@@ -391,7 +391,7 @@ function CreateTaskPage() {
                         <div className="flex items-center justify-between">
                           <Label>Add image</Label>
                           <div className="flex gap-3">
-                            <div className="flex items-center gap-2 bg-(--input) px-3 py-1.5 rounded-lg border hover:scale-120">
+                            <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                               <GalleryButton
                                 onClick={handleGallery}
                                 disabled={
@@ -399,7 +399,7 @@ function CreateTaskPage() {
                                 }
                               />
                             </div>
-                            <div className="flex items-center gap-2 bg-(--input) px-3 py-1.5 rounded-lg border hover:scale-120">
+                            <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                               <CameraButton
                                 onClick={handleCamera}
                                 disabled={

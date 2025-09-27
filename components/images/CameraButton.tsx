@@ -18,7 +18,7 @@ export default function CameraButton({
         aria-label="Take photo"
         type="button"
       >
-        <FaCamera size={20} />
+        <FaCamera size={25} />
       </button>
     </div>
   );
