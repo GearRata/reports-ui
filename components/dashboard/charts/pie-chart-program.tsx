@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Pie, PieChart, Cell, ResponsiveContainer, Legend } from "recharts";
+import { Pie, PieChart, Cell, ResponsiveContainer } from "recharts";
 import {
   Card,
   CardContent,
@@ -61,13 +61,32 @@ export const ChartPieProgram = React.memo(function ChartPieProgram({
       groupedData[systemName] = (groupedData[systemName] || 0) + 1;
     });
 
-    const result = Object.entries(groupedData)
-      .map(([system_name, total_problems], index) => ({
-        system_name,
-        total_problems,
-        fill: systemColors[index % systemColors.length],
-      }))
-      .sort((a, b) => b.total_problems - a.total_problems); // เรียงจากมากไปน้อย
+    const sortedEntries = Object.entries(groupedData).sort(
+      ([, a], [, b]) => b - a
+    ); // เรียงจากมากไปน้อย
+
+    // แสดงเฉพาะ Top 10 และรวมที่เหลือเป็น "อื่นๆ"
+    const topEntries = sortedEntries.slice(0, 10);
+    const otherEntries = sortedEntries.slice(10);
+
+    const result = topEntries.map(([system_name, total_problems], index) => ({
+      system_name,
+      total_problems,
+      fill: systemColors[index % systemColors.length],
+    }));
+
+    // เพิ่ม "อื่นๆ" ถ้ามีข้อมูลเหลือ
+    if (otherEntries.length > 0) {
+      const otherTotal = otherEntries.reduce(
+        (sum, [, count]) => sum + count,
+        0
+      );
+      result.push({
+        system_name: `อื่นๆ (${otherEntries.length} โปรแกรม)`,
+        total_problems: otherTotal,
+        fill: "#94A3B8", // สีเทา
+      });
+    }
 
     return result;
   }, [filteredTasks, systemColors]);
@@ -138,54 +157,71 @@ export const ChartPieProgram = React.memo(function ChartPieProgram({
             </div>
           </div>
         ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square max-h-[400px]"
-          >
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <ChartTooltip
-                  content={
-                    <ChartTooltipContent
-                      formatter={(value, name) => [
-                        `โปรแกรม ${name}: `,
-                        `${value} รายการ`,
-                        // เช็ค name ก่อน
-                      ]}
-                    />
-                  }
-                />
-                <Pie
-                  data={chartData}
-                  dataKey="total_problems"
-                  nameKey="system_name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  label={({ system_name, total_problems, percent }) =>
-                    `${system_name || "ไม่ระบุโปรแกรม"}: ${total_problems} (${(
-                      (percent || 0) * 100
-                    ).toFixed(1)}%)`
-                  }
-                  labelLine={true}
+          <div className="space-y-4">
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square max-h-[500px]"
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value, name) => [
+                          `${value} รายการ`,
+                          `โปรแกรม: ${name}`,
+                        ]}
+                      />
+                    }
+                  />
+                  <Pie
+                    data={chartData}
+                    dataKey="total_problems"
+                    nameKey="system_name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={120}
+                    innerRadius={40}
+                    paddingAngle={2}
+                    label={({ percent }) =>
+                      percent ? `${(percent * 100).toFixed(1)}%` : ""
+                    }
+                    labelLine={false}
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+            </ChartContainer>
+
+            {/* Custom Legend with better layout */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 text-sm">
+              {chartData.map((entry, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 p-2 rounded-md bg-muted/50"
                 >
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Legend
-                  verticalAlign="bottom"
-                  height={36}
-                  formatter={(value, entry) => {
-                    const payload = entry?.payload as
-                      | { total_problems: number }
-                      | undefined;
-                    return `${value} (${payload?.total_problems || 0})`;
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </ChartContainer>
+                  <div
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: entry.fill }}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className="font-medium truncate"
+                      title={entry.system_name}
+                    >
+                      {entry.system_name}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {entry.total_problems} รายการ
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </CardContent>
     </Card>
