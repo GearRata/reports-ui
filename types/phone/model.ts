@@ -11,7 +11,6 @@ export interface IpPhoneData {
 export type IpPhoneDataId = number
 
 export interface AddIpPhone {
-  branch_id: number
   department_id: number
   number: number
   name: string

@@ -988,13 +988,13 @@ export default function DialogForm() {
                 </div>
                 {/* Camera and Gallery Buttons */}
                 <div className="flex gap-4">
-                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                 <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                     <GalleryButton
                       onClick={handleGallery}
                       disabled={processing || selectedImages.length >= 9}
                     />
                   </div>
-                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-4 py-3 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5  rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                     <CameraButton
                       onClick={handleCamera}
                       disabled={processing || selectedImages.length >= 9}

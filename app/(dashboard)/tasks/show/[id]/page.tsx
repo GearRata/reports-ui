@@ -853,7 +853,7 @@ function ShowTaskPage() {
                                       
                                       {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
                                       <div className="flex gap-2">
-                                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                        <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                                           <CameraButton
                                             onClick={handleEditCamera}
                                             disabled={
@@ -862,7 +862,7 @@ function ShowTaskPage() {
                                             }
                                           />
                                         </div>
-                                        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                        <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                                           <GalleryButton
                                             onClick={handleEditGallery}
                                             disabled={
@@ -1055,7 +1055,7 @@ function ShowTaskPage() {
                                 
                                 {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
                                 <div className="flex gap-2">
-                                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-2 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                                     <GalleryButton
                                       onClick={handleGallery}
                                       disabled={
@@ -1063,7 +1063,7 @@ function ShowTaskPage() {
                                       }
                                     />
                                   </div>
-                                  <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-2 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                                     <CameraButton
                                       onClick={handleCamera}
                                       disabled={

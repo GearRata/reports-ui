@@ -38,24 +38,20 @@ export const ChartPieDepartment = React.memo(function ChartPieDepartment({
   // Department colors
   const departmentColors = React.useMemo(
     () => [
-      
-      "#0046FF",
-      "#CC66DA",
-      "#E4004B",
-      "#3B82F6", // สีน้ำเงิน
-      "#10B981", // สีเขียว
-      "#F59E0B", // สีเหลือง
-      "#E43636", // สีแดง
-      "#8B5CF6", // สีม่วง
-      "#08CB00",
-      "#1A2A80",
-      "#F97316", // สีส้ม
-      "#B4E50D",
-      "#06B6D4", // สีฟ้า
-      "#84CC16", // สีเขียวอ่อน
-      "#EC4899", // สีชมพู
-      "#154D71",
-      "#FFE100",
+      "#3B82F6", // Blue
+      "#EF4444", // Red
+      "#10B981", // Green
+      "#F59E0B", // Amber
+      "#8B5CF6", // Purple
+      "#EC4899", // Pink
+      "#06B6D4", // Cyan
+      "#84CC16", // Lime
+      "#F97316", // Orange
+      "#6366F1", // Indigo
+      "#FF884D",
+      "#FF3864",
+      "#52B788",
+      "#1D70A2"
     ],
     []
   );

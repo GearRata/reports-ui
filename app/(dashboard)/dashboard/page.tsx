@@ -53,7 +53,9 @@ type Task = {
   phone_name?: string;
 };
 
-type DashboardData = { tasks: Task[] };
+import type { DashboardData as DashboardDataType } from "@/types/entities";
+
+
 
 type Range = { from: Date; to: Date }; // [from, to) รวม from ไม่รวม to
 
@@ -86,7 +88,7 @@ function rangeLastYear(): Range {
 
 function Page() {
   const { data, loading, error } = useDashboard() as {
-    data?: DashboardData;
+    data?: DashboardDataType;
     loading: boolean;
     error?: unknown;
   };
@@ -96,6 +98,8 @@ function Page() {
   const [selectedRange, setSelectedRange] = useState<Range | null>(null);
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [open, setOpen] = useState(false);
+
+  console.log("Data", data);
 
   // Filter data based on selected date and branch using half-open ranges [from, to)
   const filteredTasks = useMemo(() => {
@@ -453,12 +457,11 @@ function Page() {
                           align="start"
                         >
                           <SelectItem value="all">ทั้งหมด</SelectItem>
-                          <SelectItem value="สำนักงานใหญ่">
-                            สำนักงานใหญ่
-                          </SelectItem>
-                          <SelectItem value="สาขาสันกำแพง">
-                            สาขาสันกำแพง
-                          </SelectItem>
+                          {data?.branches?.map((branch) => (
+                            <SelectItem key={branch.id} value={branch.name}>
+                              {branch.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>

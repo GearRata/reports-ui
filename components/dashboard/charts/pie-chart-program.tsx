@@ -38,23 +38,16 @@ export const ChartPieProgram = React.memo(function ChartPieProgram({
   // Department colors
   const systemColors = React.useMemo(
     () => [
-      "#3B82F6", // สีน้ำเงิน
-      "#10B981", // สีเขียว
-      "#F59E0B", // สีเหลือง
-      "#E43636", // สีแดง
-      "#8B5CF6", // สีม่วง
-      "#FFE100",
-      "#0046FF",
-      "#CC66DA",
-      "#E4004B",
-      "#08CB00",
-      "#1A2A80",
-      "#F97316", // สีส้ม
-      "#B4E50D",
-      "#06B6D4", // สีฟ้า
-      "#84CC16", // สีเขียวอ่อน
-      "#EC4899", // สีชมพู
-      "#154D71",
+       "#FFD700", // Blue
+      "#5DADE2", // Red
+      "#FF7F50", // Green
+      "#2ECC71", // Amber
+      "#BB8FCE", // Purple
+      "#F39C12", // Pink
+      "#EF4444",
+      "#9C27B0",
+      "#00BCD4",
+      "#E91E63",
     ],
     []
   );

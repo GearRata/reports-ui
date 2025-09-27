@@ -18,7 +18,7 @@ export default function GalleryButton({
         aria-label="Add image"
         type="button"
       >
-        <AiFillPicture size={20}  />
+        <AiFillPicture size={25}  />
       </button>
     </div>
   );

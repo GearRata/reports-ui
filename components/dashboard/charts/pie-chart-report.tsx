@@ -38,23 +38,26 @@ export const ChartPieReport = React.memo(function ChartPieReport({
   // Reporter colors
   const reporterColors = React.useMemo(
     () => [
-      "#E43636", // สีแดง
-      "#8B5CF6", // สีม่วง
-      "#08CB00",
-      "#1A2A80",
-      "#F97316", // สีส้ม
-      "#FFE100",
-      "#0046FF",
-      "#B4E50D",
-      "#CC66DA",
-      "#06B6D4", // สีฟ้า
-      "#E4004B",
-      "#3B82F6", // สีน้ำเงิน
-      "#10B981", // สีเขียว
-      "#F59E0B", // สีเหลือง
-      "#84CC16", // สีเขียวอ่อน
-      "#EC4899", // สีชมพู
-      "#154D71",
+       "#6050DC", // Blue
+      "#FF2E7E", // Red
+      "#FF6B45", // Green
+      "#FFAB05", // Amber
+      "#00BF7D", // Purple
+      "#EC4899", // Pink
+      "#06B6D4", // Cyan
+      "#84CC16", // Lime
+      "#F97316", // Orange
+      "#6366F1", // Indig
+       "#17BECF", // Blue
+      "#FFC20A", // Red
+      "#00668E", // Green
+      "#E84A5F", // Amber
+      "#5BA300", // Purple
+      "#A56EFF", // Pink
+      "#F44336", // Cyan
+      "#FF9800", // Lime
+      "#CDDC39", // Orange
+      "#2196F3", // Indig
     ],
     []
   );
