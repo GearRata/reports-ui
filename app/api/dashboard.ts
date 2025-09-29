@@ -25,6 +25,12 @@ export function useDashboard() {
 
   useEffect(() => {
     fetchDashboard();
+    
+    const interval = setInterval(() => {
+      fetchDashboard();
+    }, 180000); // 
+    
+    return () => clearInterval(interval);
   }, []);
 
   return { data, loading, error, refreshDashboard: fetchDashboard };

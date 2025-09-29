@@ -16,8 +16,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FileDown  } from "lucide-react";
-import { exportFileTask } from "@/lib/utils";
+import { DownLoadFile } from "@/components/downloadfile/download";
 
 // ——— แยกเนื้อหาออกมาเป็นคอมโพเนนต์ที่อยู่ใน Suspense ———
 function TasksPageContent() {
@@ -177,19 +176,17 @@ function TasksPageContent() {
                       className="h-8 w-[150px] lg:w-[450px]"
                     />
                   </div>
-                  <Button 
-                    onClick={exportFileTask}
-                    size="sm"
-                    className="text-white bg-linear-to-r from-violet-500 to-pink-500 hover:scale-110"
-                  >
-                    <FileDown className="h-4 w-4"/>
-                  </Button>
+
+                  {/* Download File CSV */}
+                  
+                  <DownLoadFile/>
+
                   <Button
                     onClick={handleAddTask}
                     size="sm"
                     className="bg-linear-to-r/srgb from-indigo-500 to-teal-400 text-white hover:scale-110"
                   >
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-3" />
                     Add Task
                   </Button>
                 </div>

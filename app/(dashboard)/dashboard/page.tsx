@@ -99,7 +99,6 @@ function Page() {
   const [selectedBranch, setSelectedBranch] = useState<string>("all");
   const [open, setOpen] = useState(false);
 
-  console.log("Data", data);
 
   // Filter data based on selected date and branch using half-open ranges [from, to)
   const filteredTasks = useMemo(() => {
@@ -314,6 +313,7 @@ function Page() {
                             selected={selectedDate}
                             onSelect={handleDateSelect}
                             captionLayout="dropdown"
+                            tasksData={data?.tasks || []}
                           />
                           <div className="grid grid-cols-2 max-sm:grid-cols-1">
                             <div className="flex flex-col border-r ">
@@ -392,7 +392,7 @@ function Page() {
                                         key={i}
                                         value={`${i}-${currentYear}`}
                                       >
-                                        {monthName} {currentYear}
+                                        {monthName}
                                       </SelectItem>
                                     );
                                   })}
@@ -412,7 +412,7 @@ function Page() {
                                     <SelectValue placeholder="เลือกปี" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {Array.from({ length: 5 }, (_, i) => {
+                                    {Array.from({ length: 10 }, (_, i) => {
                                       const year = new Date().getFullYear() - i;
                                       return (
                                         <SelectItem

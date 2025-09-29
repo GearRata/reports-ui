@@ -13,10 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown, Check, SquareCheckBig } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash, CircleEllipsis } from "lucide-react";
+import { Pencil, Trash, CircleEllipsis, Check, ChevronDown, SquareCheckBig  } from "lucide-react";
 // import type { TaskData } from "@/types/Task/model";
 import type { TaskWithPhone } from "@/types/entities";
 import { LuClock } from "react-icons/lu";
@@ -145,6 +144,7 @@ export function TasksNewTable({
     }
     return out.join("");
   };
+
 
   return (
     <div className="rounded-md border">
@@ -327,7 +327,7 @@ export function TasksNewTable({
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={
-                      task.status === 0 || 1
+                      (task.status === 0 || task.status === 1)
                         ? assignTo
                             .find((a) => a.name === task.assign_to)
                             ?.id.toString() || "unassigned"
@@ -352,7 +352,7 @@ export function TasksNewTable({
                       <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
                     <SelectContent>
-                      {task.status === 0 || 1 ? (
+                      {(task.status === 0 || task.status === 1) ? (
                         <>
                           <SelectItem value="unassigned" disabled>
            
@@ -388,15 +388,16 @@ export function TasksNewTable({
                     </SelectContent>
                   </Select>
                 </TableCell>
-
-                <TableCell>
+                
+                {(task.status === 0 || task.status === 1) ? (
+                   <TableCell>
                   <Button
                     onClick={(e) => {
                       e.stopPropagation();
                       onEditTask(task);
                     }}
                     disabled={loading}
-                    className="cursor-pointer mr-2 bg-(--accent) text-white hover:bg-(--popover) hover:scale-105 "
+                    className="cursor-pointer mr-2 bg-[#27272a] text-white hover:bg-[#18181b] hover:scale-105 "
                   >
                     <Pencil className=" h-4 w-4" />
                   </Button>
@@ -411,6 +412,8 @@ export function TasksNewTable({
                     <Trash className=" h-4 w-4" />
                   </Button>
                 </TableCell>
+                ) : <TableCell className="flex items-center justify-center gap-1"><Check className="w-10 h-10"/>Success</TableCell>}
+               
               </TableRow>
             ))
           )}

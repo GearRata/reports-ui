@@ -585,7 +585,8 @@ export default function DialogForm() {
                     htmlFor="phone"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    IP Phone
+                    IP Phone 
+                    <p className="text-sm font-light"><span className="text-red-500">*</span> ถ้าไม่มี IP Phone สามารถกรอกเบอร์ตัวเอง</p>
                   </Label>
                 </div>
               </div>
@@ -648,6 +649,20 @@ export default function DialogForm() {
                     </Command>
                   </PopoverContent>
                 </Popover>
+                {/* ถ้าไม่มี IP Phone สามารถกรอกเองได้ */}
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="หรือกรอกเบอร์โทรศัพท์เอง (เช่น 081-234-5678)"
+                    className={cn(
+                      "h-14 sm:h-16 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
+                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600",
+                      "shadow-xl hover:shadow-2xl",
+                      "border-slate-600/40 focus:border-yellow-400 hover:border-slate-500/60 focus:ring-2 focus:ring-yellow-400/30",
+                      "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
