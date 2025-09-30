@@ -14,7 +14,7 @@ export default function ChatUserPage() {
 
   const [ticketNo, setTicketNo] = useState("");
   const [status, setStatus] = useState(0);
-  const [assign, setAssign] = useState("")
+  const [assign, setAssign] = useState("");
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -30,7 +30,7 @@ export default function ChatUserPage() {
         if (data.data) {
           setTicketNo(data.data.ticket_no || `TASK-${taskId}`);
           setStatus(data.data.status);
-          setAssign(data.data.assign_to)
+          setAssign(data.data.assign_to);
         }
         return data.data;
       } catch (error) {
@@ -42,13 +42,24 @@ export default function ChatUserPage() {
   }, [taskId]);
 
 
-console.log("assign", assign)
   useEffect(() => {
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
       behavior: "smooth",
     });
   }, [Chat.length]);
+
+   const formatThaiDate = (date: Date) => {
+    const thaiMonths = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    const day = date.getDate();
+    const month = thaiMonths[date.getMonth()];
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+    return `${day} ${month} ${year} ${time}`;
+  };
 
   useEffect(() => {
     if (!viewerOpen) return;
@@ -83,15 +94,12 @@ console.log("assign", assign)
       <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <div className="flex-cols gap-2 text-lg font-semibold ">
-            <div className="flex pb-3">
-              {ticketNo}
-            </div>
+            <div className="flex pb-3">{ticketNo}</div>
             <div className="flex gap-2">
-              
-                <Badge className="bg-(--input) text-white p-1">
-                  <Wrench /> {assign || "ยังไม่มีผู้รับผิดชอบงานนี้"}
-                </Badge>
-              
+              <Badge className="bg-(--input) text-white p-1">
+                <Wrench /> {assign || "ยังไม่มีผู้รับผิดชอบงานนี้"}
+              </Badge>
+
               {status === 2 ? (
                 <Badge className="bg-green-500 text-white">เสร็จสิ้น</Badge>
               ) : status === 1 ? (
@@ -113,10 +121,11 @@ console.log("assign", assign)
         <div ref={listRef} className="h-[520px] overflow-auto p-4">
           <div className="flex flex-col gap-3">
             {Chat.map((chat) => (
-              <div
-                key={chat.id}
-                className="flex max-w-full gap-2 justify-start"
-              >
+              <div key={chat.id} className="flex flex-col gap-1 group">
+                {/* Date and Time */}
+                <div className="p-2 text-[12px] opacity-70 text-gray-500 dark:text-gray-400 text-center">
+                 {formatThaiDate(new Date(chat.created_at))}
+                </div>
                 <div className="max-w-fit relative rounded-2xl px-3 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800">
                   <div className="absolute bottom-1 -left-2 border-solid border-r-zinc-800 border-r-20 border-y-transparent border-y-12 border-l-0 whitespace-pre-wrap break-words"></div>
                   <div className="flex justify-start mb-2 whitespace-pre-wrap break-words">
@@ -149,12 +158,7 @@ console.log("assign", assign)
                         )}
                     </div>
                   </div>
-                  <div className="flex justify-end mt-1 text-[12px] opacity-70 text-gray-500 dark:text-gray-400">
-                    {new Date(chat.created_at).toLocaleTimeString("th-TH", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
+                  
                 </div>
                 <div className="max-w-full flex flex-1 justify-end items-center"></div>
               </div>

@@ -15,7 +15,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash, CircleEllipsis, Check, ChevronDown, SquareCheckBig  } from "lucide-react";
+import {
+  Pencil,
+  Trash,
+  CircleEllipsis,
+  Check,
+  ChevronDown,
+  SquareCheckBig,
+} from "lucide-react";
 // import type { TaskData } from "@/types/Task/model";
 import type { TaskWithPhone } from "@/types/entities";
 import { LuClock } from "react-icons/lu";
@@ -117,8 +124,6 @@ export function TasksNewTable({
     return thaiLand.format("DD MMMM YYYY HH:mm");
   };
 
-  
-
   const filterAlphabet = (str: string): string => {
     const wantMap: Record<string, string[]> = {
       hardware: ["H", "W"],
@@ -145,7 +150,6 @@ export function TasksNewTable({
     return out.join("");
   };
 
-
   return (
     <div className="rounded-md border">
       <Table>
@@ -154,8 +158,9 @@ export function TasksNewTable({
             <TableHead>Type</TableHead>
             <TableHead>Ticket ID</TableHead>
             {/* <TableHead>Phone Number</TableHead> */}
-            <TableHead>ชื่อผู้แจ้ง</TableHead>
-            <TableHead>Phone Name</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Number</TableHead>
+            <TableHead>Phone</TableHead>
             <TableHead>Department</TableHead>
             <TableHead>Program</TableHead>
             <TableHead>Branch</TableHead>
@@ -175,9 +180,11 @@ export function TasksNewTable({
                     <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-cyan-500 to-blue-500">
                       Progress
                     </Badge>
-                  ) : <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-lime-500 to-emerald-500">
+                  ) : (
+                    <Badge className="h-6 rounded-2xl text-white font-bold bg-linear-to-r from-lime-500 to-emerald-500">
                       Done
-                    </Badge>}
+                    </Badge>
+                  )}
                 </span>
 
                 <DropdownMenu>
@@ -207,7 +214,7 @@ export function TasksNewTable({
                         <Check className="ml-auto h-4 w-4" />
                       )}
                     </DropdownMenuItem>
-                     <DropdownMenuItem
+                    <DropdownMenuItem
                       onClick={() => handleStatusChange("progress")}
                     >
                       Progress
@@ -269,10 +276,17 @@ export function TasksNewTable({
                     {filterAlphabet(task.system_type)}
                   </Badge>
                 </TableCell>
-                <TableCell className="font-medium hover:underline cursor-pointer" onClick={(e) => { e.stopPropagation(); onShowTask(task); }}>
+                <TableCell
+                  className="font-medium hover:underline cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onShowTask(task);
+                  }}
+                >
                   {task.ticket_no || `#${task.id}`}
                 </TableCell>
                 <TableCell>{task.reported_by}</TableCell>
+                <TableCell>{task.phone_id === 0 ? task.phone_else : task.number}</TableCell>
                 <TableCell>{task.phone_name || "-"}</TableCell>
                 <TableCell>{task.department_name || "-"}</TableCell>
                 <TableCell>{task.system_name || "อื่นๆ"}</TableCell>
@@ -313,13 +327,11 @@ export function TasksNewTable({
                       ) : (
                         <SquareCheckBig className="w-4 h-4" />
                       )}
-                        {task.status === 0 ? (
-                          formatTimeAgo(task.created_at)
-                        ) : task.status === 1 ? (
-                          formatTimeAgo(task.updated_at)
-                        ) : (
-                          formatFixedTime(task.updated_at)
-                        )}
+                      {task.status === 0
+                        ? formatTimeAgo(task.created_at)
+                        : task.status === 1
+                        ? formatTimeAgo(task.updated_at)
+                        : formatFixedTime(task.updated_at)}
                     </div>
                   </Badge>
                 </TableCell>
@@ -327,7 +339,7 @@ export function TasksNewTable({
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Select
                     value={
-                      (task.status === 0 || task.status === 1)
+                      task.status === 0 || task.status === 1
                         ? assignTo
                             .find((a) => a.name === task.assign_to)
                             ?.id.toString() || "unassigned"
@@ -352,11 +364,12 @@ export function TasksNewTable({
                       <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
                     </SelectTrigger>
                     <SelectContent>
-                      {(task.status === 0 || task.status === 1) ? (
+                      {task.status === 0 || task.status === 1 ? (
                         <>
                           <SelectItem value="unassigned" disabled>
-           
-                              <span className="text-(--muted-foreground)">เลือกผู้รับผิดชอบ</span>
+                            <span className="text-(--muted-foreground)">
+                              เลือกผู้รับผิดชอบ
+                            </span>
                           </SelectItem>
                           {assignTo && assignTo.length > 0 ? (
                             assignTo.map((assign) => (
@@ -388,32 +401,36 @@ export function TasksNewTable({
                     </SelectContent>
                   </Select>
                 </TableCell>
-                
-                {(task.status === 0 || task.status === 1) ? (
-                   <TableCell>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEditTask(task);
-                    }}
-                    disabled={loading}
-                    className="cursor-pointer mr-2 bg-[#27272a] text-white hover:bg-[#18181b] hover:scale-105 "
-                  >
-                    <Pencil className=" h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDeleteTask(task.id);
-                    }}
-                    disabled={loading}
-                    className="cursor-pointer mr-2 bg-red-500 text-white hover:bg-red-600 hover:scale-105 "
-                  >
-                    <Trash className=" h-4 w-4" />
-                  </Button>
-                </TableCell>
-                ) : <TableCell className="flex items-center justify-center gap-1"><Check className="w-10 h-10"/>Success</TableCell>}
-               
+
+                {task.status === 0 || task.status === 1 ? (
+                  <TableCell>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditTask(task);
+                      }}
+                      disabled={loading}
+                      className="cursor-pointer mr-2 bg-[#27272a] text-white hover:bg-[#18181b] hover:scale-105 "
+                    >
+                      <Pencil className=" h-4 w-4" />
+                    </Button>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteTask(task.id);
+                      }}
+                      disabled={loading}
+                      className="cursor-pointer mr-2 bg-red-500 text-white hover:bg-red-600 hover:scale-105 "
+                    >
+                      <Trash className=" h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                ) : (
+                  <TableCell className="flex items-center justify-center gap-1">
+                    <Check className="w-10 h-10" />
+                    Success
+                  </TableCell>
+                )}
               </TableRow>
             ))
           )}

@@ -294,6 +294,18 @@ export default function ChatAdminPage() {
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
 
+  const formatThaiDate = (date: Date) => {
+    const thaiMonths = [
+      "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+      "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+    ];
+    const day = date.getDate();
+    const month = thaiMonths[date.getMonth()];
+    const year = date.getFullYear();
+    const time = date.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+    return `${day} ${month} ${year} ${time}`;
+  };
+
   useEffect(() => {
     // Scroll to input area at the bottom with delay for initial load
     const timer = setTimeout(() => {
@@ -330,7 +342,6 @@ export default function ChatAdminPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-       
         <div className="flex items-center justify-center min-h-screen p-2">
           <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between border-b px-4 py-3">
@@ -355,14 +366,20 @@ export default function ChatAdminPage() {
                 </div>
               </div>
             </div>
+
             <div ref={listRef} className="h-[520px] overflow-auto p-4">
               <div className="flex flex-col gap-3">
                 {Chat.map((chat) => (
-                  <div
-                    key={chat.id}
-                    className="flex justify-end max-w-full gap-2 "
-                  >
-                    <div className="flex flex-1 justify-end items-center opacity-0 hover:opacity-100 ">
+                  <div key={chat.id} className="flex flex-col gap-1 group">
+                    {/* Date and Time */}
+                    <div className="p-2 text-[12px] opacity-70 text-gray-500 dark:text-gray-400 text-center">
+                      {formatThaiDate(new Date(chat.created_at))}
+                    </div>
+                    
+                    {/* Message Container */}
+                    <div className="flex justify-end max-w-full gap-2 ">
+
+                      <div className="flex flex-1 justify-end items-center opacity-0 group-hover:opacity-100">
                       {editingChatId !== chat.id && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -391,8 +408,8 @@ export default function ChatAdminPage() {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       )}
-                    </div>
-                    <div className="relative rounded-2xl px-4 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800">
+                      </div>
+                      <div className="relative rounded-2xl px-4 py-2 text-sm shadow-sm bg-gray-100 dark:bg-zinc-800">
                       <div className="absolute bottom-1 -right-2 border-solid border-l-zinc-800 border-l-20 border-y-transparent border-y-12 border-r-0"></div>
 
                       {editingChatId === chat.id ? (
@@ -487,13 +504,13 @@ export default function ChatAdminPage() {
                           {/* Edit Controls */}
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <div className="p-1 bg-gray-100 dark:bg-gray-600 rounded hover:bg-blue-200 dark:hover:bg-slate-800">
+                              <div className="p-0.5 bg-gray-100 dark:bg-gray-600 rounded hover:bg-blue-200 dark:hover:bg-slate-800">
                                 <CameraButton
                                   onClick={handleEditCamera}
                                   disabled={editProcessing}
                                 />
                               </div>
-                              <div className="p-1 bg-blue-100 dark:bg-gray-600 rounded hover:bg-blue-200 dark:hover:bg-slate-800">
+                              <div className="p-0.5 bg-blue-100 dark:bg-gray-600 rounded hover:bg-blue-200 dark:hover:bg-slate-800">
                                 <GalleryButton
                                   onClick={handleEditGallery}
                                   disabled={editProcessing}
@@ -551,17 +568,9 @@ export default function ChatAdminPage() {
                                 )}
                             </div>
                           </div>
-                          <div className="mt-1 text-[12px] opacity-70 text-gray-500 dark:text-gray-400 ">
-                            {new Date(chat.created_at).toLocaleTimeString(
-                              "th-TH",
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
-                          </div>
                         </>
                       )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -672,12 +681,12 @@ export default function ChatAdminPage() {
                             (!input.trim() && selectedImages.length === 0) ||
                             isSubmitting
                           }
-                          className="h-10 px-4 rounded-xl bg-blue-600 text-white text-sm font-medium disabled:opacity-50 hover:bg-blue-700"
+                          className="h-10 px-4 rounded-xl bg-blue-600 text-white text-sm font-medium disabled:opacity-50 hover:bg-blue-700 group"
                         >
                           {isSubmitting ? (
                             "กำลังส่ง..."
                           ) : (
-                            <Send className="transition-transform duration-300 hover:rotate-360" />
+                            <Send className="transition-transform duration-300 group-hover:rotate-360" />
                           )}
                         </button>
                       </>

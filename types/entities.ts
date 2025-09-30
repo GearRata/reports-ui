@@ -42,6 +42,7 @@ export interface TaskWithPhone {
   issue_else: string
   id: number
   phone_id: number
+  phone_else: string
   text: string
   status: number  // เปลี่
   reported_by: string

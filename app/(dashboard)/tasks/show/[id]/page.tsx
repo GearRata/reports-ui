@@ -440,7 +440,6 @@ function ShowTaskPage() {
           <SiteHeader title="Edit Task" />
           <div className="flex flex-1 flex-col items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
               <p>Loading task...</p>
             </div>
           </div>
@@ -876,7 +875,6 @@ function ShowTaskPage() {
 
                                     {editProcessing && (
                                       <div className="flex items-center gap-2 text-blue-600">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
                                         <span className="text-sm">บีบอัด...</span>
                                       </div>
                                     )}
@@ -1076,7 +1074,6 @@ function ShowTaskPage() {
 
                               {processing && (
                                 <div className="flex items-center gap-2 text-blue-600">
-                                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-600 border-t-transparent"></div>
                                   <span className="text-sm">บีบอัด...</span>
                                 </div>
                               )}
@@ -1130,7 +1127,7 @@ function ShowTaskPage() {
                               {selectedImages.length > 0 && !processing && (
                                 <div className="text-center py-2">
                                   <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    <div className="w-2 h-2 bg-green-400 rounded-full" style={{animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'}}></div>
                                     <span className="text-sm font-medium">
                                       เลือกแล้ว {selectedImages.length} จาก 9
                                       รูป

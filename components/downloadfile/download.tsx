@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Download, ChevronDownIcon, File  } from "lucide-react";
+import { Download, ChevronDownIcon  } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
@@ -87,7 +87,7 @@ export function DownLoadFile() {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline">
-          <File className="h-4 w-4" />
+          <Download className="h-4 w-4" />
         </Button>
       </SheetTrigger>
       <SheetContent>
@@ -95,13 +95,13 @@ export function DownLoadFile() {
           <SheetTitle>ดาวน์โหลดข้อมูล CSV</SheetTitle>
           <SheetDescription>
             เลือกช่วงวันที่เพื่อดาวน์โหลดข้อมูล
-            หรือไม่ต้องเลือกพื่อดาวน์โหลดทั้งหมด
+            หรือไม่ต้องเลือกเพื่อดาวน์โหลดทั้งหมด
           </SheetDescription>
         </SheetHeader>
 
         <div className="grid grid-cols-5 px-2">
           <div className="flex flex-col gap-3 col-span-2">
-            <Label className="px-1">วันที่เริ่มต้น <br />(Start Date)</Label>
+            <Label className="px-1">วันที่เริ่มต้น</Label>
             <DropdownMenu open={openStart} onOpenChange={setOpenStart}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -134,7 +134,7 @@ export function DownLoadFile() {
 
           <div className="flex items-end justify-center text-2xl col-span-1 mb-3">_</div>       
           <div className="flex flex-col gap-3 col-span-2">
-            <Label className="px-1">วันที่สิ้นสุด<br /> (End Date)</Label>
+            <Label className="px-1">วันที่สิ้นสุด</Label>
             <DropdownMenu open={openEnd} onOpenChange={setOpenEnd}>
               <DropdownMenuTrigger asChild>
                 <Button

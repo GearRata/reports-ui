@@ -52,6 +52,7 @@ import {
   MessageCircle,
   Phone,
   ChevronsUpDown,
+  Smartphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -79,6 +80,7 @@ export default function DialogForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [issue, setIssue] = useState<string>("");
+  const [phoneElse, setPhoneElse] = useState<string>("");
   const [open, setOpen] = React.useState(false);
 
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -94,12 +96,12 @@ export default function DialogForm() {
       try {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        
+
         if (!ctx) {
-          reject(new Error('Canvas context not available'));
+          reject(new Error("Canvas context not available"));
           return;
         }
-        
+
         const img = new Image();
         const objectUrl = URL.createObjectURL(file);
 
@@ -110,7 +112,7 @@ export default function DialogForm() {
             canvas.height = img.height * ratio;
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
-            
+
             // Clean up object URL
             URL.revokeObjectURL(objectUrl);
             resolve(compressedDataUrl);
@@ -119,7 +121,7 @@ export default function DialogForm() {
             reject(error);
           }
         };
-        
+
         img.onerror = () => {
           URL.revokeObjectURL(objectUrl);
           reject(new Error(`Failed to load image: ${file.name}`));
@@ -154,8 +156,12 @@ export default function DialogForm() {
 
       for (let i = 0; i < fileArray.length; i++) {
         const file = fileArray[i];
-        console.log(`🔄 Processing file ${i + 1}/${fileArray.length}: ${file.name} (${(file.size / 1024).toFixed(2)}KB)`);
-        
+        console.log(
+          `🔄 Processing file ${i + 1}/${fileArray.length}: ${file.name} (${(
+            file.size / 1024
+          ).toFixed(2)}KB)`
+        );
+
         try {
           const compressed = await compressImage(file);
           if (compressed.length > 200 * 1024) {
@@ -182,7 +188,9 @@ export default function DialogForm() {
         toast.error("สามารถเลือกได้สูงสุด 9 รูปเท่านั้น");
       }
 
-      console.log(`📊 Final result: ${finalImages.length} images, ${finalFiles.length} files`);
+      console.log(
+        `📊 Final result: ${finalImages.length} images, ${finalFiles.length} files`
+      );
       setSelectedImages(finalImages);
       setCapturedFiles(finalFiles);
 
@@ -206,11 +214,12 @@ export default function DialogForm() {
     return (
       reportby.trim() !== "" ||
       phoneID !== undefined ||
+      phoneElse.trim() !== "" ||
       text.trim() !== "" ||
       (programID?.id === 0 && issue.trim() !== "") ||
       capturedFiles.length > 0
     );
-  }, [reportby, phoneID, text, programID, issue, capturedFiles]);
+  }, [reportby, phoneID, phoneElse, text, programID, issue, capturedFiles]);
 
   // Handle browser navigation warning
   useEffect(() => {
@@ -383,6 +392,11 @@ export default function DialogForm() {
       return;
     }
 
+    if (phoneID.id === 0 && !phoneElse.trim()) {
+      toast.error("กรุณากรอกเบอร์โทรศัพท์");
+      return;
+    }
+
     if (!text.trim()) {
       toast.error("กรุณากรอกรายละเอียดปัญหา");
       return;
@@ -402,8 +416,14 @@ export default function DialogForm() {
       fd.append("text", text || "");
       fd.append("branch_id", String(branchID || ""));
       fd.append("department_id", String(departmentID || ""));
-      if (phoneID && phoneID.id != null)
-        fd.append("phone_id", String(phoneID.id));
+      if (phoneID && phoneID.id != null) {
+        if (phoneID.id === 0) {
+          fd.append("phone_id", "0");
+          fd.append("phone_else", phoneElse.trim());
+        } else {
+          fd.append("phone_id", String(phoneID.id));
+        }
+      }
       if (programID && programID.id != null)
         fd.append("system_id", String(programID.id));
       if (typeID && typeID.id != null)
@@ -416,23 +436,31 @@ export default function DialogForm() {
       if (capturedFiles && capturedFiles.length > 0) {
         console.log(`📸 Attaching ${capturedFiles.length} images to FormData`);
         capturedFiles.forEach((image, index) => {
-          console.log(`📎 Adding image ${index + 1}: ${image.name} (${(image.size / 1024).toFixed(2)}KB)`);
+          console.log(
+            `📎 Adding image ${index + 1}: ${image.name} (${(
+              image.size / 1024
+            ).toFixed(2)}KB)`
+          );
           // ใช้ field name แยกตาม index เช่น image_0, image_1, image_2
           fd.append(`image_${index}`, image);
         });
       }
-      
+
       // Debug FormData contents
       console.log("📋 FormData contents:");
       for (const [key, value] of fd.entries()) {
         if (value instanceof File) {
-          console.log(`${key}: ${value.name} (${(value.size / 1024).toFixed(2)}KB)`);
+          console.log(
+            `${key}: ${value.name} (${(value.size / 1024).toFixed(2)}KB)`
+          );
         } else {
           console.log(`${key}: ${value}`);
         }
       }
-      
-      console.log(`🚀 Sending problem create request with FormData (${capturedFiles.length} images)`);
+
+      console.log(
+        `🚀 Sending problem create request with FormData (${capturedFiles.length} images)`
+      );
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/problem/create`,
@@ -454,20 +482,6 @@ export default function DialogForm() {
       setIsSuccess(true);
       toast.success("แจ้งปัญหาเรียบร้อยแล้ว");
       router.push("/public/success");
-      // // reset form after success animation
-      // setTimeout(() => {
-      //   setText("");
-      //   setReportBy("");
-      //   setCapturedFiles([]);
-      //   setIsSuccess(false);
-      // }, 500);
-
-      // // optionally refresh page or navigate
-      // setTimeout(() => {
-      //   // Clear unsaved changes flag before reload to prevent warning
-      //   window.removeEventListener('beforeunload', () => {});
-      //   window.location.reload();
-      // }, 500);
 
       return result;
     } catch (err) {
@@ -477,6 +491,7 @@ export default function DialogForm() {
       setIsSubmitting(false);
     }
   };
+
 
   return (
     <div className="w-full max-w-4xl mx-auto">
@@ -585,8 +600,7 @@ export default function DialogForm() {
                     htmlFor="phone"
                     className="text-base sm:text-lg font-bold text-slate-100 block"
                   >
-                    IP Phone 
-                    <p className="text-sm font-light"><span className="text-red-500">*</span> ถ้าไม่มี IP Phone สามารถกรอกเบอร์ตัวเอง</p>
+                    IP Phone
                   </Label>
                 </div>
               </div>
@@ -607,7 +621,11 @@ export default function DialogForm() {
                       )}
                     >
                       {phoneID ? (
-                        `${phoneID.number} - ${phoneID.name}`
+                        phoneID.id === 0 ? (
+                          "ไม่มีเบอร์ IP Phone"
+                        ) : (
+                          `${phoneID.number} - ${phoneID.name}`
+                        )
                       ) : (
                         <span className="text-slate-600">เลือก IP Phone</span>
                       )}
@@ -624,13 +642,21 @@ export default function DialogForm() {
                         <CommandEmpty>No phone found.</CommandEmpty>
                         <CommandGroup>
                           <CommandItem
-                            value="null"
+                            value="0"
                             onSelect={() => {
-                              setPhoneID(undefined);
+                              setPhoneID({
+                                id: 0,
+                                number: 0,
+                                name: "ไม่ได้ระบุ Phone ID",
+                                branch_id: 0,
+                                branch_name: "",
+                                department_id: 0,
+                                department_name: "",
+                              });
                               setOpen(false);
                             }}
                           >
-                            ไม่ได้ระบุ Phone ID
+                            ไม่มีเบอร์ IP Phone
                           </CommandItem>
                           {ipPhones.map((phone) => (
                             <CommandItem
@@ -649,20 +675,45 @@ export default function DialogForm() {
                     </Command>
                   </PopoverContent>
                 </Popover>
+
                 {/* ถ้าไม่มี IP Phone สามารถกรอกเองได้ */}
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder="หรือกรอกเบอร์โทรศัพท์เอง (เช่น 081-234-5678)"
-                    className={cn(
-                      "h-14 sm:h-16 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
-                      "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600",
-                      "shadow-xl hover:shadow-2xl",
-                      "border-slate-600/40 focus:border-yellow-400 hover:border-slate-500/60 focus:ring-2 focus:ring-yellow-400/30",
-                      "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300"
-                    )}
-                  />
-                </div>
+                {phoneID?.id === 0 && (
+                  <div className="space-y-6 group">
+                    <div className="flex items-center gap-4 mt-6">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-purple-500/30 rounded-2xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+                        <div className="relative p-3 bg-gradient-to-br from-lime-500 to-lime-600 rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                          <Smartphone className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                        </div>
+                      </div>
+                      <div>
+                        <Label
+                          htmlFor="phone_else"
+                          className="text-base sm:text-lg font-bold text-slate-100 block"
+                        >
+                          <span className="text-red-500">*</span>{" "}
+                          กรอกเบอร์โทรศัพท์หรือ IP Phone
+                        </Label>
+                      </div>
+                    </div>
+                    <Input
+                      type="text"
+                      placeholder="หรือกรอกเบอร์โทรศัพท์เอง (เช่น 081-234-5678)"
+                      value={phoneElse}
+                      onChange={(e) => setPhoneElse(e.target.value)}
+                      disabled={!phoneID || phoneID.id !== 0}
+                      className={cn(
+                        "h-14 sm:h-16 text-base sm:text-lg transition-all duration-500 border-2 rounded-2xl pl-4 pr-4",
+                        "bg-slate-700/40 backdrop-blur-xl text-slate-100 placeholder:text-slate-600",
+                        "shadow-xl hover:shadow-2xl",
+                        "border-slate-600/40 focus:border-yellow-400 hover:border-slate-500/60 focus:ring-2 focus:ring-yellow-400/30",
+                        "transform hover:scale-[1.02] focus:scale-[1.02] transition-transform duration-300",
+                        (!phoneID || phoneID.id !== 0) &&
+                          "opacity-50 cursor-not-allowed"
+                      )}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1003,7 +1054,7 @@ export default function DialogForm() {
                 </div>
                 {/* Camera and Gallery Buttons */}
                 <div className="flex gap-4">
-                 <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
                     <GalleryButton
                       onClick={handleGallery}
                       disabled={processing || selectedImages.length >= 9}
