@@ -153,16 +153,6 @@ export function DownloadQrPdfButton({
             color: rgb(0.15, 0.15, 0.15),
             maxWidth: cellW - pad * 2,
           });
-
-          // แสดงรหัส
-          // draw(`ID: ${d.id}`, {
-          //   x: x0 + cellW - pad - 160,
-          //   y: y0 + 18,
-          //   size: 9,
-          //   font: thaiFont,
-          //   color: rgb(0.35, 0.35, 0.35),
-          //   maxWidth: 100,
-          // });
         }
       }
 
@@ -174,11 +164,21 @@ export function DownloadQrPdfButton({
         .replace(/[-:]/g, "")
         .replace(/\..+/, "");
       const name = `${safeFilename(fileNamePrefix)}-${stamp}.pdf`;
+      
+      // สร้าง URL และดาวน์โหลดทันที
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
+      a.href = url;
       a.download = name;
+      a.style.display = "none";
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(a.href);
+      document.body.removeChild(a);
+      
+      // ล้าง URL หลังจากดาวน์โหลดเสร็จ
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+      }, 100);
     } catch (err) {
       console.error(err);
       alert("สร้าง PDF ไม่สำเร็จ ลองใหม่อีกครั้ง");

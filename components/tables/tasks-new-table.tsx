@@ -427,7 +427,7 @@ export function TasksNewTable({
                   </TableCell>
                 ) : (
                   <TableCell className="flex items-center justify-center gap-1">
-                    <Check className="w-10 h-10" />
+                    <Check className="text-green-500 w-10 h-10" />
                     Success
                   </TableCell>
                 )}

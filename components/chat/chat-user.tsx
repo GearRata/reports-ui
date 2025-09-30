@@ -43,11 +43,27 @@ export default function ChatUserPage() {
 
 
   useEffect(() => {
-    listRef.current?.scrollTo({
-      top: listRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    if (Chat.length > 0) {
+      setTimeout(() => {
+        listRef.current?.scrollTo({
+          top: listRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }, 100);
+    }
   }, [Chat.length]);
+
+  // Additional scroll on initial load
+  useEffect(() => {
+    if (!loading && Chat.length > 0) {
+      setTimeout(() => {
+        listRef.current?.scrollTo({
+          top: listRef.current.scrollHeight,
+          behavior: "auto",
+        });
+      }, 500);
+    }
+  }, [loading, Chat.length]);
 
    const formatThaiDate = (date: Date) => {
     const thaiMonths = [

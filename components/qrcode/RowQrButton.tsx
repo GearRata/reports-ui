@@ -140,11 +140,19 @@ async function generateQrPdf(
   const name = `${safeFilename(fileNamePrefix)}-${stamp}.pdf`;                    // สร้างชื่อไฟล์
 
   // สร้าง link element และคลิกเพื่อดาวน์โหลด
+  const url = URL.createObjectURL(blob);  // สร้าง URL สำหรับ blob
   const a = document.createElement("a");  // สร้าง <a> element
-  a.href = URL.createObjectURL(blob);     // สร้าง URL สำหรับ blob
+  a.href = url;                           // กำหนด URL
   a.download = name;                      // ตั้งชื่อไฟล์ที่จะดาวน์โหลด
+  a.style.display = "none";               // ซ่อน element
+  document.body.appendChild(a);           // เพิ่มเข้า DOM
   a.click();                              // คลิกเพื่อดาวน์โหลด
-  URL.revokeObjectURL(a.href);            // ลบ URL เพื่อประหยัด memory
+  document.body.removeChild(a);           // ลบออกจาก DOM
+  
+  // ลบ URL หลังจากดาวน์โหลดเสร็จ
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 100);
 }
 
 // Component สำหรับปุ่มดาวน์โหลด QR PDF ของแถวเดียว
