@@ -22,13 +22,15 @@ export function useAuth() {
       });
       const data = await res.json();
       console.log("Login Response:", data);
+      console.log("data.data:", data.data);
+      console.log("data.data?.data:", data.data?.data);
 
-      if (!res.ok || !data.success || !data.data?.data) {
+      if (!res.ok || !data.success || !data.data) {
         console.error("Login failed:", data);
         return null;
       }
 
-      const userData = data.data.data; // Access nested data
+      const userData = data.data; // Access data directly
       const userObj: User = {
         id: userData.id || "",
         username: userData.username,
@@ -38,6 +40,8 @@ export function useAuth() {
       setUser(userObj);
       if (typeof window !== "undefined") {
         localStorage.setItem("user", JSON.stringify(userObj));
+        // เซ็ต cookie เพื่อให้ middleware อ่านได้
+        document.cookie = `user=${encodeURIComponent(JSON.stringify(userObj))}; path=/; max-age=86400`;
       }
       return userObj;
     } catch (error) {
@@ -50,6 +54,8 @@ export function useAuth() {
     setUser(null);
     if (typeof window !== "undefined") {
       localStorage.removeItem("user");
+      // ลบ cookie ด้วย
+      document.cookie = "user=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
   }
 

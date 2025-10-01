@@ -11,33 +11,48 @@ This document provides a comprehensive overview of the NOPADOL Helpdesk System's
 project_test/
 ├── .next/                      # Next.js build output (auto-generated)
 ├── .vscode/                    # VS Code workspace settings
-├── app/                        # Next.js App Router pages and API integration
+├── app/                        # Next.js App Router pages and layouts
 │   ├── (dashboard)/           # Protected dashboard routes group
+│   │   ├── layout.tsx         # ✨ Shared layout (Sidebar + Header)
 │   │   ├── account/           # User account management pages
 │   │   │   ├── create/        # Create new user page
 │   │   │   ├── edit/[id]/     # Edit user by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Account list page
 │   │   ├── branches/          # Branch management pages
 │   │   │   ├── create/        # Create branch page
 │   │   │   ├── edit/[id]/     # Edit branch by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Branches list page
 │   │   ├── dashboard/         # Dashboard analytics page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Main dashboard view
 │   │   ├── department/        # Department management pages
 │   │   │   ├── create/        # Create department page
 │   │   │   ├── edit/[id]/     # Edit department by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Departments list page
 │   │   ├── phone/             # IP Phone management pages
 │   │   │   ├── create/        # Create IP phone entry page
 │   │   │   ├── edit/[id]/     # Edit IP phone by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # IP phones list page
 │   │   ├── program/           # Program/System management pages
 │   │   │   ├── create/        # Create program page
 │   │   │   ├── edit/[id]/     # Edit program by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Programs list page
 │   │   ├── supervisor/        # Supervisor assignment pages
 │   │   │   ├── create/        # Assign new supervisor page
 │   │   │   ├── edit/[id]/     # Edit assignment by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Supervisors list page
 │   │   └── tasks/             # Task/Problem management pages
 │   │       ├── chat/          # Task chat/progress tracking
@@ -46,24 +61,13 @@ project_test/
 │   │       ├── create/        # Create new task page
 │   │       ├── edit/[id]/     # Edit task by ID page
 │   │       ├── show/[id]/     # View task details page
+│   │       ├── loading.tsx    # Loading state
+│   │       ├── error.tsx      # Error boundary
 │   │       └── page.tsx       # Tasks list page
 │   ├── (user)/                # User-specific routes group
 │   │   ├── reports/           # Public reporting interface
 │   │   └── success/           # Success confirmation pages
-│   ├── api/                   # API integration layer (client-side hooks)
-│   │   ├── account.ts         # User account management API
-│   │   ├── assign.ts          # Supervisor assignment API
-│   │   ├── branches.ts        # Branch CRUD API
-│   │   ├── chat.ts            # Task progress/chat API
-│   │   ├── dashboard.ts       # Dashboard analytics API
-│   │   ├── departments.ts     # Department CRUD API
-│   │   ├── phones.ts          # IP Phone CRUD API
-│   │   ├── programs.ts        # Program CRUD API
-│   │   ├── qr-pdf.ts          # QR code PDF generation API
-│   │   ├── solution.ts        # Solution management API
-│   │   ├── tasks.ts           # Task/Problem management API
-│   │   └── type.ts            # Problem type API
-│   ├── globals.css            # Global CSS with Tailwind + custom variables
+│   ├── global.css             # Global CSS with Tailwind + custom variables
 │   ├── layout.tsx             # Root layout component
 │   └── page.tsx               # Login page (root route)
 │
@@ -129,8 +133,20 @@ project_test/
 │   ├── user/                  # User-specific components
 │   └── version/               # Version display component
 │
-├── hooks/                     # Custom React hooks
-│   └── use-auth.ts           # Authentication hook
+├── hooks/                     # Custom React hooks & API integration
+│   ├── use-auth.ts           # Authentication hook
+│   ├── useAccount.ts         # 🔄 User account management API
+│   ├── useAssign.ts          # 🔄 Supervisor assignment API
+│   ├── useBranches.ts        # 🔄 Branch CRUD API
+│   ├── useChat.ts            # 🔄 Task progress/chat API
+│   ├── useDashboard.ts       # 🔄 Dashboard analytics API
+│   ├── useDepartments.ts     # 🔄 Department CRUD API
+│   ├── usePhones.ts          # 🔄 IP Phone CRUD API
+│   ├── usePrograms.ts        # 🔄 Program CRUD API
+│   ├── useQrPdf.ts           # 🔄 QR code PDF generation API
+│   ├── useSolution.ts        # 🔄 Solution management API
+│   ├── useTasks.ts           # 🔄 Task/Problem management API
+│   └── useType.ts            # 🔄 Problem type API
 │
 ├── lib/                       # Utility functions
 │   ├── branch-chart-utils.ts # Chart utility functions
@@ -206,17 +222,21 @@ project_test/
 
 ## Key Architectural Patterns
 
-### 1. App Router Structure
+### 1. App Router Structure (Next.js 15)
 - **Route Groups**: `(dashboard)` and `(user)` for logical grouping without affecting URL structure
 - **Dynamic Routes**: `[id]` folders for parameterized routes (e.g., `/edit/[id]`)
-- **Nested Layouts**: Shared layouts within route groups
+- **Shared Layouts**: `(dashboard)/layout.tsx` provides Sidebar + Header for all dashboard pages
+- **Loading States**: `loading.tsx` files show skeleton UI during navigation
+- **Error Boundaries**: `error.tsx` files handle errors gracefully with retry functionality
 - **File-based Routing**: Automatic routing based on folder structure
 
-### 2. API Layer (`app/api/`)
-- **Client-side Integration**: Not server API routes, but client-side fetch hooks
+### 2. API Layer (Migrated to `hooks/`)
+- **Location**: All API hooks moved from `app/api/` to `hooks/` directory
 - **Custom Hooks**: Each file exports custom React hooks and API functions
+- **Naming Convention**: `use[Entity].ts` (e.g., `useTasks.ts`, `useBranches.ts`)
 - **Consistent Pattern**: All use `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/` base URL
 - **Type Safety**: Strongly typed with TypeScript interfaces
+- **Features**: Pagination support, AbortController for cancellation, error handling
 
 ### 3. Component Organization
 - **Feature-based**: Components grouped by feature (dashboard, tables, reports)
@@ -286,11 +306,18 @@ project_test/
 ## Data Flow
 
 1. **User Action** → Component
-2. **Component** → API Hook (`app/api/*.ts`)
+2. **Component** → API Hook (`hooks/use*.ts`)
 3. **API Hook** → Backend REST API (via fetch)
 4. **Response** → Type-safe parsing
 5. **State Update** → Component re-render
 6. **UI Update** → User sees result
+
+### Loading & Error Flow
+
+1. **Navigation** → `loading.tsx` displays skeleton UI
+2. **Data Fetch** → API hook fetches data
+3. **Success** → `page.tsx` renders with data
+4. **Error** → `error.tsx` displays error with retry button
 
 ---
 
@@ -386,16 +413,35 @@ The `middleware.ts` file implements authentication:
 
 1. **Always use type-safe API calls** - Import types from `types/` directory
 2. **Follow naming conventions** - Consistency is key
-3. **Use existing hooks** - Check `app/api/` before creating new API calls
+3. **Use existing hooks** - Check `hooks/` directory before creating new API calls
 4. **Reuse UI components** - Check `components/ui/` for primitives
 5. **Maintain pagination pattern** - Follow existing pagination implementation
-6. **Handle errors gracefully** - Use try-catch and display user-friendly messages
-7. **Test on mobile** - Responsive design is crucial
-8. **Update CHANGELOG** - Document all changes
-9. **Use environment variables** - Never hardcode API URLs
-10. **Follow middleware rules** - Respect authentication and authorization
+6. **Handle errors gracefully** - Use `error.tsx` files for error boundaries
+7. **Add loading states** - Create `loading.tsx` for better UX
+8. **Leverage shared layouts** - Pages only contain content, no Sidebar/Header
+9. **Test on mobile** - Responsive design is crucial
+10. **Update CHANGELOG** - Document all changes
+11. **Use environment variables** - Never hardcode API URLs
+12. **Follow middleware rules** - Respect authentication and authorization
+
+## Architecture Improvements (v0.1.9+)
+
+### ✅ What Changed
+- **API hooks migrated** from `app/api/` to `hooks/` directory
+- **Shared layout** created at `(dashboard)/layout.tsx` for all dashboard pages
+- **Loading states** added to all major routes with `loading.tsx` files
+- **Error boundaries** added to all major routes with `error.tsx` files
+- **Code duplication eliminated** - Sidebar/Header no longer repeated in each page
+
+### 💡 Best Practices
+- **Pages should only contain content** - No layout wrappers
+- **Use loading.tsx** for instant navigation feedback
+- **Use error.tsx** for graceful error handling with retry
+- **Import API hooks** from `hooks/` directory
+- **Follow Next.js 15 conventions** for App Router
 
 ---
 
-*Last Updated: 2025-10-01*
-*Version: 0.1.9*
+*Last Updated: 2025-10-01*  
+*Version: 0.1.9*  
+*Architecture: Next.js 15 App Router with Shared Layouts*

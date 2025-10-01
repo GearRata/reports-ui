@@ -5,7 +5,7 @@ import { AssignToTable } from "@/components/tables/supervisor-table";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 // BranchForm removed - using separate pages for create/edit
-import { useAssign, deleteAssignTo } from "@/app/api/assign";
+import { useAssign, deleteAssignTo } from "@/hooks/useAssign";
 import type { AssignData } from "@/types/assignto/model";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -37,17 +37,6 @@ function Page() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Supervisor" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
@@ -76,8 +65,6 @@ function Page() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

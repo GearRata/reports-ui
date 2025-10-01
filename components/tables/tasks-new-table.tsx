@@ -35,7 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAssign } from "@/app/api/assign";
+import { useAssign } from "@/hooks/useAssign";
 // import { useState } from "react";
 
 interface TasksNewTableProps {

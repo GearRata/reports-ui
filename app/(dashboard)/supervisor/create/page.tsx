@@ -16,7 +16,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { addAssignTo } from "@/app/api/assign";
+import { addAssignTo } from "@/hooks/useAssign";
 
 function CreateSupervisorPage() {
   const router = useRouter();
@@ -45,17 +45,6 @@ function CreateSupervisorPage() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Add Supervisor" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
@@ -118,8 +107,6 @@ function CreateSupervisorPage() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

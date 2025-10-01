@@ -11,7 +11,7 @@ import { PDFDocument, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 
 // API helper function
-import { buildQrUrl } from "@/app/api/qr-pdf";
+import { buildQrUrl } from "@/hooks/useQrPdf";
 
 // Type definition สำหรับข้อมูลแผนก
 type Row = {

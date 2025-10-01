@@ -8,7 +8,7 @@ import type { Department } from "@/types/entities";
 // ✅ เพิ่มบรรทัดนี้ (ใช้ named import ให้ตรงกับ component)
 import { DownloadQrPdfButton } from "@/components/qrcode/DownloadQrPdfButton";
 import { RowQrButton } from "@/components/qrcode/RowQrButton";
-import { useDepartment } from "@/app/api/qr-pdf";
+import { useDepartment } from "@/hooks/useQrPdf";
 
 interface DepartmentsTableProps {
   departments: Department[];

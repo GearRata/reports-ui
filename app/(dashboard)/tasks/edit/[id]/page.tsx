@@ -24,11 +24,11 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
-import { getTaskNewById, updateTaskNew } from "@/app/api/tasks";
-import { useAssign } from "@/app/api/assign";
-import { useType } from "@/app/api/type";
-import { useProgramsForDropdown } from "@/app/api/programs";
-import { useIPPhonesForDropdown } from "@/app/api/phones";
+import { getTaskNewById, updateTaskNew } from "@/hooks/useTasks";
+import { useAssign } from "@/hooks/useAssign";
+import { useType } from "@/hooks/useTypes";
+import { useProgramsForDropdown } from "@/hooks/usePrograms";
+import { useIPPhonesForDropdown } from "@/hooks/usePhones";
 import type { TaskWithPhone } from "@/types/entities";
 
 function EditTaskPage() {

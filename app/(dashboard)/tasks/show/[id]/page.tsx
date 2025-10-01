@@ -26,11 +26,11 @@ import {
   getSolutionById,
   updateSolution,
   deleteSolution,
-} from "@/app/api/solution";
+} from "@/hooks/useSolution";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getTaskNewById, updateTaskAssignTo } from "@/app/api/tasks";
+import { getTaskNewById, updateTaskAssignTo } from "@/hooks/useTasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
 import CameraButton from "@/components/images/CameraButton";
@@ -45,7 +45,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, Pencil, Trash, X, MessageCircle  } from "lucide-react";
 import toast from "react-hot-toast";
-import { useAssign } from "@/app/api/assign";
+import { useAssign } from "@/hooks/useAssign";
 
 function ShowTaskPage() {
   const router = useRouter();

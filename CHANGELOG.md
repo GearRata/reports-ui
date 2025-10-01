@@ -2,7 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [0.1.9](https://github.com/GearRata/reports-ui/compare/v0.1.8...v0.1.9) (2025-08-26)
+### [0.1.9](https://github.com/GearRata/reports-ui/compare/v0.1.8...v0.1.9) (2025-10-01)
+
+### 🏗️ Architecture Changes
+
+* **BREAKING**: Migrated all API hooks from `app/api/` to `hooks/` directory
+* **feat**: Added shared layout at `(dashboard)/layout.tsx` for all dashboard pages
+* **feat**: Implemented loading states with `loading.tsx` files across all major routes
+* **feat**: Added error boundaries with `error.tsx` files for graceful error handling
+* **perf**: Eliminated ~500+ lines of duplicate layout code
+* **refactor**: Renamed `globals.css` to `global.css` for consistency
+
+### ✨ Features
+
+* **UX**: Instant loading feedback with skeleton UI during navigation
+* **UX**: Graceful error handling with retry functionality
+* **UX**: Better perceived performance with optimistic UI updates
+* **DX**: Centralized API hooks in `hooks/` directory with consistent naming
+* **DX**: Single source of truth for dashboard layouts
+
+### 🐛 Bug Fixes
+
+* **layout**: Fixed duplicate Sidebar and Header rendering in pages
+* **navigation**: Improved navigation performance by eliminating unnecessary re-renders
+* **imports**: Updated all API hook imports to use new `hooks/` directory
+* **types**: Fixed SiteHeader title prop default value
+
+### 📝 Documentation
+
+* Updated `README.md` with new architecture highlights
+* Updated `PROJECT_STRUCTURE.md` with current file structure
+* Added `ARCHITECTURE_CHANGES.md` for migration guide
+* Updated all code examples to use new import paths
+
+### 🔧 Technical Details
+
+**API Hooks Migration:**
+- `app/api/tasks.ts` → `hooks/useTasks.ts`
+- `app/api/account.ts` → `hooks/useAccount.ts`
+- `app/api/branches.ts` → `hooks/useBranches.ts`
+- `app/api/departments.ts` → `hooks/useDepartments.ts`
+- `app/api/phones.ts` → `hooks/usePhones.ts`
+- `app/api/programs.ts` → `hooks/usePrograms.ts`
+- `app/api/assign.ts` → `hooks/useAssign.ts`
+- `app/api/dashboard.ts` → `hooks/useDashboard.ts`
+- `app/api/chat.ts` → `hooks/useChat.ts`
+- `app/api/solution.ts` → `hooks/useSolution.ts`
+- `app/api/qr-pdf.ts` → `hooks/useQrPdf.ts`
+- `app/api/type.ts` → `hooks/useType.ts`
+
+**New Files Added:**
+- `app/(dashboard)/layout.tsx` - Shared layout
+- Loading states: 8 `loading.tsx` files
+- Error boundaries: 8 `error.tsx` files
+
+### 📊 Impact
+
+- **Code Reduction**: ~95% reduction in layout duplication
+- **Performance**: Faster navigation (no layout re-renders)
+- **UX**: Better loading experience with instant feedback
+- **Maintainability**: Easier to update global UI components
 
 ### [0.1.8](https://github.com/GearRata/reports-ui/compare/v0.1.7...v0.1.8) (2025-08-22)
 

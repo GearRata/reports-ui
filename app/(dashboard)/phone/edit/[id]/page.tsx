@@ -37,9 +37,9 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
-import { getIPPhoneById, updateIPPhone } from "@/app/api/phones";
-import { useBranchesForDropdown } from "@/app/api/branches";
-import { useDepartmentsForDropdown } from "@/app/api/departments";
+import { getIPPhoneById, updateIPPhone } from "@/hooks/usePhones";
+import { useBranchesForDropdown } from "@/hooks/useBranches";
+import { useDepartmentsForDropdown } from "@/hooks/useDepartments";
 import type { IPPhone } from "@/types/entities";
 import { cn } from "@/lib/utils";
 
@@ -157,17 +157,6 @@ function EditPhonePage() {
   }
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Edit IP Phone" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
@@ -336,8 +325,6 @@ function EditPhonePage() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

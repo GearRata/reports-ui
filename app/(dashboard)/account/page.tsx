@@ -10,7 +10,7 @@ import { UserStatsCards } from "@/components/user/user-stats";
 import { UserTable } from "@/components/user/user-table";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { useUsers, deleteUser } from "@/app/api/account";
+import { useUsers, deleteUser } from "@/hooks/useAccount";
 import type { User, UserStats } from "@/types/user";
 
 export default function AccountPage() {
@@ -64,8 +64,6 @@ export default function AccountPage() {
     }
   };
 
-
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -75,39 +73,7 @@ export default function AccountPage() {
     setCurrentPage(1);
   };
 
-  if (loading) {
-    return (
-      <SidebarProvider
-        style={{
-          "--sidebar-width": "calc(var(--spacing) * 60)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties}
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader />
-          <div className="flex flex-1 flex-col">
-            <div className="@container/main flex flex-1 flex-col gap-2">
-              <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
-                <div className="flex justify-center items-center h-64">Loading...</div>
-              </div>
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    );
-  }
-
   return (
-    <SidebarProvider
-      style={{
-        "--sidebar-width": "calc(var(--spacing) * 60)",
-        "--header-height": "calc(var(--spacing) * 12)",
-      } as React.CSSProperties}
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Accout"/>
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
@@ -143,7 +109,5 @@ export default function AccountPage() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }

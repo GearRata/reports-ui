@@ -10,7 +10,7 @@ import { DepartmentsTable } from "@/components/tables/departments-table";
 import {
   useDepartmentsPaginated,
   deleteDepartment,
-} from "@/app/api/departments";
+} from "@/hooks/useDepartments";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { Department } from "@/types/entities";
@@ -110,17 +110,6 @@ function DepartmentsPageContent() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Departments" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
@@ -185,8 +174,6 @@ function DepartmentsPageContent() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

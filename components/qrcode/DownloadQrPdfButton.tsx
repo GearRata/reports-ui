@@ -4,7 +4,7 @@ import * as React from "react";
 import QRCode from "qrcode";
 import { PDFDocument, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
-import { buildQrUrl } from "@/app/api/qr-pdf";
+import { buildQrUrl } from "@/hooks/useQrPdf";
 import { DepartmentData } from "@/types/qr-code/model"
 import { Button } from "@/components/ui/button";
 import { QrCode } from 'lucide-react';

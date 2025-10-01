@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useState, useRef } from "react";
-import { useChatID } from "@/app/api/chat";
+import { useChatID } from "@/hooks/useChats";
 import { useParams } from "next/navigation";
 import { Send, X, MoreHorizontal, Pencil, Trash, Wrench } from "lucide-react";
 import CameraButton from "@/components/images/CameraButton";
 import GalleryButton from "@/components/images/GalleryButton";
-import { addChatNew, updateChat, deleteChat } from "@/app/api/chat";
+import { addChatNew, updateChat, deleteChat } from "@/hooks/useChats";
 import toast from "react-hot-toast";
 import {
   DropdownMenu,

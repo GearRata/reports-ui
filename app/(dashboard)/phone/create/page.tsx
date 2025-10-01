@@ -30,9 +30,9 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter } from "next/navigation";
-import { addIPPhone } from "@/app/api/phones";
+import { addIPPhone } from "@/hooks/usePhones";
 import { cn } from "@/lib/utils";
-import { useDepartmentsForDropdown } from "@/app/api/departments";
+import { useDepartmentsForDropdown } from "@/hooks/useDepartments";
 
 function CreatePhonePage() {
   const router = useRouter();
@@ -68,17 +68,6 @@ function CreatePhonePage() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Create New IP Phone" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
@@ -230,8 +219,6 @@ function CreatePhonePage() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

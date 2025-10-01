@@ -7,7 +7,7 @@ import { BranchesTable } from "@/components/tables/branches-table";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 // BranchForm removed - using separate pages for create/edit
-import { useBranches, deleteBranch } from "@/app/api/branches";
+import { useBranches, deleteBranch } from "@/hooks/useBranches";
 import type { Branch } from "@/types/entities";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
@@ -47,19 +47,6 @@ function Page() {
   );
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <div>
-          <SiteHeader title="Branch Offices" />
-        </div>
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
@@ -103,8 +90,6 @@ function Page() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

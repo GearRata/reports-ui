@@ -1,20 +1,20 @@
 // app/tasks/page.tsx
 "use client";
 
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SiteHeader } from "@/components/layout/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type React from "react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { TasksNewTable } from "@/components/tables/tasks-new-table";
-import { useTasksNewPaginated, deleteTaskNew } from "@/app/api/tasks";
-import { updateTaskAssignTo } from "@/app/api/tasks";
+import { useTasksNewPaginated, deleteTaskNew } from "@/hooks/useTasks";
+import { updateTaskAssignTo } from "@/hooks/useTasks";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { TaskWithPhone } from "@/types/entities";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DownLoadFile } from "@/components/downloadfile/download";
 
@@ -148,23 +148,10 @@ function TasksPageContent() {
   // const handleSolution = () => router.push("solution/create");
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <div>
-          <SiteHeader title="Tasks" />
-        </div>
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
-              <div className="container mx-auto space-y-6">
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
+          <div className="container mx-auto space-y-6">
                 {/* Header */}
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex flex-1 items-center space-x-2">
@@ -241,8 +228,6 @@ function TasksPageContent() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

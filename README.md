@@ -240,14 +240,22 @@ docker run -p 3000:3000 nopadol-prod
 
 ### Folder Structure Overview
 
-- **`app/`**: Next.js App Router pages and API integration
-- **`components/`**: Reusable React components
-- **`types/`**: TypeScript type definitions
-- **`hooks/`**: Custom React hooks
-- **`lib/`**: Utility functions
-- **`public/`**: Static assets
+- **`app/`**: Next.js App Router pages with shared layouts, loading & error states
+- **`components/`**: Reusable React components organized by feature
+- **`types/`**: TypeScript type definitions for all entities
+- **`hooks/`**: Custom React hooks & API integration layer
+- **`lib/`**: Utility functions for charts and formatting
+- **`public/`**: Static assets (logos, icons, fonts)
 
 For detailed structure, see [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
+
+### Architecture Highlights (v0.1.9)
+
+- ✨ **Shared Layout**: Single layout component for all dashboard pages
+- ⚡ **Loading States**: Instant navigation feedback with skeleton UI
+- 🛡️ **Error Boundaries**: Graceful error handling with retry functionality
+- 🔄 **API Hooks**: Centralized in `hooks/` directory with type safety
+- 📱 **Mobile-First**: Responsive design throughout
 
 ### Design Patterns
 
@@ -289,11 +297,11 @@ const response = await fetch(
 
 ### API Hooks
 
-The `app/api/` directory contains custom hooks for each API:
+The `hooks/` directory contains custom hooks for each API:
 
 ```typescript
 // Example: Using the tasks API
-import { useTasksNewPaginated, addTaskNew } from '@/app/api/tasks';
+import { useTasksNewPaginated, addTaskNew } from '@/hooks/useTasks';
 
 function MyComponent() {
   const { tasks, loading, error, refreshTasks } = useTasksNewPaginated({
@@ -303,6 +311,15 @@ function MyComponent() {
   
   // Use tasks data...
 }
+
+// All available API hooks
+import { useAccount } from '@/hooks/useAccount';
+import { useBranches } from '@/hooks/useBranches';
+import { useDepartments } from '@/hooks/useDepartments';
+import { usePhones } from '@/hooks/usePhones';
+import { usePrograms } from '@/hooks/usePrograms';
+import { useSupervisor } from '@/hooks/useAssign';
+// ... and more
 ```
 
 ### Data Fetching Pattern
@@ -386,18 +403,21 @@ Users can report problems by:
 **Location**: `/tasks`
 
 Features:
-- View all tasks in paginated table
-- Search by ticket number, reporter, or description
+- View all tasks in paginated table with instant loading states
+- Search by ticket number, reporter, or description (debounced)
 - Filter by status (pending/in progress/done)
-- Create new tasks
+- Create new tasks with image upload
 - Edit existing tasks
-- Assign tasks to technicians
-- Delete tasks
+- Assign tasks to technicians with Telegram notifications
+- Delete tasks with confirmation
+- URL state management for pagination and filters
 
 **Key Components**:
-- `app/(dashboard)/tasks/page.tsx`: Task list page
-- `components/tables/TasksTable.tsx`: Task data table
-- `app/api/tasks.ts`: Task API integration
+- `app/(dashboard)/tasks/page.tsx`: Task list page (content only)
+- `app/(dashboard)/tasks/loading.tsx`: Loading skeleton UI
+- `app/(dashboard)/tasks/error.tsx`: Error boundary with retry
+- `components/tables/tasks-new-table.tsx`: Task data table
+- `hooks/useTasks.ts`: Task API integration
 
 ### 3. Progress Tracking
 
@@ -497,17 +517,20 @@ Features:
 
 1. **Keep components small**: Single responsibility principle
 2. **Use TypeScript interfaces**: Strongly type all props
-3. **Error handling**: Always handle loading and error states
-4. **Accessibility**: Use semantic HTML and ARIA labels
-5. **Responsive design**: Mobile-first approach
+3. **Error handling**: Use `error.tsx` files for error boundaries
+4. **Loading states**: Use `loading.tsx` files for instant feedback
+5. **No layout duplication**: Pages should only contain content
+6. **Accessibility**: Use semantic HTML and ARIA labels
+7. **Responsive design**: Mobile-first approach
 
 ### API Integration Guidelines
 
-1. **Use custom hooks**: Don't call fetch directly in components
+1. **Use custom hooks**: Import from `hooks/` directory
 2. **Type safety**: Use interfaces from `types/` directory
 3. **Error handling**: Try-catch blocks with user-friendly messages
-4. **Loading states**: Show loading indicators
+4. **Loading states**: Leverage Next.js loading.tsx
 5. **Abort controllers**: Cancel in-flight requests when needed
+6. **Pagination**: Use URL state management pattern
 
 ### Best Practices
 
@@ -799,9 +822,33 @@ This project is proprietary software developed for internal use.
 - **Lines of Code**: ~15,000+
 - **Components**: 100+
 - **Pages**: 25+
-- **API Endpoints**: 12+
+- **API Hooks**: 12+ (in `hooks/` directory)
 - **UI Components**: 53 (shadcn/ui)
 - **Type Definitions**: 18+ modules
+- **Loading States**: 8 routes
+- **Error Boundaries**: 8 routes
+
+---
+
+## 🎯 What's New in v0.1.9
+
+### Architecture Improvements
+
+- ✅ **Migrated API hooks** from `app/api/` to `hooks/` directory
+- ✅ **Created shared layout** at `(dashboard)/layout.tsx`
+- ✅ **Added loading states** to all major routes
+- ✅ **Added error boundaries** to all major routes
+- ✅ **Eliminated code duplication** - No more repeated Sidebar/Header code
+- ✅ **Improved UX** with instant navigation feedback
+- ✅ **Better error handling** with retry functionality
+
+### Benefits
+
+- 🚀 **Faster development** - Less boilerplate code
+- 🎨 **Better UX** - Instant loading feedback
+- 🛡️ **More robust** - Graceful error handling
+- 📦 **Cleaner code** - Single source of truth for layouts
+- 🔄 **Easier maintenance** - Update layout once, affects all pages
 
 ---
 

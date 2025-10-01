@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useChatID } from "@/app/api/chat";
+import { useChatID } from "@/hooks/useChats";
 import { useParams } from "next/navigation";
 import { MessageCircle } from "lucide-react";
 import { Badge } from "../ui/badge";

@@ -32,7 +32,7 @@ import { Input } from "../ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { useParams, useRouter } from "next/navigation";
-import { useIPPhonesForDropdown } from "@/app/api/phones";
+import { useIPPhonesForDropdown } from "@/hooks/usePhones";
 import { Branch, Department, Program, Type, IPPhone } from "@/types/entities";
 import toast from "react-hot-toast";
 import ImageCompressor from "@/components/images/ImageCompressor";

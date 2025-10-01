@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { ProgramsTable } from "@/components/tables/programs-table";
 // ProgramFormNew removed - using separate pages for create/edit
-import { useProgramsPaginated, deleteProgram } from "@/app/api/programs";
+import { useProgramsPaginated, deleteProgram } from "@/hooks/usePrograms";
 // import { useType } from "@/lib/api/type";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
@@ -65,17 +65,6 @@ function Page() {
   );
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Problem" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
@@ -140,8 +129,6 @@ function Page() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

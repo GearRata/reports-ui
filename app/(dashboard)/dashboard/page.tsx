@@ -20,7 +20,7 @@ import { ChartPieReport } from "@/components/dashboard/charts/pie-chart-report";
 import { SiteHeader } from "@/components/layout/site-header";
 import { StatsCards } from "@/components/dashboard/card/stats-card";
 import { TaskStats } from "@/types/entities";
-import { useDashboard } from "@/app/api/dashboard";
+import { useDashboard } from "@/hooks/useDashboard";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -242,17 +242,6 @@ function Page() {
     setOpen(false);
   }, []);
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 53)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
@@ -471,8 +460,7 @@ function Page() {
                 {/* StatsCard show Status of tasks */}
                
                  <StatsCards stats={status} />
-                
-                {/* <StatsCards stats={status} /> */}
+ 
 
                 {/* Charts Grid */}
 
@@ -527,8 +515,6 @@ function Page() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 
