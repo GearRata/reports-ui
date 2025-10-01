@@ -61,6 +61,7 @@ function CreateTaskPage() {
   const [capturedFiles, setCapturedFiles] = useState<File[]>([]);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [reportBy, setReportBy] = useState<string>("");
+  const [phoneElse, setPhoneElse] = useState<string>("");
   const [open, setOpen] = React.useState(false);
   const [processing, setProcessing] = useState(false);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -87,13 +88,13 @@ function CreateTaskPage() {
         phone_id:
           phoneId && phoneId !== "" && phoneId !== "null"
             ? Number(phoneId)
-            : null,
-        // system_id: Number(programID),
+            : 0,
+        phone_else: phoneId === "0" ? phoneElse : "",
         system_id: Number(programID),
         text,
         status: 0, // Default to pending
         issue_type: Number(type),
-        issue_else: issue,
+        issue_else: issue || "",
         telegram: true,
         images: capturedFiles, // ส่งไฟล์รูปภาพ
       });
@@ -228,84 +229,104 @@ function CreateTaskPage() {
                         />
                       </div>
                       {/* IP Phone Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="phone_id">IP Phone</Label>
-                        <Popover open={open} onOpenChange={setOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={open}
-                              className="w-full justify-between"
-                            >
-                              {phoneId ? (
-                                (() => {
-                                  const phone = ipPhones.find(
-                                    (phone) => phone.id.toString() === phoneId
-                                  );
-                                  return phone
-                                    ? `${phone.number} - ${phone.name}`
-                                    : "Select Phone ID...";
-                                })()
-                              ) : (
-                                <span className="text-muted-foreground">
-                                  Select Phone IP
-                                </span>
-                              )}
-                              <ChevronsUpDown className="opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
-                              <CommandInput
-                                placeholder="Search phone..."
-                                className="h-9"
-                              />
-                              <CommandList>
-                                <CommandEmpty>No phone found.</CommandEmpty>
-                                <CommandGroup>
-                                  <CommandItem
-                                    value="null"
-                                    onSelect={() => {
-                                      setPhoneId("");
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    ไม่ได้ระบุ Phone ID
-                                    <Check
-                                      className={cn(
-                                        "ml-auto",
-                                        !phoneId ? "opacity-100" : "opacity-0"
-                                      )}
-                                    />
-                                  </CommandItem>
-                                  {ipPhones.map((phone) => (
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="phone_id">IP Phone</Label>
+                          <Popover open={open} onOpenChange={setOpen}>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={open}
+                                className="w-full justify-between"
+                              >
+                                {phoneId ? (
+                                  phoneId === "0" ? (
+                                    "ไม่มีเบอร์"
+                                  ) : (
+                                    (() => {
+                                      const phone = ipPhones.find(
+                                        (phone) => phone.id.toString() === phoneId
+                                      );
+                                      return phone
+                                        ? `${phone.number} - ${phone.name}`
+                                        : "Select Phone ID...";
+                                    })()
+                                  )
+                                ) : (
+                                  <span className="text-muted-foreground">
+                                    Select Phone IP
+                                  </span>
+                                )}
+                                <ChevronsUpDown className="opacity-50" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-full p-0">
+                              <Command>
+                                <CommandInput
+                                  placeholder="Search phone..."
+                                  className="h-9"
+                                />
+                                <CommandList>
+                                  <CommandEmpty>No phone found.</CommandEmpty>
+                                  <CommandGroup>
                                     <CommandItem
-                                      key={phone.id}
-                                      value={`${phone.number} ${phone.name}`}
+                                      value="0"
                                       onSelect={() => {
-                                        setPhoneId(phone.id.toString());
+                                        setPhoneId("0");
                                         setOpen(false);
                                       }}
                                     >
-                                      {phone.number} - {phone.name}
+                                      ไม่มีเบอร์
                                       <Check
                                         className={cn(
                                           "ml-auto",
-                                          phoneId === phone.id.toString()
-                                            ? "opacity-100"
-                                            : "opacity-0"
+                                          phoneId === "0" ? "opacity-100" : "opacity-0"
                                         )}
                                       />
                                     </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                                    {ipPhones.map((phone) => (
+                                      <CommandItem
+                                        key={phone.id}
+                                        value={`${phone.number} ${phone.name}`}
+                                        onSelect={() => {
+                                          setPhoneId(phone.id.toString());
+                                          setOpen(false);
+                                        }}
+                                      >
+                                        {phone.number} - {phone.name}
+                                        <Check
+                                          className={cn(
+                                            "ml-auto",
+                                            phoneId === phone.id.toString()
+                                              ? "opacity-100"
+                                              : "opacity-0"
+                                          )}
+                                        />
+                                      </CommandItem>
+                                    ))}
+                                  </CommandGroup>
+                                </CommandList>
+                              </Command>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        
+                        {/* Phone Else Input - แสดงเมื่อเลือก "ไม่มีเบอร์" */}
+                        {phoneId === "0" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="phone_else">เบอร์โทรศัพท์</Label>
+                            <input
+                              type="text"
+                              id="phone_else"
+                              className="w-full border-1 rounded-md p-2"
+                              value={phoneElse}
+                              onChange={(e) => setPhoneElse(e.target.value)}
+                              placeholder="กรอกเบอร์โทรศัพท์ (เช่น 081-234-5678)"
+                            />
+                          </div>
+                        )}
                       </div>
-
                       <div className="space-y-2">
                         <Label htmlFor="type">Type</Label>
                         <Select

@@ -187,7 +187,10 @@ export async function addTaskNew(task: AddTask) {
 
     // เพิ่มข้อมูล task
     formData.append("reported_by", task.reported_by);
-    formData.append("phone_id", task.phone_id ? task.phone_id.toString() : "");
+    formData.append("phone_id", task.phone_id !== undefined && task.phone_id !== null ? task.phone_id.toString() : "0");
+    if (task.phone_else) {
+      formData.append("phone_else", task.phone_else);
+    }
     formData.append("issue_type", task.issue_type.toString());
     formData.append("system_id", task.system_id.toString());
     formData.append("issue_else", task.issue_else);

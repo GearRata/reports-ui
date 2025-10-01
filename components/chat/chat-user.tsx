@@ -39,6 +39,13 @@ export default function ChatUserPage() {
     };
 
     fetchData();
+
+    const interval = setInterval(() => {
+      fetchData();
+      window.location.reload()
+    }, 12000);
+
+    return () => clearInterval(interval);
   }, [taskId]);
 
 
