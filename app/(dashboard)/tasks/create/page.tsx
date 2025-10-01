@@ -40,6 +40,7 @@ import { addTaskNew } from "@/app/api/tasks";
 import { useType } from "@/app/api/type";
 import { useProgramsForDropdown } from "@/app/api/programs";
 import { useIPPhonesForDropdown } from "@/app/api/phones";
+import { useDepartmentsForDropdown } from "@/app/api/departments";
 import CameraButton from "@/components/images/CameraButton";
 import GalleryButton from "@/components/images/GalleryButton";
 import ImageCompressor from "@/components/images/ImageCompressor";
@@ -51,9 +52,12 @@ function CreateTaskPage() {
   const router = useRouter();
   const { ipPhones } = useIPPhonesForDropdown();
   const { programs } = useProgramsForDropdown();
+
+  const { departments } = useDepartmentsForDropdown();
   const { types } = useType();
   const [phoneId, setPhoneId] = useState<string>("");
   const [programID, setProgramID] = useState<string>("");
+  const [departmentId, setDepartmentId] = useState<string>("");
   const [issue, setIssue] = useState<string>("");
   const [type, setType] = useState<string>("");
   const [text, setText] = useState("");
@@ -63,6 +67,7 @@ function CreateTaskPage() {
   const [reportBy, setReportBy] = useState<string>("");
   const [phoneElse, setPhoneElse] = useState<string>("");
   const [open, setOpen] = React.useState(false);
+  const [departmentOpen, setDepartmentOpen] = React.useState(false);
   const [processing, setProcessing] = useState(false);
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -86,11 +91,10 @@ function CreateTaskPage() {
       await addTaskNew({
         reported_by: reportBy,
         phone_id:
-          phoneId && phoneId !== "" && phoneId !== "null"
-            ? Number(phoneId)
-            : 0,
+          phoneId && phoneId !== "" && phoneId !== "null" ? Number(phoneId) : 0,
         phone_else: phoneId === "0" ? phoneElse : "",
         system_id: Number(programID),
+        department_id: Number(departmentId),
         text,
         status: 0, // Default to pending
         issue_type: Number(type),
@@ -246,7 +250,8 @@ function CreateTaskPage() {
                                   ) : (
                                     (() => {
                                       const phone = ipPhones.find(
-                                        (phone) => phone.id.toString() === phoneId
+                                        (phone) =>
+                                          phone.id.toString() === phoneId
                                       );
                                       return phone
                                         ? `${phone.number} - ${phone.name}`
@@ -281,7 +286,9 @@ function CreateTaskPage() {
                                       <Check
                                         className={cn(
                                           "ml-auto",
-                                          phoneId === "0" ? "opacity-100" : "opacity-0"
+                                          phoneId === "0"
+                                            ? "opacity-100"
+                                            : "opacity-0"
                                         )}
                                       />
                                     </CommandItem>
@@ -311,7 +318,7 @@ function CreateTaskPage() {
                             </PopoverContent>
                           </Popover>
                         </div>
-                        
+
                         {/* Phone Else Input - แสดงเมื่อเลือก "ไม่มีเบอร์" */}
                         {phoneId === "0" && (
                           <div className="space-y-2">
@@ -319,14 +326,85 @@ function CreateTaskPage() {
                             <input
                               type="text"
                               id="phone_else"
-                              className="w-full border-1 rounded-md p-2"
+                              className="w-full border-1 rounded-md p-1.5"
                               value={phoneElse}
                               onChange={(e) => setPhoneElse(e.target.value)}
                               placeholder="กรอกเบอร์โทรศัพท์ (เช่น 081-234-5678)"
                             />
                           </div>
                         )}
+                        {phoneId === "0" && (
+                          <div className="space-y-2">
+                            <Label htmlFor="department_id">Department</Label>
+                            <Popover open={departmentOpen} onOpenChange={setDepartmentOpen}>
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  role="combobox"
+                                  aria-expanded={departmentOpen}
+                                  className="w-full justify-between"
+                                >
+                                  {departmentId ? (
+                                    (() => {
+                                      const department = departments.find(
+                                        (department) =>
+                                          department.id.toString() ===
+                                          departmentId
+                                      );
+                                      return department
+                                        ? `${department.name}`
+                                        : "Select Department...";
+                                    })()
+                                  ) : (
+                                    <span className="text-muted-foreground">
+                                      Select Department
+                                    </span>
+                                  )}
+                                  <ChevronsUpDown className="opacity-50" />
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-full p-0">
+                                <Command>
+                                  <CommandInput
+                                    placeholder="Search department..."
+                                    className="h-9"
+                                  />
+                                  <CommandList>
+                                    <CommandEmpty>No Department found.</CommandEmpty>
+                                    <CommandGroup>
+                                      {departments.map((department) => (
+                                        <CommandItem
+                                          key={department.id}
+                                          value={`${department.number} ${department.name}`}
+                                          onSelect={() => {
+                                            setDepartmentId(
+                                              department.id.toString()
+                                            );
+                                            setDepartmentOpen(false);
+                                          }}
+                                        >
+                                          {department.name}
+                                          <Check
+                                            className={cn(
+                                              "ml-auto",
+                                              departmentId ===
+                                                department.id.toString()
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                            )}
+                                          />
+                                        </CommandItem>
+                                      ))}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        )}
                       </div>
+
+                      {/* Type Selection */}
                       <div className="space-y-2">
                         <Label htmlFor="type">Type</Label>
                         <Select

@@ -31,6 +31,7 @@ export type TaskDataId = number;
 export interface AddTask {
     reported_by: string;
     phone_id: number | null;
+    department_id: number;
     phone_else: string ;
     issue_type: number;
     system_id: number;

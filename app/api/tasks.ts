@@ -193,6 +193,7 @@ export async function addTaskNew(task: AddTask) {
     }
     formData.append("issue_type", task.issue_type.toString());
     formData.append("system_id", task.system_id.toString());
+    formData.append("department_id", task.department_id.toString());
     formData.append("issue_else", task.issue_else);
     formData.append("text", task.text);
     formData.append("status", task.status.toString());

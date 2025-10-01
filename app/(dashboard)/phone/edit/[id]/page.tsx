@@ -268,29 +268,12 @@ function EditPhonePage() {
                           <PopoverContent className="w-full p-0">
                             <Command>
                               <CommandInput
-                                placeholder="Search phone..."
+                                placeholder="Search department..."
                                 className="h-9"
                               />
                               <CommandList>
                                 <CommandEmpty>No phone found.</CommandEmpty>
                                 <CommandGroup>
-                                  <CommandItem
-                                    value="null"
-                                    onSelect={() => {
-                                      setDepartmentId("");
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    ไม่ได้ระบุ Phone ID
-                                    <Check
-                                      className={cn(
-                                        "ml-auto",
-                                        !departmentId
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      )}
-                                    />
-                                  </CommandItem>
                                   {departments.map((department) => (
                                     <CommandItem
                                       key={department.id}
