@@ -3,9 +3,6 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
 import { UserStatsCards } from "@/components/user/user-stats";
 import { UserTable } from "@/components/user/user-table";
 import { Plus } from "lucide-react";
@@ -15,7 +12,7 @@ import type { User, UserStats } from "@/types/user";
 
 export default function AccountPage() {
   const router = useRouter();
-  const { users, loading, refreshUsers } = useUsers();
+  const { users, refreshUsers } = useUsers();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 

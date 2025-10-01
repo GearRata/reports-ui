@@ -2,12 +2,8 @@
 
 import type React from "react";
 import { AssignToTable } from "@/components/tables/supervisor-table";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-// BranchForm removed - using separate pages for create/edit
 import { useAssign, deleteAssignTo } from "@/hooks/useAssign";
 import type { AssignData } from "@/types/assignto/model";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";

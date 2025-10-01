@@ -211,22 +211,6 @@ Start the production server:
 npm start
 ```
 
-### Using Docker
-
-#### Development
-```bash
-docker build -f Dockerfile.dev -t nopadol-dev .
-docker run -p 3000:3000 nopadol-dev
-```
-
-#### Production
-```bash
-docker build -f Dockerfile -t nopadol-prod .
-docker run -p 3000:3000 nopadol-prod
-```
-
----
-
 ## 🏗️ Project Architecture
 
 ### High-Level Architecture
@@ -622,14 +606,6 @@ npm run build
 npm start
 ```
 
-#### 3. Using PM2 (Process Manager)
-
-```bash
-npm install -g pm2
-pm2 start npm --name "nopadol-helpdesk" -- start
-pm2 save
-pm2 startup
-```
 
 ### Environment Setup
 
@@ -639,81 +615,6 @@ Ensure these environment variables are set in production:
 NEXT_PUBLIC_API_BASE=https://your-production-api.com
 NODE_ENV=production
 ```
-
----
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-#### 1. API Connection Errors
-
-**Problem**: "Failed to fetch" errors
-
-**Solution**:
-- Verify `NEXT_PUBLIC_API_BASE` is set correctly
-- Check backend API is running
-- Verify CORS settings on backend
-- Check network connectivity
-
-#### 2. Build Errors
-
-**Problem**: Build fails with TypeScript errors
-
-**Solution**:
-```bash
-# Clean build cache
-rm -rf .next
-rm -rf node_modules
-npm install
-npm run build
-```
-
-#### 3. Authentication Issues
-
-**Problem**: Login fails or redirects loop
-
-**Solution**:
-- Clear browser cookies and localStorage
-- Verify backend authentication endpoint
-- Check middleware configuration
-- Verify user role is correct
-
-#### 4. Image Upload Failures
-
-**Problem**: Images don't upload
-
-**Solution**:
-- Check image size (compression may be needed)
-- Verify FormData is being sent correctly
-- Check backend file upload limits
-- Verify MIME types are supported
-
-#### 5. Development Server Issues
-
-**Problem**: Changes not reflecting
-
-**Solution**:
-```bash
-# Restart dev server
-# Clear Next.js cache
-rm -rf .next
-npm run dev
-```
-
-### Debug Mode
-
-Enable detailed logging:
-
-```typescript
-// Add to component
-console.log('Debug:', { data, error, loading });
-```
-
-Check browser console for:
-- Network requests (Network tab)
-- Console errors (Console tab)
-- React components (React DevTools)
 
 ---
 
@@ -776,34 +677,6 @@ chore: maintenance tasks
 
 ---
 
-## 📞 Support
-
-### Getting Help
-
-If you encounter issues:
-
-1. Check this README and PROJECT_STRUCTURE.md
-2. Review the CHANGELOG for recent changes
-3. Check existing issues on GitHub
-4. Contact the development team
-
----
-
-## 📄 License
-
-This project is proprietary software developed for internal use.
-
----
-
-## 👥 Team
-
-**Project**: NOPADOL Helpdesk System  
-**Repository**: GearRata/reports-ui  
-**Version**: 0.1.9  
-**Last Updated**: 2025-10-01
-
----
-
 ## 🎯 Quick Start Checklist
 
 - [ ] Node.js 18+ installed
@@ -814,19 +687,6 @@ This project is proprietary software developed for internal use.
 - [ ] Access `http://localhost:3000`
 - [ ] Test login with credentials
 - [ ] Verify backend connectivity
-
----
-
-## 📊 Project Statistics
-
-- **Lines of Code**: ~15,000+
-- **Components**: 100+
-- **Pages**: 25+
-- **API Hooks**: 12+ (in `hooks/` directory)
-- **UI Components**: 53 (shadcn/ui)
-- **Type Definitions**: 18+ modules
-- **Loading States**: 8 routes
-- **Error Boundaries**: 8 routes
 
 ---
 

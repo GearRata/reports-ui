@@ -1,9 +1,6 @@
 // app/tasks/page.tsx
 "use client";
 
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type React from "react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";

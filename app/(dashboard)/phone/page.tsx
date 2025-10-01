@@ -5,14 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { IPPhonesTable } from "@/components/tables/ip-phones-table";
-// IPPhoneForm removed - using separate pages for create/edit
 import { useIPPhonesPaginated, deleteIPPhone } from "@/hooks/usePhones";
 import { PaginationWrapper } from "@/components/pagination/pagination-wrapper";
 import { PaginationErrorBoundary } from "@/components/error-boundary/pagination-error-boundary";
 import type { IPPhone } from "@/types/entities";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FileDown } from "lucide-react";
 import { exportFilePhone } from "@/lib/utils";

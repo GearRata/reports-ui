@@ -4,12 +4,8 @@ import type React from "react";
 
 import { useState } from "react";
 import { BranchesTable } from "@/components/tables/branches-table";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-// BranchForm removed - using separate pages for create/edit
 import { useBranches, deleteBranch } from "@/hooks/useBranches";
 import type { Branch } from "@/types/entities";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";

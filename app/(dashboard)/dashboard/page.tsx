@@ -11,17 +11,14 @@ import {
 } from "date-fns";
 import { th } from "date-fns/locale";
 
-import { AppSidebar } from "@/components/layout/app-sidebar";
 import { BarChartComponents } from "@/components/dashboard/charts/bar-chart";
 import { ChartPieDepartment } from "@/components/dashboard/charts/pie-chart-department";
 import { ChartPieProgram } from "@/components/dashboard/charts/pie-chart-program";
 import { ChartPieType } from "@/components/dashboard/charts/pie-chart-type";
 import { ChartPieReport } from "@/components/dashboard/charts/pie-chart-report";
-import { SiteHeader } from "@/components/layout/site-header";
 import { StatsCards } from "@/components/dashboard/card/stats-card";
 import { TaskStats } from "@/types/entities";
 import { useDashboard } from "@/hooks/useDashboard";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
