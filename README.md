@@ -207,25 +207,274 @@ Open **http://localhost:3000** in your browser. You should see the login page.
 
 ## 🐳 Docker Deployment
 
-### Quick Start with Docker
+### Docker Hub Workflow (Recommended)
 
-#### Option 1: Using Docker Compose (Recommended)
+โปรเจกต์นี้ใช้ **Docker Hub** สำหรับเก็บ Docker images และใช้ **Shell Scripts** สำหรับ automated build & push pipeline
 
-**1. Create `docker-compose.yml`:**
+#### Prerequisites
+
+1. **Docker Hub Account**: สมัครที่ https://hub.docker.com/
+2. **Access Token**: สร้าง access token จาก Account Settings → Security
+3. **Environment Files**: `.env.development` สำหรับ dev, `.env` สำหรับ prod
+
+#### Deployment Workflow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                   Docker Hub Pipeline                        │
+└─────────────────────────────────────────────────────────────┘
+
+Local Machine                Docker Hub              Server
+─────────────               ───────────              ──────
+
+1. Edit code
+   │
+2. Run build-dev.sh
+   │
+   ├──> Check .env file
+   │
+   ├──> Docker Login ────────> Authenticate
+   │
+   ├──> Docker Build
+   │    (Create image)
+   │
+   ├──> Docker Push ─────────> Store image ────────> Pull image
+   │                          (username/reports-ui)   │
+   ├──> Docker Logout                                 │
+   │                                              Docker Run
+   └──> ✅ Done!                                  (Start container)
+```
+
+**Tags:**
+- `dev` → Development builds
+- `latest` → Production builds
+- `0.1.9` → Version-specific builds
+
+---
+
+### Build & Push to Docker Hub Scripts
+
+#### Development Environment
+
+**`build-dev.sh` - Build & Push Development Image:**
+
+```bash
+#!/bin/bash
+
+# ---------- CONFIG ----------
+IMAGE_NAME="your-dockerhub-username/reports-ui"
+TAG="dev"
+DOCKERFILE="Dockerfile.dev"
+ENV_FILE=".env.development"
+DOCKER_USERNAME="your-dockerhub-username"
+DOCKER_TOKEN="your-docker-access-token"
+# ----------------------------
+
+# ตรวจสอบว่า .env.development มีอยู่หรือไม่
+if [ ! -f "$ENV_FILE" ]; then
+  echo "❌ Environment file '$ENV_FILE' not found!"
+  exit 1
+fi
+
+# Login เข้าสู่ Docker Hub
+echo "🔐 Logging in to Docker Hub..."
+echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+if [ $? -ne 0 ]; then
+  echo "❌ Docker login failed!"
+  exit 1
+fi
+
+# สร้าง Docker image
+echo "🔧 Building Docker image: $IMAGE_NAME:$TAG"
+docker build -f "$DOCKERFILE" -t "$IMAGE_NAME:$TAG" .
+
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed"
+  docker logout
+  exit 1
+fi
+
+# Push ขึ้น Docker Hub
+echo "📦 Pushing to Docker Hub..."
+docker push "$IMAGE_NAME:$TAG"
+
+if [ $? -eq 0 ]; then
+  echo "✅ Push completed: $IMAGE_NAME:$TAG"
+else
+  echo "❌ Push failed"
+  docker logout
+  exit 1
+fi
+
+# Logout ออกจาก Docker Hub
+echo "🚪 Logging out..."
+docker logout
+
+echo "🎉 Done!"
+```
+
+#### Production Environment
+
+**`build-prod.sh` - Build & Push Production Image:**
+
+```bash
+#!/bin/bash
+
+# ---------- CONFIG ----------
+IMAGE_NAME="your-dockerhub-username/reports-ui"
+TAG="latest"
+DOCKERFILE="Dockerfile"
+ENV_FILE=".env"
+DOCKER_USERNAME="your-dockerhub-username"
+DOCKER_TOKEN="your-docker-access-token"
+# ----------------------------
+
+# ตรวจสอบว่า .env มีอยู่หรือไม่
+if [ ! -f "$ENV_FILE" ]; then
+  echo "❌ Environment file '$ENV_FILE' not found!"
+  exit 1
+fi
+
+# Login เข้าสู่ Docker Hub
+echo "🔐 Logging in to Docker Hub..."
+echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+if [ $? -ne 0 ]; then
+  echo "❌ Docker login failed!"
+  exit 1
+fi
+
+# สร้าง Docker image
+echo "🔧 Building Docker image: $IMAGE_NAME:$TAG"
+docker build -f "$DOCKERFILE" -t "$IMAGE_NAME:$TAG" .
+
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed"
+  docker logout
+  exit 1
+fi
+
+# Tag with version
+VERSION=$(node -p "require('./package.json').version")
+docker tag "$IMAGE_NAME:$TAG" "$IMAGE_NAME:$VERSION"
+
+# Push ขึ้น Docker Hub
+echo "📦 Pushing to Docker Hub..."
+docker push "$IMAGE_NAME:$TAG"
+docker push "$IMAGE_NAME:$VERSION"
+
+if [ $? -eq 0 ]; then
+  echo "✅ Push completed: $IMAGE_NAME:$TAG"
+  echo "✅ Push completed: $IMAGE_NAME:$VERSION"
+else
+  echo "❌ Push failed"
+  docker logout
+  exit 1
+fi
+
+# Logout ออกจาก Docker Hub
+echo "🚪 Logging out..."
+docker logout
+
+echo "🎉 Done!"
+```
+
+---
+
+### How to Use
+
+**1. Configuration**
+
+แก้ไข config ใน script:
+```bash
+IMAGE_NAME="your-dockerhub-username/reports-ui"  # เปลี่ยนเป็น username ของคุณ
+DOCKER_USERNAME="your-dockerhub-username"        # Docker Hub username
+DOCKER_TOKEN="dckr_pat_xxxxxxxxxxxxx"            # Access token จาก Docker Hub
+```
+
+**2. Create Environment Files**
+
+```bash
+# Development
+cat > .env.development << EOF
+NEXT_PUBLIC_API_BASE=http://localhost:8080
+EOF
+
+# Production
+cat > .env << EOF
+NEXT_PUBLIC_API_BASE=https://api.your-domain.com
+EOF
+```
+
+**3. Make Scripts Executable**
+
+```bash
+chmod +x build-dev.sh build-prod.sh
+```
+
+**4. Run Build & Push**
+
+```bash
+# Development
+./build-dev.sh
+
+# Production
+./build-prod.sh
+```
+
+---
+
+### Pull & Run from Docker Hub
+
+หลังจาก push image ขึ้น Docker Hub แล้ว สามารถ pull และ run บน server อื่นได้:
+
+**Development:**
+```bash
+# Pull image
+docker pull your-dockerhub-username/reports-ui:dev
+
+# Run container
+docker run -d \
+  --name nopadol-dev \
+  -p 3000:3000 \
+  -e NEXT_PUBLIC_API_BASE=http://localhost:8080 \
+  your-dockerhub-username/reports-ui:dev
+```
+
+**Production:**
+```bash
+# Pull image
+docker pull your-dockerhub-username/reports-ui:latest
+
+# Run container
+docker run -d \
+  --name nopadol-prod \
+  -p 3000:3000 \
+  -e NEXT_PUBLIC_API_BASE=https://api.your-domain.com \
+  --restart unless-stopped \
+  --memory="1g" \
+  --cpus="1.0" \
+  your-dockerhub-username/reports-ui:latest
+```
+
+---
+
+### Docker Compose with Docker Hub
+
+**`docker-compose.yml`:**
 
 ```yaml
 version: '3.8'
 
 services:
   nopadol-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: your-dockerhub-username/reports-ui:latest
     container_name: nopadol-helpdesk
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_BASE=http://your-api-url
+      - NEXT_PUBLIC_API_BASE=https://api.your-domain.com
     restart: unless-stopped
     networks:
       - nopadol-network
@@ -235,98 +484,143 @@ networks:
     driver: bridge
 ```
 
-**2. Start the application:**
-
+**Start:**
 ```bash
-# Build and start
+docker-compose pull  # Pull latest image from Docker Hub
 docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop
-docker-compose down
 ```
 
-#### Option 2: Using Docker Commands
+---
 
-**Development Build:**
+### Security Best Practices
+
+**⚠️ Important: Never commit Docker credentials to Git!**
+
+**Option 1: Use Environment Variables**
 
 ```bash
-# Build development image
-docker build -f Dockerfile.dev -t nopadol-helpdesk:dev .
-
-# Run development container
-docker run -d \
-  --name nopadol-dev \
-  -p 3000:3000 \
-  -v $(pwd):/app \
-  -v /app/node_modules \
-  -e NEXT_PUBLIC_API_BASE=http://localhost:8080 \
-  nopadol-helpdesk:dev
-
-# View logs
-docker logs -f nopadol-dev
+# build-dev.sh
+DOCKER_TOKEN="${DOCKER_HUB_TOKEN}"  # จาก environment variable
 ```
 
-**Production Build:**
+**Option 2: Use .env file (gitignored)**
 
 ```bash
-# Build production image
-docker build -f Dockerfile -t nopadol-helpdesk:prod .
+# .docker.env (add to .gitignore)
+DOCKER_USERNAME=your-username
+DOCKER_TOKEN=your-token
 
-# Run production container
-docker run -d \
-  --name nopadol-prod \
-  -p 3000:3000 \
-  -e NEXT_PUBLIC_API_BASE=http://your-api-url \
+# Load in script
+source .docker.env
+```
+
+**Option 3: Use Docker Credential Helper**
+
+```bash
+# Install credential helper
+brew install docker-credential-helper  # macOS
+apt-get install pass                   # Linux
+
+# Configure
+docker login  # จะเก็บ credentials อัตโนมัติ
+```
+
+---
+
+### Quick Reference
+
+**Complete Deployment Flow:**
+
+```bash
+# Step 1: Prepare environment
+cat > .env.development << EOF
+NEXT_PUBLIC_API_BASE=http://localhost:8080
+EOF
+
+# Step 2: Make script executable
+chmod +x build-dev.sh
+
+# Step 3: Build & Push (one command)
+./build-dev.sh
+
+# Step 4: Deploy on server
+ssh user@server
+docker pull your-username/reports-ui:dev
+docker run -d --name nopadol -p 3000:3000 \
+  -e NEXT_PUBLIC_API_BASE=http://api-server:8080 \
+  your-username/reports-ui:dev
+```
+
+**Update Existing Deployment:**
+
+```bash
+# On server
+docker pull your-username/reports-ui:latest  # Pull new image
+docker stop nopadol-prod                      # Stop old container
+docker rm nopadol-prod                        # Remove old container
+docker run -d --name nopadol-prod -p 3000:3000 \
+  -e NEXT_PUBLIC_API_BASE=https://api.domain.com \
   --restart unless-stopped \
-  nopadol-helpdesk:prod
-
-# View logs
-docker logs -f nopadol-prod
+  your-username/reports-ui:latest             # Start new container
 ```
 
-### Docker Build Scripts
+---
 
-**Create build scripts for easy deployment:**
+### Common Issues & Solutions
 
-**`build-dev.sh` - Development Build:**
+#### ❌ Build Failed: "Environment file not found"
+
+**Problem:** `.env.development` ไม่มี
+
+**Solution:**
 ```bash
-#!/bin/bash
-echo "Building development Docker image..."
-docker build -f Dockerfile.dev -t nopadol-helpdesk:dev .
-docker run -d \
-  --name nopadol-dev \
-  -p 3000:3000 \
-  -v $(pwd):/app \
-  -v /app/node_modules \
-  -e NEXT_PUBLIC_API_BASE=http://localhost:8080 \
-  nopadol-helpdesk:dev
-echo "Development server running at http://localhost:3000"
+# สร้างไฟล์ .env.development
+echo "NEXT_PUBLIC_API_BASE=http://localhost:8080" > .env.development
 ```
 
-**`build-prod.sh` - Production Build:**
+#### ❌ Docker Login Failed
+
+**Problem:** Access token ไม่ถูกต้อง
+
+**Solution:**
+1. ไปที่ Docker Hub → Account Settings → Security
+2. สร้าง Access Token ใหม่
+3. อัพเดท `DOCKER_TOKEN` ใน script
+
+#### ❌ Push Failed: "denied: requested access to the resource is denied"
+
+**Problem:** Repository name ผิด หรือไม่มีสิทธิ์
+
+**Solution:**
 ```bash
-#!/bin/bash
-echo "Building production Docker image..."
-docker build -f Dockerfile -t nopadol-helpdesk:prod .
-docker run -d \
-  --name nopadol-prod \
-  -p 3000:3000 \
-  -e NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE \
-  --restart unless-stopped \
-  --memory="1g" \
-  --cpus="1.0" \
-  nopadol-helpdesk:prod
-echo "Production server running at http://localhost:3000"
+# ตรวจสอบว่า IMAGE_NAME ตรงกับ Docker Hub username
+IMAGE_NAME="your-exact-username/reports-ui"  # ต้องตรงกับ Docker Hub
 ```
 
-**Make scripts executable:**
+#### ❌ Build Failed: "Cannot find module"
+
+**Problem:** Dependencies ไม่ครบ
+
+**Solution:**
 ```bash
-chmod +x build-dev.sh build-prod.sh
-./build-prod.sh
+# ลบ node_modules และติดตั้งใหม่
+rm -rf node_modules package-lock.json
+npm install
+./build-dev.sh
 ```
+
+#### ⚠️ Image Size Too Large (>1GB)
+
+**Solution:** ใช้ multi-stage build (ทำไว้แล้วใน Dockerfile)
+
+```bash
+# ตรวจสอบขนาด image
+docker images your-username/reports-ui
+
+# Expected size: ~400-600MB
+```
+
+---
 
 ### Docker Management Commands
 
@@ -357,6 +651,48 @@ docker exec -it nopadol-prod sh
 
 # Inspect container
 docker inspect nopadol-prod
+
+# Clean up unused images
+docker image prune -a
+```
+
+---
+
+### Docker Hub Repository Information
+
+**View Your Images:**
+
+Visit: `https://hub.docker.com/r/your-username/reports-ui`
+
+**Available Tags:**
+```bash
+# List all tags on Docker Hub
+curl -s https://hub.docker.com/v2/repositories/your-username/reports-ui/tags/ | jq '.results[].name'
+
+# Pull specific tag
+docker pull your-username/reports-ui:dev
+docker pull your-username/reports-ui:latest
+docker pull your-username/reports-ui:0.1.9
+```
+
+**Image Information:**
+
+| Tag | Purpose | Size | Dockerfile |
+|-----|---------|------|------------|
+| `dev` | Development builds | ~500MB | `Dockerfile.dev` |
+| `latest` | Latest production | ~400MB | `Dockerfile` |
+| `0.1.9` | Version-specific | ~400MB | `Dockerfile` |
+
+**Check Image Details:**
+```bash
+# View image details locally
+docker images your-username/reports-ui
+
+# View image history (layers)
+docker history your-username/reports-ui:latest
+
+# Inspect image
+docker inspect your-username/reports-ui:latest
 ```
 
 ---
