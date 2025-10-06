@@ -27,9 +27,6 @@ import {
   updateSolution,
   deleteSolution,
 } from "@/hooks/useSolution";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getTaskNewById, updateTaskAssignTo } from "@/hooks/useTasks";
 import type { TaskData } from "@/types/task/model";
 import type { SolutionData } from "@/types/solution/model";
@@ -427,62 +424,25 @@ function ShowTaskPage() {
 
   if (loadTask || (task && task.status === 2 && loadSolution)) {
     return (
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "calc(var(--spacing) * 53)",
-            "--header-height": "calc(var(--spacing) * 12)",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader title="Edit Task" />
-          <div className="flex flex-1 flex-col items-center justify-center">
-            <div className="text-center">
-              <p>Loading task...</p>
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="text-center">
+          <p>Loading task...</p>
+        </div>
+      </div>
     );
   }
 
   if (!task) {
     return (
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "calc(var(--spacing) * 53)",
-            "--header-height": "calc(var(--spacing) * 12)",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader title="Show Task" />
-          <div className="flex flex-1 flex-col items-center justify-center">
-            <div className="text-center">
-              <p className="text-red-500 mb-4">Task not found</p>
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Task not found</p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 60)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader title="Show Task" />
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-3 md:gap-6 md:py-6 px-6">
@@ -1157,8 +1117,6 @@ function ShowTaskPage() {
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
   );
 }
 

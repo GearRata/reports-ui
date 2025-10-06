@@ -65,157 +65,151 @@ function CreatePhonePage() {
   };
 
   return (
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
-              <div className="container mx-auto max-w-2xl">
-                {/* Create Phone Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Create New IP Phone</CardTitle>
-                    <CardDescription>
-                      Fill in the details to create a new IP phone.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Phone Number */}
-                      <div className="space-y-2">
-                        <Label htmlFor="number">Phone Number</Label>
-                        <Input
-                          id="number"
-                          type="number"
-                          value={number}
-                          onChange={(e) => setNumber(e.target.value)}
-                          placeholder="Enter phone number"
-                          required
-                        />
-                      </div>
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
+          <div className="container mx-auto max-w-2xl">
+            {/* Create Phone Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New IP Phone</CardTitle>
+                <CardDescription>
+                  Fill in the details to create a new IP phone.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Phone Number */}
+                  <div className="space-y-2">
+                    <Label htmlFor="number">Phone Number</Label>
+                    <Input
+                      id="number"
+                      type="number"
+                      value={number}
+                      onChange={(e) => setNumber(e.target.value)}
+                      placeholder="Enter phone number"
+                      required
+                    />
+                  </div>
 
-                      {/* Phone Name */}
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Phone Name</Label>
-                        <Input
-                          id="name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter phone name"
-                          required
-                        />
-                      </div>
-                     
+                  {/* Phone Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Phone Name</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter phone name"
+                      required
+                    />
+                  </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="phone_id">IP Phone</Label>
-                        <Popover open={open} onOpenChange={setOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={open}
-                              className="w-full justify-between"
-                            >
-                              {departmentId
-                                ? (() => {
-                                    const department = departments.find(
-                                      (department) =>
-                                        department.id.toString() ===
-                                        departmentId
-                                    );
-                                    return department
-                                      ? `${department.name}`
-                                      : "Select Department...";
-                                  })()
-                                : <span className="text-muted-foreground">Select Department</span>}
-                              <ChevronsUpDown className="opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
-                              <CommandInput
-                                placeholder="Search phone..."
-                                className="h-9"
-                              />
-                              <CommandList>
-                                <CommandEmpty>No phone found.</CommandEmpty>
-                                <CommandGroup>
-                                  <CommandItem
-                                    value="null"
-                                    onSelect={() => {
-                                      setDepartmentId("");
-                                      setOpen(false);
-                                    }}
-                                  >
-                                    ไม่ได้ระบุ Phone ID
-                                    <Check
-                                      className={cn(
-                                        "ml-auto",
-                                        !departmentId
-                                          ? "opacity-100"
-                                          : "opacity-0"
-                                      )}
-                                    />
-                                  </CommandItem>
-                                  {departments.map((department) => (
-                                    <CommandItem
-                                      key={department.id}
-                                      value={`${department.number} ${department.name}`}
-                                      onSelect={() => {
-                                        setDepartmentId(
-                                          department.id.toString()
-                                        );
-                                        setOpen(false);
-                                      }}
-                                    >
-                                       {department.name} - {department.branch_name}
-                                      <Check
-                                        className={cn(
-                                          "ml-auto",
-                                          departmentId ===
-                                            department.id.toString()
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                      />
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-
-                      {/* Form Actions */}
-                      <div className="flex justify-end gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone_id">IP Phone</Label>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
                         <Button
-                          type="button"
                           variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSubmitting}
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-full justify-between"
                         >
-                          Cancel
+                          {departmentId ? (
+                            (() => {
+                              const department = departments.find(
+                                (department) =>
+                                  department.id.toString() === departmentId
+                              );
+                              return department
+                                ? `${department.name}`
+                                : "Select Department...";
+                            })()
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Select Department
+                            </span>
+                          )}
+                          <ChevronsUpDown className="opacity-50" />
                         </Button>
-                        <Button
-                          type="submit"
-                          disabled={
-                            isSubmitting ||
-                            !number ||
-                            !name.trim() ||
-                            !departmentId
-                          }
-                          className="text-white"
-                        >
-                          {isSubmitting ? "Creating..." : "Create IP Phone"}
-                        </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search phone..."
+                            className="h-9"
+                          />
+                          <CommandList>
+                            <CommandEmpty>No phone found.</CommandEmpty>
+                            <CommandGroup>
+                              <CommandItem
+                                value="null"
+                                onSelect={() => {
+                                  setDepartmentId("");
+                                  setOpen(false);
+                                }}
+                              >
+                                ไม่ได้ระบุ Phone ID
+                                <Check
+                                  className={cn(
+                                    "ml-auto",
+                                    !departmentId ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                              </CommandItem>
+                              {departments.map((department) => (
+                                <CommandItem
+                                  key={department.id}
+                                  value={`${department.number} ${department.name}`}
+                                  onSelect={() => {
+                                    setDepartmentId(department.id.toString());
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {department.name} - {department.branch_name}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      departmentId === department.id.toString()
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={
+                        isSubmitting || !number || !name.trim() || !departmentId
+                      }
+                      className="text-white"
+                    >
+                      {isSubmitting ? "Creating..." : "Create IP Phone"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 

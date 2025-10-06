@@ -12,7 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { addDepartment } from "@/hooks/useDepartments";
 import { useBranchesForDropdown } from "@/hooks/useBranches";
@@ -20,7 +26,7 @@ import { useBranchesForDropdown } from "@/hooks/useBranches";
 function CreateDepartmentPage() {
   const router = useRouter();
   const { branches, loading: branchesLoading } = useBranchesForDropdown();
-  
+
   const [name, setName] = useState("");
   const [branchId, setBranchId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,12 +36,12 @@ function CreateDepartmentPage() {
     setIsSubmitting(true);
 
     try {
-      await addDepartment({ 
-        name, 
-        branch_id: Number(branchId) 
+      await addDepartment({
+        name,
+        branch_id: Number(branchId),
       });
       // Navigate back to departments page
-      router.push('/department');
+      router.push("/department");
     } catch (error) {
       console.error("Error creating department:", error);
     } finally {
@@ -48,82 +54,85 @@ function CreateDepartmentPage() {
   };
 
   return (
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
+          <div className="container mx-auto max-w-2xl">
+            {/* Create Department Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New Department</CardTitle>
+                <CardDescription>
+                  Fill in the details to create a new department.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Department Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Department Name</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter department name"
+                      required
+                    />
+                  </div>
 
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
-              <div className="container mx-auto max-w-2xl">
-
-                {/* Create Department Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Create New Department</CardTitle>
-                    <CardDescription>
-                      Fill in the details to create a new department.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Department Name */}
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Department Name</Label>
-                        <Input
-                          id="name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter department name"
-                          required
+                  {/* Branch Selection */}
+                  <div className="space-y-2">
+                    <Label htmlFor="branch">Branch</Label>
+                    <Select
+                      value={branchId}
+                      onValueChange={(value) => setBranchId(value)}
+                      required
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={
+                            branchesLoading ? "Loading..." : "Select Branch"
+                          }
                         />
-                      </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {branches.map((branch) => (
+                          <SelectItem
+                            key={branch.id}
+                            value={branch.id.toString()}
+                          >
+                            {branch.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                      {/* Branch Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="branch">Branch</Label>
-                        <Select
-                          value={branchId}
-                          onValueChange={(value) => setBranchId(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue 
-                              placeholder={branchesLoading ? "Loading..." : "Select Branch"} 
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {branches.map((branch) => (
-                              <SelectItem key={branch.id} value={branch.id.toString()}>
-                                {branch.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Form Actions */}
-                      <div className="flex justify-end gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSubmitting}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={isSubmitting || !name.trim() || !branchId}
-                          className="text-white"
-                        >
-                          {isSubmitting ? "Creating..." : "Create Department"}
-                        </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !name.trim() || !branchId}
+                      className="text-white"
+                    >
+                      {isSubmitting ? "Creating..." : "Create Department"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 

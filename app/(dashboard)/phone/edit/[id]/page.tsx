@@ -33,9 +33,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronsUpDown, Check } from "lucide-react";
-import { AppSidebar } from "@/components/layout/app-sidebar";
-import { SiteHeader } from "@/components/layout/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useRouter, useParams } from "next/navigation";
 import { getIPPhoneById, updateIPPhone } from "@/hooks/usePhones";
 import { useBranchesForDropdown } from "@/hooks/useBranches";
@@ -110,221 +107,191 @@ function EditPhonePage() {
 
   if (loading) {
     return (
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "calc(var(--spacing) * 53)",
-            "--header-height": "calc(var(--spacing) * 12)",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader title="Edit IP Phone" />
-          <div className="flex flex-1 flex-col items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p>Loading IP phone...</p>
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading IP phone...</p>
+        </div>
+      </div>
     );
   }
 
   if (!phone) {
     return (
-      <SidebarProvider
-        style={
-          {
-            "--sidebar-width": "calc(var(--spacing) * 60)",
-            "--header-height": "calc(var(--spacing) * 12)",
-          } as React.CSSProperties
-        }
-      >
-        <AppSidebar variant="inset" />
-        <SidebarInset>
-          <SiteHeader title="Edit IP Phone" />
-          <div className="flex flex-1 flex-col items-center justify-center">
-            <div className="text-center">
-              <p className="text-red-500 mb-4">IP Phone not found</p>
-              <Button onClick={handleCancel}>Back to IP Phones</Button>
-            </div>
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">IP Phone not found</p>
+          <Button onClick={handleCancel}>Back to IP Phones</Button>
+        </div>
+      </div>
     );
   }
 
   return (
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
-              <div className="container mx-auto max-w-2xl">
-                {/* Edit Phone Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      Edit IP Phone: {phone.number} - {phone.name}
-                    </CardTitle>
-                    <CardDescription>
-                      Update the IP phone details below.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Phone Number */}
-                      <div className="space-y-2">
-                        <Label htmlFor="number">Phone Number</Label>
-                        <Input
-                          id="number"
-                          type="number"
-                          value={number}
-                          onChange={(e) => setNumber(e.target.value)}
-                          placeholder="Enter phone number"
-                          required
-                        />
-                      </div>
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
+          <div className="container mx-auto max-w-2xl">
+            {/* Edit Phone Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Edit IP Phone: {phone.number} - {phone.name}
+                </CardTitle>
+                <CardDescription>
+                  Update the IP phone details below.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Phone Number */}
+                  <div className="space-y-2">
+                    <Label htmlFor="number">Phone Number</Label>
+                    <Input
+                      id="number"
+                      type="number"
+                      value={number}
+                      onChange={(e) => setNumber(e.target.value)}
+                      placeholder="Enter phone number"
+                      required
+                    />
+                  </div>
 
-                      {/* Phone Name */}
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Phone Name</Label>
-                        <Input
-                          id="name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter phone name"
-                          required
-                        />
-                      </div>
+                  {/* Phone Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Phone Name</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter phone name"
+                      required
+                    />
+                  </div>
 
-                      {/* Branch Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="branch">Branch</Label>
-                        <Select
-                          value={branchId}
-                          onValueChange={(value) => setBranchId(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue
-                              placeholder={
-                                branchesLoading ? "Loading..." : "Select Branch"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {branches.map((branch) => (
-                              <SelectItem
-                                key={branch.id}
-                                value={branch.id.toString()}
-                              >
-                                {branch.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="department_id">Department</Label>
-                        <Popover open={open} onOpenChange={setOpen}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              aria-expanded={open}
-                              className="w-full justify-between"
-                            >
-                              {departmentId ? (
-                                (() => {
-                                  const department = departments.find(
-                                    (department) =>
-                                      department.id.toString() === departmentId
-                                  );
-                                  return department
-                                    ? `${department.name}`
-                                    : "Select Department...";
-                                })()
-                              ) : (
-                                <span className="text-muted-foreground">
-                                  Select Department
-                                </span>
-                              )}
-                              <ChevronsUpDown className="opacity-50" />
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-full p-0">
-                            <Command>
-                              <CommandInput
-                                placeholder="Search department..."
-                                className="h-9"
-                              />
-                              <CommandList>
-                                <CommandEmpty>No phone found.</CommandEmpty>
-                                <CommandGroup>
-                                  {departments.map((department) => (
-                                    <CommandItem
-                                      key={department.id}
-                                      value={`${department.number} ${department.name}`}
-                                      onSelect={() => {
-                                        setDepartmentId(
-                                          department.id.toString()
-                                        );
-                                        setOpen(false);
-                                      }}
-                                    >
-                                      {department.name}
-                                      <Check
-                                        className={cn(
-                                          "ml-auto",
-                                          departmentId ===
-                                            department.id.toString()
-                                            ? "opacity-100"
-                                            : "opacity-0"
-                                        )}
-                                      />
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
-                      </div>
-                     
-
-                      {/* Form Actions */}
-                      <div className="flex justify-end gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSubmitting}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={
-                            isSubmitting ||
-                            !number ||
-                            !name.trim() ||
-                            !branchId ||
-                            !departmentId
+                  {/* Branch Selection */}
+                  <div className="space-y-2">
+                    <Label htmlFor="branch">Branch</Label>
+                    <Select
+                      value={branchId}
+                      onValueChange={(value) => setBranchId(value)}
+                      required
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue
+                          placeholder={
+                            branchesLoading ? "Loading..." : "Select Branch"
                           }
-                          className="text-white"
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {branches.map((branch) => (
+                          <SelectItem
+                            key={branch.id}
+                            value={branch.id.toString()}
+                          >
+                            {branch.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="department_id">Department</Label>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-full justify-between"
                         >
-                          {isSubmitting ? "Updating..." : "Update IP Phone"}
+                          {departmentId ? (
+                            (() => {
+                              const department = departments.find(
+                                (department) =>
+                                  department.id.toString() === departmentId
+                              );
+                              return department
+                                ? `${department.name}`
+                                : "Select Department...";
+                            })()
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Select Department
+                            </span>
+                          )}
+                          <ChevronsUpDown className="opacity-50" />
                         </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search department..."
+                            className="h-9"
+                          />
+                          <CommandList>
+                            <CommandEmpty>No phone found.</CommandEmpty>
+                            <CommandGroup>
+                              {departments.map((department) => (
+                                <CommandItem
+                                  key={department.id}
+                                  value={`${department.number} ${department.name}`}
+                                  onSelect={() => {
+                                    setDepartmentId(department.id.toString());
+                                    setOpen(false);
+                                  }}
+                                >
+                                  {department.name}
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      departmentId === department.id.toString()
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={
+                        isSubmitting ||
+                        !number ||
+                        !name.trim() ||
+                        !branchId ||
+                        !departmentId
+                      }
+                      className="text-white"
+                    >
+                      {isSubmitting ? "Updating..." : "Update IP Phone"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 
