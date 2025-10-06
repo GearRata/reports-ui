@@ -79,13 +79,9 @@
 
 ### UI & Styling
 - **Tailwind CSS 4**: Utility-first CSS framework
-- **Radix UI**: Accessible component primitives (via shadcn/ui)
 - **Lucide React**: Icon library
 - **Framer Motion**: Animation library
 
-### Charts & Visualization
-- **MUI X-Charts**: Material-UI charting library
-- **Recharts**: React charting library
 
 ### Forms & Validation
 - **React Hook Form**: Form state management
@@ -125,24 +121,37 @@ Before you begin, ensure you have the following installed:
 
 ---
 
-## 🚀 Installation
+## 🚀 Installation & Setup Instructions
 
-### 1. Clone the Repository
+### Step 1: Clone the Repository
 
 ```bash
 git clone https://github.com/GearRata/reports-ui.git
 cd reports-ui
 ```
 
-### 2. Install Dependencies
+### Step 2: Install Dependencies
 
 ```bash
+# Using npm (recommended)
 npm install
+
+# Or using yarn
+yarn install
+
+# Or using pnpm
+pnpm install
 ```
 
-This will install all required packages defined in `package.json`.
+**What gets installed:**
+- Next.js 15.3.4 framework
+- React 19 with TypeScript
+- Tailwind CSS 4 and UI components
+- All dependencies from `package.json`
 
-### 3. Configure Environment Variables
+**Installation time:** ~2-5 minutes depending on your internet speed
+
+### Step 3: Configure Environment Variables
 
 Create a `.env` file in the root directory:
 
@@ -151,12 +160,467 @@ Create a `.env` file in the root directory:
 NEXT_PUBLIC_API_BASE=http://your-backend-api-url
 ```
 
-Replace `http://your-backend-api-url` with your actual backend API URL.
+**Environment Configuration Examples:**
 
-**Example**:
-```
+**Development (Local):**
+```env
 NEXT_PUBLIC_API_BASE=http://localhost:8080
 ```
+
+**Development (Network):**
+```env
+NEXT_PUBLIC_API_BASE=http://192.168.1.100:8080
+```
+
+**Production:**
+```env
+NEXT_PUBLIC_API_BASE=https://api.nopadol.your-domain.com
+```
+
+### Step 4: Verify Installation
+
+Check if everything is installed correctly:
+
+```bash
+# Check Node.js version
+node --version  # Should be 18.x or higher
+
+# Check npm version
+npm --version   # Should be 9.x or higher
+
+# Check Next.js installation
+npx next --version
+```
+
+### Step 5: Run Development Server
+
+```bash
+npm run dev
+```
+
+Open **http://localhost:3000** in your browser. You should see the login page.
+
+**Default port:** 3000  
+**Dev server features:** Hot reload, Fast Refresh, Turbopack
+
+---
+
+## 🐳 Docker Deployment
+
+### Quick Start with Docker
+
+#### Option 1: Using Docker Compose (Recommended)
+
+**1. Create `docker-compose.yml`:**
+
+```yaml
+version: '3.8'
+
+services:
+  nopadol-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nopadol-helpdesk
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://your-api-url
+    restart: unless-stopped
+    networks:
+      - nopadol-network
+
+networks:
+  nopadol-network:
+    driver: bridge
+```
+
+**2. Start the application:**
+
+```bash
+# Build and start
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop
+docker-compose down
+```
+
+#### Option 2: Using Docker Commands
+
+**Development Build:**
+
+```bash
+# Build development image
+docker build -f Dockerfile.dev -t nopadol-helpdesk:dev .
+
+# Run development container
+docker run -d \
+  --name nopadol-dev \
+  -p 3000:3000 \
+  -v $(pwd):/app \
+  -v /app/node_modules \
+  -e NEXT_PUBLIC_API_BASE=http://localhost:8080 \
+  nopadol-helpdesk:dev
+
+# View logs
+docker logs -f nopadol-dev
+```
+
+**Production Build:**
+
+```bash
+# Build production image
+docker build -f Dockerfile -t nopadol-helpdesk:prod .
+
+# Run production container
+docker run -d \
+  --name nopadol-prod \
+  -p 3000:3000 \
+  -e NEXT_PUBLIC_API_BASE=http://your-api-url \
+  --restart unless-stopped \
+  nopadol-helpdesk:prod
+
+# View logs
+docker logs -f nopadol-prod
+```
+
+### Docker Build Scripts
+
+**Create build scripts for easy deployment:**
+
+**`build-dev.sh` - Development Build:**
+```bash
+#!/bin/bash
+echo "Building development Docker image..."
+docker build -f Dockerfile.dev -t nopadol-helpdesk:dev .
+docker run -d \
+  --name nopadol-dev \
+  -p 3000:3000 \
+  -v $(pwd):/app \
+  -v /app/node_modules \
+  -e NEXT_PUBLIC_API_BASE=http://localhost:8080 \
+  nopadol-helpdesk:dev
+echo "Development server running at http://localhost:3000"
+```
+
+**`build-prod.sh` - Production Build:**
+```bash
+#!/bin/bash
+echo "Building production Docker image..."
+docker build -f Dockerfile -t nopadol-helpdesk:prod .
+docker run -d \
+  --name nopadol-prod \
+  -p 3000:3000 \
+  -e NEXT_PUBLIC_API_BASE=$NEXT_PUBLIC_API_BASE \
+  --restart unless-stopped \
+  --memory="1g" \
+  --cpus="1.0" \
+  nopadol-helpdesk:prod
+echo "Production server running at http://localhost:3000"
+```
+
+**Make scripts executable:**
+```bash
+chmod +x build-dev.sh build-prod.sh
+./build-prod.sh
+```
+
+### Docker Management Commands
+
+```bash
+# List containers
+docker ps -a
+
+# Stop container
+docker stop nopadol-prod
+
+# Start container
+docker start nopadol-prod
+
+# Restart container
+docker restart nopadol-prod
+
+# Remove container
+docker rm nopadol-prod
+
+# View logs
+docker logs -f nopadol-prod
+
+# Monitor resources
+docker stats nopadol-prod
+
+# Execute commands in container
+docker exec -it nopadol-prod sh
+
+# Inspect container
+docker inspect nopadol-prod
+```
+
+---
+
+## 📦 Build & Deployment Pipeline
+
+### Manual Build Process
+
+**Step 1: Build Application**
+```bash
+# Install dependencies
+npm ci
+
+# Run linter
+npm run lint
+
+# Build for production
+npm run build
+
+# Test production build locally
+npm start
+```
+
+**Build outputs:**
+- `.next/` - Next.js build output
+- `.next/standalone/` - Standalone server files (for Docker)
+- `.next/static/` - Static assets
+
+**Step 2: Deploy to Server**
+```bash
+# Copy files to server
+scp -r .next package.json server.js user@server:/app/
+
+# SSH into server
+ssh user@server
+
+# Start application
+cd /app
+NODE_ENV=production node server.js
+```
+
+### CI/CD Pipeline Examples
+
+#### GitHub Actions Workflow
+
+**`.github/workflows/deploy.yml`:**
+
+```yaml
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linter
+      run: npm run lint
+    
+    - name: Build application
+      run: npm run build
+      env:
+        NEXT_PUBLIC_API_BASE: ${{ secrets.API_BASE_URL }}
+    
+    - name: Run tests (if any)
+      run: npm test --if-present
+
+  docker:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=sha
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /app/nopadol-helpdesk
+          docker-compose pull
+          docker-compose up -d
+          docker image prune -f
+```
+
+#### GitLab CI/CD
+
+**`.gitlab-ci.yml`:**
+
+```yaml
+stages:
+  - install
+  - lint
+  - build
+  - docker
+  - deploy
+
+variables:
+  DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
+  NODE_VERSION: "18"
+
+cache:
+  paths:
+    - node_modules/
+    - .next/cache/
+
+install:
+  stage: install
+  image: node:${NODE_VERSION}-alpine
+  script:
+    - npm ci
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+
+lint:
+  stage: lint
+  image: node:${NODE_VERSION}-alpine
+  dependencies:
+    - install
+  script:
+    - npm run lint
+
+build:
+  stage: build
+  image: node:${NODE_VERSION}-alpine
+  dependencies:
+    - install
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+    expire_in: 1 hour
+
+docker-build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  only:
+    - main
+    - tags
+  script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHA -t $DOCKER_IMAGE:latest .
+    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHA
+    - docker push $DOCKER_IMAGE:latest
+
+deploy-production:
+  stage: deploy
+  image: alpine:latest
+  only:
+    - main
+  before_script:
+    - apk add --no-cache openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  script:
+    - |
+      ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST << EOF
+        cd /app/nopadol-helpdesk
+        docker pull $DOCKER_IMAGE:latest
+        docker-compose up -d
+        docker image prune -f
+      EOF
+```
+
+### Deployment Checklist
+
+**Pre-deployment:**
+- [ ] Environment variables configured
+- [ ] Backend API accessible
+- [ ] Database migrations completed (backend)
+- [ ] SSL certificates ready (for production)
+- [ ] Backup current version
+
+**Deployment:**
+- [ ] Build application
+- [ ] Run tests
+- [ ] Create Docker image
+- [ ] Push to registry
+- [ ] Deploy to server
+- [ ] Health check
+
+**Post-deployment:**
+- [ ] Verify application is running
+- [ ] Check logs for errors
+- [ ] Test core functionality
+- [ ] Monitor performance
+- [ ] Update documentation
+
+---
+
+## 📊 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server with Turbopack |
+| `npm run build` | Build for production |
+| `npm start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run release` | Bump version and update CHANGELOG |
 
 ---
 
@@ -248,118 +712,6 @@ For detailed structure, see [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
 3. **Type Safety**: Full TypeScript coverage
 4. **Separation of Concerns**: API, UI, and business logic separated
 5. **File-based Routing**: Next.js App Router conventions
-
----
-
-## 🔌 API Integration
-
-### API Base URL
-
-All API calls use the environment variable `NEXT_PUBLIC_API_BASE`:
-
-```typescript
-const response = await fetch(
-  `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/endpoint`
-);
-```
-
-### API Endpoints
-
-| Endpoint | Purpose |
-|----------|---------|
-| `/api/v1/problem/*` | Task/problem management |
-| `/api/v1/department/*` | Department CRUD |
-| `/api/v1/branch/*` | Branch CRUD |
-| `/api/v1/program/*` | Program CRUD |
-| `/api/v1/ipphone/*` | IP Phone CRUD |
-| `/api/v1/respons/*` | Supervisor assignments |
-| `/api/v1/resolution/*` | Solution management |
-| `/api/v1/progress/*` | Task progress/chat |
-| `/api/v1/dashboard/data` | Dashboard analytics |
-| `/api/authEntry/login` | User authentication |
-| `/api/authEntry/users` | User management |
-
-### API Hooks
-
-The `hooks/` directory contains custom hooks for each API:
-
-```typescript
-// Example: Using the tasks API
-import { useTasksNewPaginated, addTaskNew } from '@/hooks/useTasks';
-
-function MyComponent() {
-  const { tasks, loading, error, refreshTasks } = useTasksNewPaginated({
-    page: 1,
-    limit: 10
-  });
-  
-  // Use tasks data...
-}
-
-// All available API hooks
-import { useAccount } from '@/hooks/useAccount';
-import { useBranches } from '@/hooks/useBranches';
-import { useDepartments } from '@/hooks/useDepartments';
-import { usePhones } from '@/hooks/usePhones';
-import { usePrograms } from '@/hooks/usePrograms';
-import { useSupervisor } from '@/hooks/useAssign';
-// ... and more
-```
-
-### Data Fetching Pattern
-
-1. **Custom Hook**: Encapsulates fetch logic
-2. **Loading State**: Shows loading indicator
-3. **Error Handling**: Displays error messages
-4. **Type Safety**: Strongly typed responses
-
----
-
-## 🔐 Authentication & Authorization
-
-### Authentication Flow
-
-1. User enters credentials on login page (`/`)
-2. `useAuth` hook sends credentials to backend API
-3. Backend validates and returns user data
-4. User data stored in localStorage and cookies
-5. Middleware validates authentication on protected routes
-
-### Role-Based Access Control
-
-Two user roles are supported:
-
-- **Admin**: Full access to all features
-- **User**: Limited access (cannot manage master data)
-
-### Protected Routes
-
-The `middleware.ts` file protects routes:
-
-```typescript
-// Admin-only routes
-const adminOnlyPaths = ["/account", "/dashboard"]
-
-// All /dashboard/* routes require authentication
-export const config = {
-  matcher: ["/account", "/dashboard/:path*"],
-}
-```
-
-### Implementation
-
-```typescript
-// hooks/use-auth.ts
-export function useAuth() {
-  const { user, login, logout } = useAuth();
-  
-  // Login
-  await login(username, password);
-  
-  // Logout
-  logout();
-}
-```
 
 ---
 
@@ -672,7 +1024,6 @@ chore: maintenance tasks
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Radix UI Documentation](https://www.radix-ui.com/)
 - [shadcn/ui Documentation](https://ui.shadcn.com/)
 
 ---
