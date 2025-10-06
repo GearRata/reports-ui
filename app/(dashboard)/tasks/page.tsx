@@ -230,7 +230,7 @@ function TasksPageContent() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center">Loading tasks…</div>}>
+    <Suspense fallback={<div></div>}>
       <TasksPageContent />
     </Suspense>
   );

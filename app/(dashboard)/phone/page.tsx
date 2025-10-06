@@ -173,7 +173,7 @@ function IPPhonesPageContent() {
 export default function Page() {
   // ห่อด้วย Suspense เพื่อรองรับ useSearchParams แบบไม่มี warning
   return (
-    <Suspense fallback={<div className="flex items-center justify-center">Loading IP phones…</div>}>
+    <Suspense fallback={<div></div>}>
       <IPPhonesPageContent />
     </Suspense>
   );
