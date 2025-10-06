@@ -229,9 +229,8 @@ function TasksPageContent() {
 }
 
 export default function Page() {
-  // ห่อด้วย Suspense เพื่อรองรับ useSearchParams แบบไม่มี warning
   return (
-    <Suspense fallback={<div className="p-4">Loading tasks…</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center">Loading tasks…</div>}>
       <TasksPageContent />
     </Suspense>
   );
