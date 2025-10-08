@@ -112,15 +112,3 @@ export async function deleteUser(id: number) {
   }
 }
 
-// Logout
-export async function logout() {
-  try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/authEntry/logout`, {
-      method: "POST",
-    });
-    return response.ok;
-  } catch (error) {
-    console.error("Error logging out:", error);
-    throw error;
-  }
-}

@@ -40,7 +40,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash, X, MessageCircle  } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, X, MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAssign } from "@/hooks/useAssign";
 
@@ -443,680 +443,670 @@ function ShowTaskPage() {
   }
 
   return (
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-3 md:gap-6 md:py-6 px-6">
-              <div className="container mx-auto max-w-2xl">
-                {/*================ แสดงข้อมูลและแก้ไขข้อมูล ================*/}
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-3 md:gap-6 md:py-6 px-6">
+          <div className="container mx-auto max-w-2xl">
+            {/*================ แสดงข้อมูลและแก้ไขข้อมูล ================*/}
 
-                {/* ทริกเกอร์ระหว่างแสดงข้อมูลกับเพิ่มวิธีแก้ไขปัญหา */}
-                <Tabs defaultValue="show">
-                  <TabsList>
-                    <TabsTrigger value="show">ปัญหา</TabsTrigger>
-                    <TabsTrigger
-                      value="solution"
-                      disabled={task.status !== 1 && task.status !== 2}
-                      className={
-                        task.status !== 1 && task.status !== 2
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }
-                    >
-                      วิธีแก้ไขปัญหา
-                    </TabsTrigger>
-                  </TabsList>
+            {/* ทริกเกอร์ระหว่างแสดงข้อมูลกับเพิ่มวิธีแก้ไขปัญหา */}
+            <Tabs defaultValue="show">
+              <TabsList>
+                <TabsTrigger value="show">ปัญหา</TabsTrigger>
+                <TabsTrigger
+                  value="solution"
+                  disabled={task.status !== 1 && task.status !== 2}
+                  className={
+                    task.status !== 1 && task.status !== 2
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
+                >
+                  วิธีแก้ไขปัญหา
+                </TabsTrigger>
+              </TabsList>
 
-                  {/* แสดงข้อมูล */}
-                  <TabsContent value="show">
-                    <Card>
-                      <CardHeader>
-                        <div className="flex items-center justify-between ">
-                          {/* แสดงรายละเอียดของ  Ticket */}
-                          <div>
-                            <CardTitle >
-                              Task #{task.ticket_no || task.id}
-                            </CardTitle>
-                            <CardDescription>
-                              แสดงรายละเอียดงานด้านล่างนี้
-                            </CardDescription>
-                          </div>
+              {/* แสดงข้อมูล */}
+              <TabsContent value="show">
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between ">
+                      {/* แสดงรายละเอียดของ  Ticket */}
+                      <div>
+                        <CardTitle>Task #{task.ticket_no || task.id}</CardTitle>
+                        <CardDescription>
+                          แสดงรายละเอียดงานด้านล่างนี้
+                        </CardDescription>
+                      </div>
 
-                          <div className="grid place-items-center md:flex gap-2 max-sm:grid max-md:gap-3 ">
-                            {/* Icon สำหรับแชท */}
-                            <div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  router.push(`/tasks/chat/admin/${task.id}`)
-                                }
-                                className="flex items-center gap-2"
-                              >
-                                <MessageCircle  className="h-4 w-4" />
-                                แชท
-                              </Button>
-                            </div>
-                            {/* Icon สำหรับไว้แก้ไขข้อมูล */}
-                            <div>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  router.push(`/tasks/edit/${task.id}`)
-                                }
-                                className="flex items-center gap-2"
-                              >
-                                <Pencil className="h-4 w-4" />
-                                แก้ไข
-                              </Button>
-                            </div>
-                            <div className="max-md:flex ">
-                              <span
-                                className={`px-2 py-1 rounded-md text-sm font-medium ${
-                                  task.status === 0
-                                    ? "bg-linear-to-r from-amber-500 to-amber-600 text-white text-center"
-                                    : task.status === 1
-                                    ? "bg-linear-to-r from-cyan-500 to-sky-600 text-white text-center"
-                                    : "bg-linear-to-r from-green-500 to-green-600 text-white text-center"
-                                }`}
-                              >
-                                {task.status === 0
-                                  ? "Pending"
-                                  : task.status === 1
-                                  ? "Progress"
-                                  : "Done"}
-                              </span>
-                            </div>
-                          </div>
+                      <div className="grid place-items-center md:flex gap-2 max-sm:grid max-md:gap-3 ">
+                        {/* Icon สำหรับแชท */}
+                        <div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              router.push(`/tasks/chat/admin/${task.id}`)
+                            }
+                            className="flex items-center gap-2"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                            แชท
+                          </Button>
                         </div>
-                      </CardHeader>
+                        {/* Icon สำหรับไว้แก้ไขข้อมูล */}
+                        <div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              router.push(`/tasks/edit/${task.id}`)
+                            }
+                            className="flex items-center gap-2"
+                          >
+                            <Pencil className="h-4 w-4" />
+                            แก้ไข
+                          </Button>
+                        </div>
+                        <div className="max-md:flex ">
+                          <span
+                            className={`px-2 py-1 rounded-md text-sm font-medium ${
+                              task.status === 0
+                                ? "bg-linear-to-r from-amber-500 to-amber-600 text-white text-center"
+                                : task.status === 1
+                                ? "bg-linear-to-r from-cyan-500 to-sky-600 text-white text-center"
+                                : "bg-linear-to-r from-green-500 to-green-600 text-white text-center"
+                            }`}
+                          >
+                            {task.status === 0
+                              ? "Pending"
+                              : task.status === 1
+                              ? "Progress"
+                              : "Done"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardHeader>
 
-                      <CardContent>
-                        <form className="space-y-6">
-                          {/* ชื่อผู้แจ้ง */}
+                  <CardContent>
+                    <form className="space-y-6">
+                      {/* ชื่อผู้แจ้ง */}
+                      <div className="space-y-2">
+                        <Label className="font-bold text-[16px]">
+                          ชื่อผู้แจ้ง
+                        </Label>
+                        <p className="text-muted-foreground">
+                          {task.reported_by || "ไม่ได้ระบุชื่อผู้แจ้ง"}
+                        </p>
+                      </div>
+                      {/* IP Phone Selection */}
+                      <div className="space-y-2">
+                        <Label className="font-bold text-[16px]">
+                          โทรศัพท์ไอพี (IP Phone)
+                        </Label>
+                        <p className="text-muted-foreground">
+                          {task.phone_id
+                            ? `${task.number} - ${task.phone_name}`
+                            : "ไม่ได้ระบุ ID"}
+                        </p>
+                      </div>
+
+                      {/* Type Selection */}
+                      <div className="space-y-2">
+                        <Label className="font-bold text-[16px]">
+                          ชนิดของปัญหา (Type)
+                        </Label>
+                        <p className="text-muted-foreground">
+                          {task.issue_type
+                            ? `${task.system_type}`
+                            : "ไม่ได้ระบุ Type"}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {/* Problem Selection */}
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            ปัญหา (Problem)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.system_id === 0
+                              ? "อื่นๆ"
+                              : `${task.system_name}`}
+                          </p>
+                        </div>
+
+                        {/* Issue Selection */}
+                        {task.system_id === 0 && (
                           <div className="space-y-2">
                             <Label className="font-bold text-[16px]">
-                              ชื่อผู้แจ้ง
+                              ปัญหาเพิ่มเติม (Problem)
                             </Label>
                             <p className="text-muted-foreground">
-                              {task.reported_by || "ไม่ได้ระบุชื่อผู้แจ้ง"}
+                              {task.system_id === 0
+                                ? `${task.issue_else}`
+                                : "ไม่ได้ระบุ"}
                             </p>
                           </div>
-                          {/* IP Phone Selection */}
-                          <div className="space-y-2">
-                            <Label className="font-bold text-[16px]">
-                              โทรศัพท์ไอพี (IP Phone)
-                            </Label>
-                            <p className="text-muted-foreground">
-                              {task.phone_id
-                                ? `${task.number} - ${task.phone_name}`
-                                : "ไม่ได้ระบุ ID"}
-                            </p>
-                          </div>
+                        )}
+                      </div>
 
-                          {/* Type Selection */}
-                          <div className="space-y-2">
-                            <Label className="font-bold text-[16px]">
-                              ชนิดของปัญหา (Type)
-                            </Label>
-                            <p className="text-muted-foreground">
-                              {task.issue_type
-                                ? `${task.system_type}`
-                                : "ไม่ได้ระบุ Type"}
-                            </p>
-                          </div>
+                      {/* Task Description */}
+                      <div className="space-y-2">
+                        <Label className="font-bold text-[16px]">
+                          รายละเอียดของปัญหา
+                        </Label>
+                        <Textarea
+                          defaultValue={task.text}
+                          placeholder="Describe the task in detail..."
+                          rows={4}
+                          readOnly
+                        />
+                      </div>
 
-                          <div className="grid grid-cols-2 gap-4">
-                            {/* Problem Selection */}
-                            <div className="space-y-2">
-                              <Label className="font-bold text-[16px]">
-                                ปัญหา (Problem)
-                              </Label>
-                              <p className="text-muted-foreground">
-                                {task.system_id === 0
-                                  ? "อื่นๆ"
-                                  : `${task.system_name}`}
-                              </p>
-                            </div>
-
-                            {/* Issue Selection */}
-                            {task.system_id === 0 && (
-                              <div className="space-y-2">
-                                <Label className="font-bold text-[16px]">
-                                  ปัญหาเพิ่มเติม (Problem)
-                                </Label>
-                                <p className="text-muted-foreground">
-                                  {task.system_id === 0
-                                    ? `${task.issue_else}`
-                                    : "ไม่ได้ระบุ"}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Task Description */}
-                          <div className="space-y-2">
-                            <Label className="font-bold text-[16px]">
-                              รายละเอียดของปัญหา
-                            </Label>
-                            <Textarea
-                              defaultValue={task.text}
-                              placeholder="Describe the task in detail..."
-                              rows={4}
-                              readOnly
-                            />
-                          </div>
-
-                          {/* Assign To Selection */}
-                          <div className="space-y-2">
-                            <Label className="font-bold text-[16px]">
-                              มอบหมายงานให้กับ
-                            </Label>
-                            {task.status === 0 ? (
-                              <Select
-                                value={
-                                  assignTo
-                                    .find((a) => a.name === task.assign_to)
-                                    ?.id.toString() || "unassigned"
-                                }
-                                onValueChange={(value) => {
-                                  if (value !== "unassigned") {
-                                    const selectedAssign = assignTo.find(
-                                      (a) => a.id.toString() === value
-                                    );
-                                    const assignName = selectedAssign
-                                      ? selectedAssign.name
-                                      : "";
-                                    const assignId = selectedAssign
-                                      ? selectedAssign.id
-                                      : 0;
-                                    handleAssignChange(assignId, assignName);
-                                  }
-                                }}
-                              >
-                                <SelectTrigger className="">
-                                  <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="unassigned" disabled>
-                                    <span className="text-muted-foreground">
-                                      เลือกผู้รับผิดชอบ
-                                    </span>
+                      {/* Assign To Selection */}
+                      <div className="space-y-2">
+                        <Label className="font-bold text-[16px]">
+                          มอบหมายงานให้กับ
+                        </Label>
+                        {task.status === 0 ? (
+                          <Select
+                            value={
+                              assignTo
+                                .find((a) => a.name === task.assign_to)
+                                ?.id.toString() || "unassigned"
+                            }
+                            onValueChange={(value) => {
+                              if (value !== "unassigned") {
+                                const selectedAssign = assignTo.find(
+                                  (a) => a.id.toString() === value
+                                );
+                                const assignName = selectedAssign
+                                  ? selectedAssign.name
+                                  : "";
+                                const assignId = selectedAssign
+                                  ? selectedAssign.id
+                                  : 0;
+                                handleAssignChange(assignId, assignName);
+                              }
+                            }}
+                          >
+                            <SelectTrigger className="">
+                              <SelectValue placeholder="เลือกผู้รับผิดชอบ" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unassigned" disabled>
+                                <span className="text-muted-foreground">
+                                  เลือกผู้รับผิดชอบ
+                                </span>
+                              </SelectItem>
+                              {assignTo && assignTo.length > 0 ? (
+                                assignTo.map((assign) => (
+                                  <SelectItem
+                                    key={assign.id}
+                                    value={assign.id.toString()}
+                                  >
+                                    {assign.name}
                                   </SelectItem>
-                                  {assignTo && assignTo.length > 0 ? (
-                                    assignTo.map((assign) => (
+                                ))
+                              ) : (
+                                <SelectItem value="no-data" disabled>
+                                  ไม่มีข้อมูลผู้รับผิดชอบ
+                                </SelectItem>
+                              )}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <p className="text-muted-foreground">
+                            {task.assign_to || "ไม่ได้ระบุ"}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* แสดงรูปภาพที่มีอยู่ */}
+                      <TaskImageViewer taskImages={taskImages} />
+                    </form>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              {/*======================================================*/}
+
+              {/*================ วิธีแก้ไขปัญหา ================*/}
+              <TabsContent value="solution">
+                {task.status === 2 && solution ? (
+                  // Task is completed and solution exists - Show solution (read-only)
+                  <Card>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle>
+                            Task #{task.ticket_no || task.id}
+                          </CardTitle>
+                          <CardDescription>
+                            วิธีแก้ไขปัญหา (แก้ไข)
+                          </CardDescription>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={handleEditSolution}
+                              className="flex items-center cursor-pointer"
+                            >
+                              <Pencil className="mr-2 h-4 w-4" />
+                              แก้ไข
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={handleDeleteSolution}
+                              className="text-red-600 flex items-center cursor-pointer"
+                            >
+                              <Trash className="mr-2 h-4 w-4" />
+                              ลบ
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-6">
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            วิธีแก้ไขปัญหา
+                          </Label>
+
+                          {isEditingSolution ? (
+                            <div className="space-y-4">
+                              <Textarea
+                                value={editSolutionText}
+                                onChange={(e) =>
+                                  setEditSolutionText(e.target.value)
+                                }
+                                placeholder="อธิบายการแก้ปัญหา..."
+                                rows={4}
+                                className="border-primary"
+                              />
+
+                              {/* Edit Assign Data */}
+                              <div className="space-y-2">
+                                <Label htmlFor="assign_to">
+                                  มอบหมายงานให้กับ
+                                </Label>
+                                <Select
+                                  value={editAssign}
+                                  onValueChange={(value) =>
+                                    setEditAssign(value)
+                                  }
+                                >
+                                  <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select AssignTo" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {assignTo.map((assign) => (
                                       <SelectItem
                                         key={assign.id}
                                         value={assign.id.toString()}
                                       >
-                                        {assign.name}
+                                        {assign.name || "ไม่ได้ระบุ"}
                                       </SelectItem>
-                                    ))
-                                  ) : (
-                                    <SelectItem value="no-data" disabled>
-                                      ไม่มีข้อมูลผู้รับผิดชอบ
-                                    </SelectItem>
-                                  )}
-                                </SelectContent>
-                              </Select>
-                            ) : (
-                              <p className="text-muted-foreground">
-                                {task.assign_to || "ไม่ได้ระบุ"}
-                              </p>
-                            )}
-                          </div>
-
-                          {/* แสดงรูปภาพที่มีอยู่ */}
-                          <TaskImageViewer taskImages={taskImages} />
-                        </form>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  {/*======================================================*/}
-
-                  {/*================ วิธีแก้ไขปัญหา ================*/}
-                  <TabsContent value="solution">
-                    {task.status === 2 && solution ? (
-                      // Task is completed and solution exists - Show solution (read-only)
-                      <Card>
-                        <CardHeader>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <CardTitle>
-                                Task #{task.ticket_no || task.id}
-                              </CardTitle>
-                              <CardDescription>
-                                วิธีแก้ไขปัญหา (แก้ไข)
-                              </CardDescription>
-                            </div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                  <span className="sr-only">Open menu</span>
-                                  <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem
-                                  onClick={handleEditSolution}
-                                  className="flex items-center cursor-pointer"
-                                >
-                                  <Pencil className="mr-2 h-4 w-4" />
-                                  แก้ไข
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={handleDeleteSolution}
-                                  className="text-red-600 flex items-center cursor-pointer"
-                                >
-                                  <Trash className="mr-2 h-4 w-4" />
-                                  ลบ
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-6">
-                            <div className="space-y-2">
-                              <Label className="font-bold text-[16px]">
-                                วิธีแก้ไขปัญหา
-                              </Label>
-
-                              {isEditingSolution ? (
-                                <div className="space-y-4">
-                                  <Textarea
-                                    value={editSolutionText}
-                                    onChange={(e) =>
-                                      setEditSolutionText(e.target.value)
-                                    }
-                                    placeholder="อธิบายการแก้ปัญหา..."
-                                    rows={4}
-                                    className="border-primary"
-                                  />
-
-                                  {/* Edit Assign Data */}
-                                  <div className="space-y-2">
-                                    <Label htmlFor="assign_to">
-                                      มอบหมายงานให้กับ
-                                    </Label>
-                                    <Select
-                                      value={editAssign}
-                                      onValueChange={(value) =>
-                                        setEditAssign(value)
-                                      }
-                                    >
-                                      <SelectTrigger className="w-full">
-                                        <SelectValue placeholder="Select AssignTo" />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        {assignTo.map((assign) => (
-                                          <SelectItem
-                                            key={assign.id}
-                                            value={assign.id.toString()}
-                                          >
-                                            {assign.name || "ไม่ได้ระบุ"}
-                                          </SelectItem>
-                                        ))}
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  {/* แสดงรูปภาพเดิม */}
-                                  {existingSolutionImages.length > 0 && (
-                                    <div className="space-y-2">
-                                      <Label className="font-bold text-[16px]">
-                                        รูปภาพเดิม (
-                                        {existingSolutionImages.length} รูป)
-                                      </Label>
-                                      <p className="text-sm text-muted-foreground">
-                                        รูปภาพเหล่านี้จะถูกเก็บไว้และรวมกับรูปภาพใหม่
-                                      </p>
-                                      <div className="grid grid-cols-3 gap-2">
-                                        {existingSolutionImages.map(
-                                          (imageUrl, index) => (
-                                            <div
-                                              key={index}
-                                              className="relative aspect-square group"
-                                            >
-                                              <img
-                                                src={imageUrl}
-                                                alt={`Existing image ${
-                                                  index + 1
-                                                }`}
-                                                className="w-full h-full object-cover rounded-md border border-blue-300"
-                                              />
-                                              <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">
-                                                เดิม
-                                              </div>
-                                              <button
-                                                type="button"
-                                                onClick={() =>
-                                                  handleRemoveExistingImage(
-                                                    index
-                                                  )
-                                                }
-                                                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs p-1 rounded-full hover:bg-red-600"
-                                                title="ลบรูปภาพนี้"
-                                              >
-                                                <X className="h-4 w-4" />
-                                              </button>
-                                            </div>
-                                          )
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                      <Label>เพิ่มรูปภาพใหม่</Label>
-                                      
-                                      {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
-                                      <div className="flex gap-2">
-                                        <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
-                                          <CameraButton
-                                            onClick={handleEditCamera}
-                                            disabled={
-                                              editProcessing ||
-                                              editSelectedImages.length >= 9
-                                            }
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              {/* แสดงรูปภาพเดิม */}
+                              {existingSolutionImages.length > 0 && (
+                                <div className="space-y-2">
+                                  <Label className="font-bold text-[16px]">
+                                    รูปภาพเดิม ({existingSolutionImages.length}{" "}
+                                    รูป)
+                                  </Label>
+                                  <p className="text-sm text-muted-foreground">
+                                    รูปภาพเหล่านี้จะถูกเก็บไว้และรวมกับรูปภาพใหม่
+                                  </p>
+                                  <div className="grid grid-cols-3 gap-2">
+                                    {existingSolutionImages.map(
+                                      (imageUrl, index) => (
+                                        <div
+                                          key={index}
+                                          className="relative aspect-square group"
+                                        >
+                                          <img
+                                            src={imageUrl}
+                                            alt={`Existing image ${index + 1}`}
+                                            className="w-full h-full object-cover rounded-md border border-blue-300"
                                           />
-                                        </div>
-                                        <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
-                                          <GalleryButton
-                                            onClick={handleEditGallery}
-                                            disabled={
-                                              editProcessing ||
-                                              editSelectedImages.length >= 9
-                                            }
-                                          />
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {editProcessing && (
-                                      <div className="flex items-center gap-2 text-blue-600">
-                                        <span className="text-sm">บีบอัด...</span>
-                                      </div>
-                                    )}
-
-                                    {/* Hidden File Inputs */}
-                                    <input
-                                      ref={editCameraRef}
-                                      type="file"
-                                      accept="image/*"
-                                      capture="environment"
-                                      multiple
-                                      onChange={onEditFileChange}
-                                      className="hidden"
-                                    />
-                                    <input
-                                      ref={editGalleryRef}
-                                      type="file"
-                                      accept="image/*"
-                                      multiple
-                                      onChange={onEditFileChange}
-                                      className="hidden"
-                                    />
-
-                                    {/* Image Grid Display */}
-                                    {editSelectedImages.length > 0 && (
-                                      <div className="grid grid-cols-3 gap-3">
-                                        {editSelectedImages.map((src, i) => (
-                                          <div
-                                            key={i}
-                                            className="relative aspect-square group"
-                                          >
-                                            <img
-                                              src={src}
-                                              alt={`preview-${i}`}
-                                              className="w-full h-full object-cover rounded-lg border-2 border-green-300 shadow-sm"
-                                            />
-                                            <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 rounded">
-                                              ใหม่
-                                            </div>
-                                            <button
-                                              type="button"
-                                              onClick={() => removeEditImage(i)}
-                                              className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
-                                            >
-                                              <X className="h-3 w-3" />
-                                            </button>
+                                          <div className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-1 rounded">
+                                            เดิม
                                           </div>
-                                        ))}
-                                      </div>
+                                          <button
+                                            type="button"
+                                            onClick={() =>
+                                              handleRemoveExistingImage(index)
+                                            }
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white text-xs p-1 rounded-full hover:bg-red-600"
+                                            title="ลบรูปภาพนี้"
+                                          >
+                                            <X className="h-4 w-4" />
+                                          </button>
+                                        </div>
+                                      )
                                     )}
-                                  </div>
-
-                                  <div className="flex justify-end gap-2">
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      onClick={handleCancelEdit}
-                                      disabled={isSubmitting}
-                                    >
-                                      ยกเลิก
-                                    </Button>
-                                    <Button
-                                      type="button"
-                                      onClick={handleUpdateSolution}
-                                      disabled={
-                                        isSubmitting || !editSolutionText.trim()
-                                      }
-                                      className="text-white"
-                                    >
-                                      {isSubmitting
-                                        ? "กำลังบันทึก..."
-                                        : `บันทึก (${
-                                            existingSolutionImages.length +
-                                            editSolutionFiles.length
-                                          } รูป)`}
-                                    </Button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="space-y-4">
-                                  <Textarea
-                                    value={solution.solution || ""}
-                                    placeholder="ไม่มีรายละเอียดการแก้ปัญหา"
-                                    rows={4}
-                                    readOnly
-                                    className="bg-muted"
-                                  />
-                                  <div className="space-y-2">
-                                    <Label className="font-bold text-[16px]">
-                                      มอบหมายงานให้กับ
-                                    </Label>
-                                    <p className="text-muted-foreground">
-                                      {task.assign_to || "ไม่ได้ระบุ"}
-                                    </p>
                                   </div>
                                 </div>
                               )}
-                            </div>
-                            {/* Show solution images */}
-                            {!isEditingSolution && (
-                              <TaskImageViewer
-                                solutionImages={solutionImages}
-                              />
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : task.status === 2 && !solution ? (
-                      // Task is completed but no solution exists - Show message
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>
-                            Task #{task.ticket_no || task.id}
-                          </CardTitle>
-                          <CardDescription>วิธีแก้ไขปัญหา</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="text-center py-8">
-                            <p className="text-muted-foreground">
-                              งานนี้เสร็จแล้ว แต่ยังไม่มีการบันทึกวิธีแก้ไขปัญหา
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : (
-                      // Task is not completed - Show form to add solution
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>
-                            Task #{task.ticket_no || task.id}
-                          </CardTitle>
-                          <CardDescription>เพิ่มวิธีแก้ไขปัญหา</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                          <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                              <Label htmlFor="text">วิธีแก้ไขปัญหา</Label>
-                              <Textarea
-                                id="text"
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                                placeholder="อธิบายการแก้ปัญหา..."
-                                required
-                                rows={4}
-                              />
-                            </div>
 
-                            <div className="space-y-2">
-                              <Label htmlFor="assign_to">
-                                มอบหมายงานให้กับ
-                              </Label>
-                              <Select
-                                value={assignId}
-                                onValueChange={(value) => setAssignId(value)}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="ยังไม่ได้ระบุ" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {assignTo.map((assign) => (
-                                    <SelectItem
-                                      key={assign.id}
-                                      value={assign.id.toString()}
-                                    >
-                                      {assign.name || "ไม่ได้ระบุ"}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
+                              <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                  <Label>เพิ่มรูปภาพใหม่</Label>
 
-                            {/* Camera Section */}
-                            <div className="space-y-4">
-                              <div className="flex items-center justify-between">
-                                <Label>เพิ่มรูปภาพ</Label>
-                                
-                                {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
-                                <div className="flex gap-2">
-                                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-2 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
-                                    <GalleryButton
-                                      onClick={handleGallery}
-                                      disabled={
-                                        processing || selectedImages.length >= 9
-                                      }
-                                    />
-                                  </div>
-                                  <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-2 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
-                                    <CameraButton
-                                      onClick={handleCamera}
-                                      disabled={
-                                        processing || selectedImages.length >= 9
-                                      }
-                                    />
+                                  {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
+                                  <div className="flex gap-2">
+                                    <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                                      <CameraButton
+                                        onClick={handleEditCamera}
+                                        disabled={
+                                          editProcessing ||
+                                          editSelectedImages.length >= 9
+                                        }
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                                      <GalleryButton
+                                        onClick={handleEditGallery}
+                                        disabled={
+                                          editProcessing ||
+                                          editSelectedImages.length >= 9
+                                        }
+                                      />
+                                    </div>
                                   </div>
                                 </div>
+
+                                {editProcessing && (
+                                  <div className="flex items-center gap-2 text-blue-600">
+                                    <span className="text-sm">บีบอัด...</span>
+                                  </div>
+                                )}
+
+                                {/* Hidden File Inputs */}
+                                <input
+                                  ref={editCameraRef}
+                                  type="file"
+                                  accept="image/*"
+                                  capture="environment"
+                                  multiple
+                                  onChange={onEditFileChange}
+                                  className="hidden"
+                                />
+                                <input
+                                  ref={editGalleryRef}
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  onChange={onEditFileChange}
+                                  className="hidden"
+                                />
+
+                                {/* Image Grid Display */}
+                                {editSelectedImages.length > 0 && (
+                                  <div className="grid grid-cols-3 gap-3">
+                                    {editSelectedImages.map((src, i) => (
+                                      <div
+                                        key={i}
+                                        className="relative aspect-square group"
+                                      >
+                                        <img
+                                          src={src}
+                                          alt={`preview-${i}`}
+                                          className="w-full h-full object-cover rounded-lg border-2 border-green-300 shadow-sm"
+                                        />
+                                        <div className="absolute top-1 left-1 bg-green-500 text-white text-xs px-1 rounded">
+                                          ใหม่
+                                        </div>
+                                        <button
+                                          type="button"
+                                          onClick={() => removeEditImage(i)}
+                                          className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
 
-                              {processing && (
-                                <div className="flex items-center gap-2 text-blue-600">
-                                  <span className="text-sm">บีบอัด...</span>
-                                </div>
-                              )}
-
-                              {/* Hidden File Inputs */}
-                               <input
-                                ref={galleryRef}
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={onFileChange}
-                                className="hidden"
-                              />
-                              <input
-                                ref={cameraRef}
-                                type="file"
-                                accept="image/*"
-                                capture="environment"
-                                multiple
-                                onChange={onFileChange}
-                                className="hidden"
-                              />
-                             
-
-                              {/* Image Grid Display */}
-                              {selectedImages.length > 0 && (
-                                <div className="grid grid-cols-3 gap-3">
-                                  {selectedImages.map((src, i) => (
-                                    <div
-                                      key={i}
-                                      className="relative aspect-square group"
-                                    >
-                                      <img
-                                        src={src}
-                                        alt={`preview-${i}`}
-                                        className="w-full h-full object-cover rounded-lg border-2 border-slate-300 shadow-sm transition-all duration-300 group-hover:border-slate-400"
-                                      />
-                                      <button
-                                        type="button"
-                                        onClick={() => removeImage(i)}
-                                        className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
-                                      >
-                                        <X className="h-3 w-3" />
-                                      </button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-
-                              {/* File Size Summary */}
-                              {selectedImages.length > 0 && !processing && (
-                                <div className="text-center py-2">
-                                  <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
-                                    <div className="w-2 h-2 bg-green-400 rounded-full" style={{animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'}}></div>
-                                    <span className="text-sm font-medium">
-                                      เลือกแล้ว {selectedImages.length} จาก 9
-                                      รูป
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
+                              <div className="flex justify-end gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  onClick={handleCancelEdit}
+                                  disabled={isSubmitting}
+                                >
+                                  ยกเลิก
+                                </Button>
+                                <Button
+                                  type="button"
+                                  onClick={handleUpdateSolution}
+                                  disabled={
+                                    isSubmitting || !editSolutionText.trim()
+                                  }
+                                  className="text-white"
+                                >
+                                  {isSubmitting
+                                    ? "กำลังบันทึก..."
+                                    : `บันทึก (${
+                                        existingSolutionImages.length +
+                                        editSolutionFiles.length
+                                      } รูป)`}
+                                </Button>
+                              </div>
                             </div>
-                            <div className="flex justify-end gap-4">
-                              <Button
-                                type="submit"
-                                className="text-white"
-                                disabled={isSubmitting}
-                              >
-                                {isSubmitting
-                                  ? "กำลังบันทึก..."
-                                  : "บันทึกวิธีแก้ไข"}
-                              </Button>
+                          ) : (
+                            <div className="space-y-4">
+                              <Textarea
+                                value={solution.solution || ""}
+                                placeholder="ไม่มีรายละเอียดการแก้ปัญหา"
+                                rows={4}
+                                readOnly
+                                className="bg-muted"
+                              />
+                              <div className="space-y-2">
+                                <Label className="font-bold text-[16px]">
+                                  มอบหมายงานให้กับ
+                                </Label>
+                                <p className="text-muted-foreground">
+                                  {task.assign_to || "ไม่ได้ระบุ"}
+                                </p>
+                              </div>
                             </div>
-                          </form>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </div>
+                          )}
+                        </div>
+                        {/* Show solution images */}
+                        {!isEditingSolution && (
+                          <TaskImageViewer solutionImages={solutionImages} />
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : task.status === 2 && !solution ? (
+                  // Task is completed but no solution exists - Show message
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Task #{task.ticket_no || task.id}</CardTitle>
+                      <CardDescription>วิธีแก้ไขปัญหา</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground">
+                          งานนี้เสร็จแล้ว แต่ยังไม่มีการบันทึกวิธีแก้ไขปัญหา
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  // Task is not completed - Show form to add solution
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Task #{task.ticket_no || task.id}</CardTitle>
+                      <CardDescription>เพิ่มวิธีแก้ไขปัญหา</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="text">วิธีแก้ไขปัญหา</Label>
+                          <Textarea
+                            id="text"
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            placeholder="อธิบายการแก้ปัญหา..."
+                            required
+                            rows={4}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="assign_to">มอบหมายงานให้กับ</Label>
+                          <Select
+                            value={assignId}
+                            onValueChange={(value) => setAssignId(value)}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="ยังไม่ได้ระบุ" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {assignTo.map((assign) => (
+                                <SelectItem
+                                  key={assign.id}
+                                  value={assign.id.toString()}
+                                >
+                                  {assign.name || "ไม่ได้ระบุ"}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Camera Section */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <Label>เพิ่มรูปภาพ</Label>
+
+                            {/* Camera and Gallery Buttons - ย้ายมาชิดขวา */}
+                            <div className="flex gap-2">
+                              <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-2 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                                <GalleryButton
+                                  onClick={handleGallery}
+                                  disabled={
+                                    processing || selectedImages.length >= 9
+                                  }
+                                />
+                              </div>
+                              <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-2 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                                <CameraButton
+                                  onClick={handleCamera}
+                                  disabled={
+                                    processing || selectedImages.length >= 9
+                                  }
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {processing && (
+                            <div className="flex items-center gap-2 text-blue-600">
+                              <span className="text-sm">บีบอัด...</span>
+                            </div>
+                          )}
+
+                          {/* Hidden File Inputs */}
+                          <input
+                            ref={galleryRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={onFileChange}
+                            className="hidden"
+                          />
+                          <input
+                            ref={cameraRef}
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            multiple
+                            onChange={onFileChange}
+                            className="hidden"
+                          />
+
+                          {/* Image Grid Display */}
+                          {selectedImages.length > 0 && (
+                            <div className="grid grid-cols-3 gap-3">
+                              {selectedImages.map((src, i) => (
+                                <div
+                                  key={i}
+                                  className="relative aspect-square group"
+                                >
+                                  <img
+                                    src={src}
+                                    alt={`preview-${i}`}
+                                    className="w-full h-full object-cover rounded-lg border-2 border-slate-300 shadow-sm transition-all duration-300 group-hover:border-slate-400"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => removeImage(i)}
+                                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-110"
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* File Size Summary */}
+                          {selectedImages.length > 0 && !processing && (
+                            <div className="text-center py-2">
+                              <div className="inline-flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border">
+                                <div
+                                  className="w-2 h-2 bg-green-400 rounded-full"
+                                  style={{
+                                    animation:
+                                      "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+                                  }}
+                                ></div>
+                                <span className="text-sm font-medium">
+                                  เลือกแล้ว {selectedImages.length} จาก 9 รูป
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex justify-end gap-4">
+                          <Button
+                            type="submit"
+                            className="text-white"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting
+                              ? "กำลังบันทึก..."
+                              : "บันทึกวิธีแก้ไข"}
+                          </Button>
+                        </div>
+                      </form>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 

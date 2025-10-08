@@ -135,276 +135,277 @@ function EditTaskPage() {
 
   if (loading) {
     return (
-          <div className="flex flex-1 flex-col items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-              <p>Loading task...</p>
-            </div>
-          </div>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading task...</p>
+        </div>
+      </div>
     );
   }
 
-
   if (!task) {
     return (
-          <div className="flex flex-1 flex-col items-center justify-center">
-            <div className="text-center">
-              <p className="text-red-500 mb-4">Task not found</p>
-              <Button onClick={handleCancel}>Back to Tasks</Button>
-            </div>
-          </div>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Task not found</p>
+          <Button onClick={handleCancel}>Back to Tasks</Button>
+        </div>
+      </div>
     );
   }
 
   return (
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
-              <div className="container mx-auto max-w-2xl">
-                {/* Edit Task Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      Edit Task #{task.ticket_no || task.id}
-                    </CardTitle>
-                    <CardDescription>
-                      Update the task details below.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Report By Section */}
-                      <div className="space-y-2">
-                        <Label htmlFor="reportby">ชื่อผู้แจ้ง</Label>
-                        <input
-                          type="text"
-                          id="reportby"
-                          className="w-full border-1 rounded-md p-1.5"
-                          value={reportBy}
-                          onChange={(e) => setReportBy(e.target.value)}
-                          placeholder="ไม่ได้ระบุชื่อผู้รายงาน"
-                        />
-                      </div>
-                      {/* IP Phone Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="phone_id">IP Phone</Label>
-                        <Select
-                          value={phoneId}
-                          onValueChange={(value) => setPhoneId(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select IP phone" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>
-                            {ipPhones.map((phone) => (
-                              <SelectItem
-                                key={phone.id}
-                                value={phone.id.toString()}
-                              >
-                                {phone.number} - {phone.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Type Selection */}
-                      <div className="space-y-2">
-                        <Label htmlFor="type">Type</Label>
-                        <Select
-                          value={type}
-                          onValueChange={(value) => setType(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {types.map((type) => (
-                              <SelectItem
-                                key={type.id}
-                                value={type.id.toString()}
-                              >
-                                {type.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <input type="hidden" name="type" value={type} required />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="program_id">Problem</Label>
-                          <Select
-                            value={programID}
-                            onValueChange={(value) => setProgramID(value)}
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+          <div className="container mx-auto max-w-2xl">
+            {/* Edit Task Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Edit Task #{task.ticket_no || task.id}</CardTitle>
+                <CardDescription>
+                  Update the task details below.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Report By Section */}
+                  <div className="space-y-2">
+                    <Label htmlFor="reportby">ชื่อผู้แจ้ง</Label>
+                    <input
+                      type="text"
+                      id="reportby"
+                      className="w-full border-1 rounded-md p-1.5"
+                      value={reportBy}
+                      onChange={(e) => setReportBy(e.target.value)}
+                      placeholder="ไม่ได้ระบุชื่อผู้รายงาน"
+                    />
+                  </div>
+                  {/* IP Phone Selection */}
+                  <div className="space-y-2">
+                    <Label htmlFor="phone_id">IP Phone</Label>
+                    <Select
+                      value={phoneId}
+                      onValueChange={(value) => setPhoneId(value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select IP phone" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>
+                        {ipPhones.map((phone) => (
+                          <SelectItem
+                            key={phone.id}
+                            value={phone.id.toString()}
                           >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select Program" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">อื่นๆ</SelectItem>
-                              {filteredPrograms.map((program) => (
-                                <SelectItem
-                                  key={program.id}
-                                  value={program.id.toString()}
-                                >
-                                  {program.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <input type="hidden" name="program_id" value={programID} required />
-                        </div>
+                            {phone.number} - {phone.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                        <div>
-                          {programID === "0" && (
-                            <div className="space-y-2">
-                              <Label htmlFor="type">ปัญหาอื่นๆ</Label>
-                              <input
-                                type="text"
-                                id="type"
-                                className="w-full border-1 rounded-md p-1.5"
-                                value={issue}
-                                onChange={(e) => setIssue(e.target.value)}
-                                placeholder="ไม่ได้ระบุปัญหาที่พบ"
+                  {/* Type Selection */}
+                  <div className="space-y-2">
+                    <Label htmlFor="type">Type</Label>
+                    <Select
+                      value={type}
+                      onValueChange={(value) => setType(value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {types.map((type) => (
+                          <SelectItem key={type.id} value={type.id.toString()}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <input type="hidden" name="type" value={type} required />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="program_id">Problem</Label>
+                      <Select
+                        value={programID}
+                        onValueChange={(value) => setProgramID(value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select Program" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">อื่นๆ</SelectItem>
+                          {filteredPrograms.map((program) => (
+                            <SelectItem
+                              key={program.id}
+                              value={program.id.toString()}
+                            >
+                              {program.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <input
+                        type="hidden"
+                        name="program_id"
+                        value={programID}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      {programID === "0" && (
+                        <div className="space-y-2">
+                          <Label htmlFor="type">ปัญหาอื่นๆ</Label>
+                          <input
+                            type="text"
+                            id="type"
+                            className="w-full border-1 rounded-md p-1.5"
+                            value={issue}
+                            onChange={(e) => setIssue(e.target.value)}
+                            placeholder="ไม่ได้ระบุปัญหาที่พบ"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Task Description */}
+                  <div className="space-y-2">
+                    <Label htmlFor="text">Task Description</Label>
+                    <Textarea
+                      id="text"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      placeholder="Describe the task in detail..."
+                      required
+                      rows={4}
+                    />
+                  </div>
+
+                  {/* Assign To Selection */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Status Selection */}
+                    <div className="space-y-2">
+                      <Label htmlFor="status">Status</Label>
+                      <Select
+                        value={status}
+                        onValueChange={(value) => setStatus(value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">Pending</SelectItem>
+                          <SelectItem value="1">Progress</SelectItem>
+                          <SelectItem value="2">Done</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <input
+                        type="hidden"
+                        name="status"
+                        value={status}
+                        required
+                      />
+                    </div>
+
+                    {/* Assign To Selection */}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="assign_to">Assign To</Label>
+                      <Select
+                        value={assignId}
+                        onValueChange={(value) => setAssignId(value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select AssignTo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {task?.status === 0 ? (
+                            assignTo.map((assign) => (
+                              <SelectItem
+                                key={assign.id}
+                                value={assign.id.toString()}
+                              >
+                                {assign.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem
+                              disabled
+                              value={
+                                assignTo
+                                  .find((a) => a.name === task.assign_to)
+                                  ?.id.toString() || "completed"
+                              }
+                            >
+                              {task?.assign_to || "Completed"}
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <input
+                        type="hidden"
+                        name="assign_to"
+                        value={assignId}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* แสดงรูปภาพที่มีอยู่ */}
+                  {task.file_paths &&
+                    Object.keys(task.file_paths).length > 0 && (
+                      <div className="space-y-2">
+                        <Label>รูปภาพที่แนบมา</Label>
+                        <div className="grid grid-cols-3 gap-2 max-w-md">
+                          {Object.entries(task.file_paths).map(([key, url]) => (
+                            <div key={key} className="relative aspect-square">
+                              <img
+                                src={url}
+                                alt={`Task image ${key}`}
+                                className="w-full h-full object-cover rounded-md border"
+                                onError={(e) => {
+                                  console.error("Image failed to load:", url);
+                                  e.currentTarget.src =
+                                    "/placeholder-image.png";
+                                }}
                               />
                             </div>
-                          )}
+                          ))}
                         </div>
                       </div>
+                    )}
 
-                      {/* Task Description */}
-                      <div className="space-y-2">
-                        <Label htmlFor="text">Task Description</Label>
-                        <Textarea
-                          id="text"
-                          value={text}
-                          onChange={(e) => setText(e.target.value)}
-                          placeholder="Describe the task in detail..."
-                          required
-                          rows={4}
-                        />
-                      </div>
-
-                      {/* Assign To Selection */}
-                      <div className="grid grid-cols-2 gap-4">
-                        {/* Status Selection */}
-                        <div className="space-y-2">
-                          <Label htmlFor="status">Status</Label>
-                          <Select
-                            value={status}
-                            onValueChange={(value) => setStatus(value)}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">Pending</SelectItem>
-                              <SelectItem value="1">Progress</SelectItem>
-                              <SelectItem value="2">Done</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <input type="hidden" name="status" value={status} required />
-                        </div>
-
-                        {/* Assign To Selection */}
-
-                        <div className="space-y-2">
-                          <Label htmlFor="assign_to">Assign To</Label>
-                          <Select
-                            value={assignId}
-                            onValueChange={(value) => setAssignId(value)}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Select AssignTo" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {task?.status === 0 ? (
-                                assignTo.map((assign) => (
-                                  <SelectItem
-                                    key={assign.id}
-                                    value={assign.id.toString()}
-                                  >
-                                    {assign.name}
-                                  </SelectItem>
-                                ))
-                              ) : (
-                                <SelectItem
-                                  disabled
-                                  value={
-                                    assignTo
-                                      .find((a) => a.name === task.assign_to)
-                                      ?.id.toString() || "completed"
-                                  }
-                                >
-                                  {task?.assign_to || "Completed"}
-                                </SelectItem>
-                              )}
-                            </SelectContent>
-                          </Select>
-                          <input type="hidden" name="assign_to" value={assignId} required />
-                        </div>
-                      </div>
-
-                      {/* แสดงรูปภาพที่มีอยู่ */}
-                      {task.file_paths &&
-                        Object.keys(task.file_paths).length > 0 && (
-                          <div className="space-y-2">
-                            <Label>รูปภาพที่แนบมา</Label>
-                            <div className="grid grid-cols-3 gap-2 max-w-md">
-                              {Object.entries(task.file_paths).map(
-                                ([key, url]) => (
-                                  <div
-                                    key={key}
-                                    className="relative aspect-square"
-                                  >
-                                    <img
-                                      src={url}
-                                      alt={`Task image ${key}`}
-                                      className="w-full h-full object-cover rounded-md border"
-                                      onError={(e) => {
-                                        console.error(
-                                          "Image failed to load:",
-                                          url
-                                        );
-                                        e.currentTarget.src =
-                                          "/placeholder-image.png";
-                                      }}
-                                    />
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          </div>
-                        )}
-
-                      {/* Form Actions */}
-                      <div className="flex justify-end gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSubmitting}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={isSubmitting || !programID || !text}
-                          className="text-white"
-                        >
-                          {isSubmitting ? "Updating..." : "Update Task"}
-                        </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !programID || !text}
+                      className="text-white"
+                    >
+                      {isSubmitting ? "Updating..." : "Update Task"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 

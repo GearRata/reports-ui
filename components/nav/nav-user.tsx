@@ -5,8 +5,9 @@ import {
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react"
-import { useEffect, useState } from "react"
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from "@/hooks/useAuth";
 
 import {
   Avatar,
@@ -38,26 +39,20 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const [user, setUser] = useState(initialUser)
+  const router = useRouter()
+  const { user, logout: authLogout } = useAuth();
 
-  useEffect(() => {
-    // Try to get user from localStorage or cookie
-    let userData = null
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("user")
-      if (stored) {
-        try {
-          userData = JSON.parse(stored)
-        } catch {}
-      }
-    }
-    if (userData && userData.role === "user") {
-      setUser({
-        name: userData.username,
-        avatar: "https://github.com/evilrabbit.png" // หรือจะใช้ avatar จาก userData ก็ได้
-      })
-    }
-  }, [])
+  async function handleLogout() {
+    await authLogout();
+    router.push("/");
+  }
+
+  // ใช้ user data จาก useAuth หรือ fallback ไป initialUser
+  const displayUser = user ? {
+    name: user.username,
+    avatar: "https://github.com/evilrabbit.png"
+  } : initialUser;
+    
 
   return (
     <SidebarMenu>
@@ -69,11 +64,11 @@ export function NavUser({
               className=" p-3 inset-shadow-sm inset-shadow-blue-600"
             >
               <Avatar>
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{displayUser.name}</span>
                 <span className="text-muted-foreground truncate text-xs">
                 </span>
               </div>
@@ -89,11 +84,11 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
                   <AvatarFallback className="rounded-lg"></AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">{displayUser.name}</span>
                   <span className="text-muted-foreground truncate text-xs">
                   </span>
                 </div>
@@ -101,20 +96,23 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-            <Link href="/account" className="flex items-center gap-2">
-              <DropdownMenuItem className="w-full cursor-pointer">
-                  <IconUserCircle /> 
-                  <p>Account</p>
-              </DropdownMenuItem>
-              </Link>
+            {user?.role === "admin" && (
+              <Link href="/account" className="flex items-center gap-2">
+                <DropdownMenuItem className="w-full cursor-pointer">
+                    <IconUserCircle /> 
+                    <p>Account</p>
+                </DropdownMenuItem>
+                </Link>
+            )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <Link href="/" className="flex items-center gap-2"> 
-            <DropdownMenuItem className="w-full cursor-pointer">
+            <DropdownMenuItem 
+              className="w-full cursor-pointer"
+              onClick={handleLogout}
+            >
                 <IconLogout /> 
                 <p>Logout</p>
             </DropdownMenuItem>
-            </Link>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

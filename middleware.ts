@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-// เส้นทางที่ admin เท่านั้นเข้าได้
-const adminOnlyPaths = ["/account"]
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -12,26 +9,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // อ่าน user จาก cookie
-  const userCookie = request.cookies.get("user")
-  let user: { role?: string } | null = null
-  if (userCookie) {
-    try {
-      user = JSON.parse(decodeURIComponent(userCookie.value))
-    } catch {}
+  // ตรวจสอบ session_cookie จาก backend
+  const sessionCookie = request.cookies.get("session_cookie")
+  
+  console.log("Middleware - Path:", pathname)
+  console.log("Middleware - Session Cookie:", sessionCookie?.value || "Not found")
+  
+  // ถ้าไม่มี session ให้ redirect ไป login
+  if (!sessionCookie) {
+    console.log("Middleware - Redirecting to login")
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
-  // ถ้าไม่มี user ใน cookie ให้ผ่านไปก่อน (จะตรวจสอบใน client-side)
-  if (!user?.role) {
-    return NextResponse.next()
-  }
-
-  // ถ้าเป็น user ห้ามเข้า /account
-  if (user.role === "user" && adminOnlyPaths.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL("/reports", request.url))
-  }
-
-  // อื่นๆ เข้าได้ปกติ
+  // ให้ผ่านไป backend จะตรวจสอบ session ต่อ
   return NextResponse.next()
 }
 

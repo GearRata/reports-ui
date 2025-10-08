@@ -53,84 +53,80 @@ function CreateProgramPage() {
   };
 
   return (
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
-              <div className="container mx-auto max-w-2xl">
-
-                {/* Create Program Form */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Create New Problem</CardTitle>
-                    <CardDescription>
-                      Fill in the details to create a new problem.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Program Name */}
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Problem</Label>
-                        <Input
-                          id="name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Enter problem"
-                          required
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
+          <div className="container mx-auto max-w-2xl">
+            {/* Create Program Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Create New Problem</CardTitle>
+                <CardDescription>
+                  Fill in the details to create a new problem.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Program Name */}
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Problem</Label>
+                    <Input
+                      id="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter problem"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="branch">Type</Label>
+                    <Select
+                      value={typeId}
+                      onValueChange={(value) => setTypeId(value)}
+                      required
+                    >
+                      <SelectTrigger>
+                        <SelectValue
+                          placeholder={
+                            typesLoading ? "Loading..." : "Select Type"
+                          }
                         />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="branch">Type</Label>
-                        <Select
-                          value={typeId}
-                          onValueChange={(value) => setTypeId(value)}
-                          required
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                typesLoading ? "Loading..." : "Select Type"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {types.map((type) => (
-                              <SelectItem
-                                key={type.id}
-                                value={type.id.toString()}
-                              >
-                                {type.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {types.map((type) => (
+                          <SelectItem key={type.id} value={type.id.toString()}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                      {/* Form Actions */}
-                      <div className="flex justify-end gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSubmitting}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={isSubmitting || !name.trim()}
-                          className="text-white"
-                        >
-                          {isSubmitting ? "Creating..." : "Create a problem"}
-                        </Button>
-                      </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !name.trim()}
+                      className="text-white"
+                    >
+                      {isSubmitting ? "Creating..." : "Create a problem"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 

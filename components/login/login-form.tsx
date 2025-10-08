@@ -16,12 +16,7 @@ export function LoginForm({
   const router = useRouter();
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  function setUserCookie(user: { username: string; role: string }) {
-    // Set cookie for middleware (expires in 1 day)
-    document.cookie = `user=${encodeURIComponent(
-      JSON.stringify(user)
-    )}; path=/; max-age=86400`;
-  }
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,12 +24,17 @@ export function LoginForm({
     const user = await login(username, password);
     if (user) {
       setError("");
-      setUserCookie(user);
       // Clear password field for security
       if (passwordRef.current) {
         passwordRef.current.value = "";
       }
-      router.push("/dashboard");
+      // ตรวจสอบ cookies หลัง login
+      console.log("All cookies after login:", document.cookie);
+      
+      // รอสักครู่ให้ cookie ถูกตั้งก่อน redirect
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 500);
     } else {
       setError("Invalid username or password");
       // Clear password field on error for security

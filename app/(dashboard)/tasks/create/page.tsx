@@ -191,362 +191,358 @@ function CreateTaskPage() {
   };
 
   return (
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
-              <div className="container mx-auto max-w-2xl">
-                {/* Create Task Form */}
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between gap-2">
-                      <CardTitle>Create New Task</CardTitle>
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
+          <div className="container mx-auto max-w-2xl">
+            {/* Create Task Form */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle>Create New Task</CardTitle>
+                </div>
+                <CardDescription>
+                  Fill in the details to create a new task.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Report by Section */}
+                  <div className="space-y-2">
+                    <Label htmlFor="report_by">ชื่อผู้แจ้ง</Label>
+                    <input
+                      type="text"
+                      id="report_by"
+                      className="w-full border-1 rounded-md p-2"
+                      value={reportBy}
+                      onChange={(e) => setReportBy(e.target.value)}
+                    />
+                  </div>
+                  {/* IP Phone Selection */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone_id">IP Phone</Label>
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="w-full justify-between"
+                          >
+                            {phoneId ? (
+                              phoneId === "0" ? (
+                                "ไม่มีเบอร์"
+                              ) : (
+                                (() => {
+                                  const phone = ipPhones.find(
+                                    (phone) => phone.id.toString() === phoneId
+                                  );
+                                  return phone
+                                    ? `${phone.number} - ${phone.name}`
+                                    : "Select Phone ID...";
+                                })()
+                              )
+                            ) : (
+                              <span className="text-muted-foreground">
+                                Select Phone IP
+                              </span>
+                            )}
+                            <ChevronsUpDown className="opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search phone..."
+                              className="h-9"
+                            />
+                            <CommandList>
+                              <CommandEmpty>No phone found.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem
+                                  value="0"
+                                  onSelect={() => {
+                                    setPhoneId("0");
+                                    setOpen(false);
+                                  }}
+                                >
+                                  ไม่มีเบอร์
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      phoneId === "0"
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                                {ipPhones.map((phone) => (
+                                  <CommandItem
+                                    key={phone.id}
+                                    value={`${phone.number} ${phone.name}`}
+                                    onSelect={() => {
+                                      setPhoneId(phone.id.toString());
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    {phone.number} - {phone.name}
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        phoneId === phone.id.toString()
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </div>
-                    <CardDescription>
-                      Fill in the details to create a new task.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      {/* Report by Section */}
+
+                    {/* Phone Else Input - แสดงเมื่อเลือก "ไม่มีเบอร์" */}
+                    {phoneId === "0" && (
                       <div className="space-y-2">
-                        <Label htmlFor="report_by">ชื่อผู้แจ้ง</Label>
+                        <Label htmlFor="phone_else">เบอร์โทรศัพท์</Label>
                         <input
                           type="text"
-                          id="report_by"
-                          className="w-full border-1 rounded-md p-2"
-                          value={reportBy}
-                          onChange={(e) => setReportBy(e.target.value)}
+                          id="phone_else"
+                          className="w-full border-1 rounded-md p-1.5"
+                          value={phoneElse}
+                          onChange={(e) => setPhoneElse(e.target.value)}
+                          placeholder="กรอกเบอร์โทรศัพท์ (เช่น 081-234-5678)"
                         />
                       </div>
-                      {/* IP Phone Selection */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="phone_id">IP Phone</Label>
-                          <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                variant="outline"
-                                role="combobox"
-                                aria-expanded={open}
-                                className="w-full justify-between"
-                              >
-                                {phoneId ? (
-                                  phoneId === "0" ? (
-                                    "ไม่มีเบอร์"
-                                  ) : (
-                                    (() => {
-                                      const phone = ipPhones.find(
-                                        (phone) =>
-                                          phone.id.toString() === phoneId
-                                      );
-                                      return phone
-                                        ? `${phone.number} - ${phone.name}`
-                                        : "Select Phone ID...";
-                                    })()
-                                  )
-                                ) : (
-                                  <span className="text-muted-foreground">
-                                    Select Phone IP
-                                  </span>
-                                )}
-                                <ChevronsUpDown className="opacity-50" />
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-full p-0">
-                              <Command>
-                                <CommandInput
-                                  placeholder="Search phone..."
-                                  className="h-9"
-                                />
-                                <CommandList>
-                                  <CommandEmpty>No phone found.</CommandEmpty>
-                                  <CommandGroup>
+                    )}
+                    {phoneId === "0" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="department_id">Department</Label>
+                        <Popover
+                          open={departmentOpen}
+                          onOpenChange={setDepartmentOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={departmentOpen}
+                              className="w-full justify-between"
+                            >
+                              {departmentId ? (
+                                (() => {
+                                  const department = departments.find(
+                                    (department) =>
+                                      department.id.toString() === departmentId
+                                  );
+                                  return department
+                                    ? `${department.name}`
+                                    : "Select Department...";
+                                })()
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Select Department
+                                </span>
+                              )}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Search department..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>
+                                  No Department found.
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {departments.map((department) => (
                                     <CommandItem
-                                      value="0"
+                                      key={department.id}
+                                      value={`${department.number} ${department.name}`}
                                       onSelect={() => {
-                                        setPhoneId("0");
-                                        setOpen(false);
+                                        setDepartmentId(
+                                          department.id.toString()
+                                        );
+                                        setDepartmentOpen(false);
                                       }}
                                     >
-                                      ไม่มีเบอร์
+                                      {department.name}
                                       <Check
                                         className={cn(
                                           "ml-auto",
-                                          phoneId === "0"
+                                          departmentId ===
+                                            department.id.toString()
                                             ? "opacity-100"
                                             : "opacity-0"
                                         )}
                                       />
                                     </CommandItem>
-                                    {ipPhones.map((phone) => (
-                                      <CommandItem
-                                        key={phone.id}
-                                        value={`${phone.number} ${phone.name}`}
-                                        onSelect={() => {
-                                          setPhoneId(phone.id.toString());
-                                          setOpen(false);
-                                        }}
-                                      >
-                                        {phone.number} - {phone.name}
-                                        <Check
-                                          className={cn(
-                                            "ml-auto",
-                                            phoneId === phone.id.toString()
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          )}
-                                        />
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-
-                        {/* Phone Else Input - แสดงเมื่อเลือก "ไม่มีเบอร์" */}
-                        {phoneId === "0" && (
-                          <div className="space-y-2">
-                            <Label htmlFor="phone_else">เบอร์โทรศัพท์</Label>
-                            <input
-                              type="text"
-                              id="phone_else"
-                              className="w-full border-1 rounded-md p-1.5"
-                              value={phoneElse}
-                              onChange={(e) => setPhoneElse(e.target.value)}
-                              placeholder="กรอกเบอร์โทรศัพท์ (เช่น 081-234-5678)"
-                            />
-                          </div>
-                        )}
-                        {phoneId === "0" && (
-                          <div className="space-y-2">
-                            <Label htmlFor="department_id">Department</Label>
-                            <Popover open={departmentOpen} onOpenChange={setDepartmentOpen}>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  role="combobox"
-                                  aria-expanded={departmentOpen}
-                                  className="w-full justify-between"
-                                >
-                                  {departmentId ? (
-                                    (() => {
-                                      const department = departments.find(
-                                        (department) =>
-                                          department.id.toString() ===
-                                          departmentId
-                                      );
-                                      return department
-                                        ? `${department.name}`
-                                        : "Select Department...";
-                                    })()
-                                  ) : (
-                                    <span className="text-muted-foreground">
-                                      Select Department
-                                    </span>
-                                  )}
-                                  <ChevronsUpDown className="opacity-50" />
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-full p-0">
-                                <Command>
-                                  <CommandInput
-                                    placeholder="Search department..."
-                                    className="h-9"
-                                  />
-                                  <CommandList>
-                                    <CommandEmpty>No Department found.</CommandEmpty>
-                                    <CommandGroup>
-                                      {departments.map((department) => (
-                                        <CommandItem
-                                          key={department.id}
-                                          value={`${department.number} ${department.name}`}
-                                          onSelect={() => {
-                                            setDepartmentId(
-                                              department.id.toString()
-                                            );
-                                            setDepartmentOpen(false);
-                                          }}
-                                        >
-                                          {department.name}
-                                          <Check
-                                            className={cn(
-                                              "ml-auto",
-                                              departmentId ===
-                                                department.id.toString()
-                                                ? "opacity-100"
-                                                : "opacity-0"
-                                            )}
-                                          />
-                                        </CommandItem>
-                                      ))}
-                                    </CommandGroup>
-                                  </CommandList>
-                                </Command>
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                        )}
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       </div>
+                    )}
+                  </div>
 
-                      {/* Type Selection */}
+                  {/* Type Selection */}
+                  <div className="space-y-2">
+                    <Label htmlFor="type">Type</Label>
+                    <Select
+                      value={type}
+                      onValueChange={(value) => setType(value)}
+                      required
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select Type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {types.map((type) => (
+                          <SelectItem key={type.id} value={type.id.toString()}>
+                            {type.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>{" "}
+                    </Select>
+                  </div>
+                  {/* Problem Selection */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="program_id">Problem</Label>
+                      <Select
+                        value={programID}
+                        onValueChange={(value) => setProgramID(value)}
+                        required
+                        disabled={!type} // ยังไม่เลือก Type ก็ปิดไว้ก่อน
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue
+                            placeholder={
+                              type ? "Select Program" : "Select Type first"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">อื่นๆ</SelectItem>
+                          {filteredPrograms.map((program) => (
+                            <SelectItem
+                              key={program.id}
+                              value={program.id.toString()}
+                            >
+                              {program.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {programID === "0" && (
                       <div className="space-y-2">
-                        <Label htmlFor="type">Type</Label>
-                        <Select
-                          value={type}
-                          onValueChange={(value) => setType(value)}
-                          required
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {types.map((type) => (
-                              <SelectItem
-                                key={type.id}
-                                value={type.id.toString()}
-                              >
-                                {type.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>{" "}
-                        </Select>
-                      </div>
-                      {/* Problem Selection */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="program_id">Problem</Label>
-                          <Select
-                            value={programID}
-                            onValueChange={(value) => setProgramID(value)}
-                            required
-                            disabled={!type} // ยังไม่เลือก Type ก็ปิดไว้ก่อน
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue
-                                placeholder={
-                                  type ? "Select Program" : "Select Type first"
-                                }
-                              />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="0">อื่นๆ</SelectItem>
-                              {filteredPrograms.map((program) => (
-                                <SelectItem
-                                  key={program.id}
-                                  value={program.id.toString()}
-                                >
-                                  {program.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-
-                        {programID === "0" && (
-                          <div className="space-y-2">
-                            <Label htmlFor="type">Add Problem</Label>
-                            <input
-                              type="text"
-                              id="type"
-                              className="w-full border-1 rounded-md p-1.5"
-                              value={issue}
-                              onChange={(e) => setIssue(e.target.value)}
-                              placeholder="อธิบายปัญหาที่พบ"
-                            />
-                          </div>
-                        )}
-                      </div>
-                      {/* Task Description */}
-                      <div className="space-y-2">
-                        <Label htmlFor="text">Task Description</Label>
-                        <Textarea
-                          id="text"
-                          value={text}
-                          onChange={(e) => setText(e.target.value)}
-                          placeholder="Describe the task in detail..."
-                          required
-                          rows={4}
-                        />
-                      </div>
-
-                      {/* Camera Section */}
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <Label>Add image</Label>
-                          <div className="flex gap-3">
-                            <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
-                              <GalleryButton
-                                onClick={handleGallery}
-                                disabled={
-                                  processing || selectedImages.length >= 9
-                                }
-                              />
-                            </div>
-                            <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
-                              <CameraButton
-                                onClick={handleCamera}
-                                disabled={
-                                  processing || selectedImages.length >= 9
-                                }
-                              />
-                            </div>
-                          </div>
-                        </div>
-
-                        <ImageCompressor
-                          selectedImages={selectedImages}
-                          capturedFiles={capturedFiles}
-                          onImagesChange={handleImagesChange}
-                          processing={processing}
-                        />
-
-                        {/* Hidden File Inputs */}
+                        <Label htmlFor="type">Add Problem</Label>
                         <input
-                          ref={cameraRef}
-                          type="file"
-                          accept="image/*"
-                          capture="environment"
-                          multiple
-                          onChange={handleImageChange}
-                          className="hidden"
-                        />
-                        <input
-                          ref={galleryRef}
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          onChange={handleImageChange}
-                          className="hidden"
+                          type="text"
+                          id="type"
+                          className="w-full border-1 rounded-md p-1.5"
+                          value={issue}
+                          onChange={(e) => setIssue(e.target.value)}
+                          placeholder="อธิบายปัญหาที่พบ"
                         />
                       </div>
+                    )}
+                  </div>
+                  {/* Task Description */}
+                  <div className="space-y-2">
+                    <Label htmlFor="text">Task Description</Label>
+                    <Textarea
+                      id="text"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      placeholder="Describe the task in detail..."
+                      required
+                      rows={4}
+                    />
+                  </div>
 
-                      {/* Form Actions */}
-                      <div className="flex justify-end gap-4">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleCancel}
-                          disabled={isSubmitting}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={isSubmitting || !programID || !text}
-                          className="text-white"
-                        >
-                          {isSubmitting ? "Creating..." : "Create Task"}
-                        </Button>
+                  {/* Camera Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Add image</Label>
+                      <div className="flex gap-3">
+                        <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 py-1 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                          <GalleryButton
+                            onClick={handleGallery}
+                            disabled={processing || selectedImages.length >= 9}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2 bg-slate-700/40 backdrop-blur-xl px-1.5 rounded-2xl border border-slate-600/40 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-120">
+                          <CameraButton
+                            onClick={handleCamera}
+                            disabled={processing || selectedImages.length >= 9}
+                          />
+                        </div>
                       </div>
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+                    </div>
+
+                    <ImageCompressor
+                      selectedImages={selectedImages}
+                      capturedFiles={capturedFiles}
+                      onImagesChange={handleImagesChange}
+                      processing={processing}
+                    />
+
+                    {/* Hidden File Inputs */}
+                    <input
+                      ref={cameraRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      multiple
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <input
+                      ref={galleryRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+
+                  {/* Form Actions */}
+                  <div className="flex justify-end gap-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={isSubmitting || !programID || !text}
+                      className="text-white"
+                    >
+                      {isSubmitting ? "Creating..." : "Create Task"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
           </div>
         </div>
+      </div>
+    </div>
   );
 }
 
