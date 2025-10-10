@@ -372,30 +372,29 @@ The `middleware.ts` file implements authentication:
 
 - **Public Routes**: `/` (login page), `/reports/*` (public reporting)
 - **Protected Routes**: All `/dashboard/*` routes require authentication
-- **Admin-only Routes**: `/account/*` requires admin role
 - **Redirect Logic**: Unauthenticated users redirected to login
 
 ---
 
 ## Page Routes Reference
 
-| Route | Description | Auth Required |
-|-------|-------------|---------------|
+| Route | Description |
+|-------|-------------|
 | `/` | Login page | No |
-| `/dashboard` | Analytics dashboard | Yes (Admin) |
-| `/tasks` | Task list & management | Yes |
-| `/tasks/create` | Create new task | Yes |
-| `/tasks/edit/[id]` | Edit task | Yes |
-| `/tasks/show/[id]` | View task details | Yes |
-| `/tasks/chat/admin/[id]` | Admin chat view | Yes (Admin) |
-| `/branches` | Branch management | Yes (Admin) |
-| `/department` | Department management | Yes (Admin) |
-| `/phone` | IP Phone management | Yes (Admin) |
-| `/program` | Program management | Yes (Admin) |
-| `/type` | Problem Type management | Yes (Admin) |
-| `/supervisor` | Supervisor assignments | Yes (Admin) |
-| `/account` | User account management | Yes (Admin) |
-| `/reports` | Public problem reporting | No |
+| `/dashboard` | Analytics dashboard 
+| `/tasks` | Task list & management 
+| `/tasks/create` | Create new task 
+| `/tasks/edit/[id]` | Edit task 
+| `/tasks/show/[id]` | View task details 
+| `/tasks/chat/admin/[id]` | Admin chat view 
+| `/branches` | Branch management 
+| `/department` | Department management 
+| `/phone` | IP Phone management 
+| `/program` | Program management 
+| `/type` | Problem Type management 
+| `/supervisor` | Supervisor assignments 
+| `/account` | User account management 
+| `/reports` | Public problem reporting 
 
 ---
 
