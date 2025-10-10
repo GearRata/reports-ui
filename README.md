@@ -16,12 +16,8 @@
 - [Configuration](#configuration)
 - [Running the Application](#running-the-application)
 - [Project Architecture](#project-architecture)
-- [API Integration](#api-integration)
-- [Authentication & Authorization](#authentication--authorization)
 - [Key Features Guide](#key-features-guide)
-- [Development Guidelines](#development-guidelines)
 - [Deployment](#deployment)
-- [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 
 ---
@@ -61,7 +57,7 @@
 - 📄 **Solution Library**: Add and retrieve solutions for problems
 
 ### For Administrators
-- 👤 **User Management**: Create and manage user accounts (admin/user roles)
+- 👤 **User Management**: Create and manage user accounts
 - 🏢 **Branch Management**: Manage office locations
 - 🏛️ **Department Management**: Organize departments within branches
 - ☎️ **IP Phone Management**: Track IP phone inventory
@@ -485,140 +481,42 @@ networks:
     driver: bridge
 ```
 
+**OR:**
+```yaml
+services:
+  frontend-dev:
+    image: your-dockerhub-username/reports-ui:dev
+    container_name: nopadol-helpdesk
+    environment:
+      - NODE_ENV=development
+      - HOSTNAME=0.0.0.0
+    ports:
+      - "3000:3000"
+    networks:
+      - api-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy: 
+      resources:
+        limits:
+          memory: 384m
+        reservations:
+          memory: 256M
+
+networks:
+  api-network:
+    driver: bridge
+```
+
 **Start:**
 ```bash
 docker-compose pull  # Pull latest image from Docker Hub
 docker-compose up -d
-```
-
----
-
-### Security Best Practices
-
-**⚠️ Important: Never commit Docker credentials to Git!**
-
-**Option 1: Use Environment Variables**
-
-```bash
-# build-dev.sh
-DOCKER_TOKEN="${DOCKER_HUB_TOKEN}"  # จาก environment variable
-```
-
-**Option 2: Use .env file (gitignored)**
-
-```bash
-# .docker.env (add to .gitignore)
-DOCKER_USERNAME=your-username
-DOCKER_TOKEN=your-token
-
-# Load in script
-source .docker.env
-```
-
-**Option 3: Use Docker Credential Helper**
-
-```bash
-# Install credential helper
-brew install docker-credential-helper  # macOS
-apt-get install pass                   # Linux
-
-# Configure
-docker login  # จะเก็บ credentials อัตโนมัติ
-```
-
----
-
-### Quick Reference
-
-**Complete Deployment Flow:**
-
-```bash
-# Step 1: Prepare environment
-cat > .env.development << EOF
-NEXT_PUBLIC_API_BASE=http://localhost:8080
-EOF
-
-# Step 2: Make script executable
-chmod +x build-dev.sh
-
-# Step 3: Build & Push (one command)
-./build-dev.sh
-
-# Step 4: Deploy on server
-ssh user@server
-docker pull your-username/reports-ui:dev
-docker run -d --name nopadol -p 3000:3000 \
-  -e NEXT_PUBLIC_API_BASE=http://api-server:8080 \
-  your-username/reports-ui:dev
-```
-
-**Update Existing Deployment:**
-
-```bash
-# On server
-docker pull your-username/reports-ui:latest  # Pull new image
-docker stop nopadol-prod                      # Stop old container
-docker rm nopadol-prod                        # Remove old container
-docker run -d --name nopadol-prod -p 3000:3000 \
-  -e NEXT_PUBLIC_API_BASE=https://api.domain.com \
-  --restart unless-stopped \
-  your-username/reports-ui:latest             # Start new container
-```
-
----
-
-### Common Issues & Solutions
-
-#### ❌ Build Failed: "Environment file not found"
-
-**Problem:** `.env.development` ไม่มี
-
-**Solution:**
-```bash
-# สร้างไฟล์ .env.development
-echo "NEXT_PUBLIC_API_BASE=http://localhost:8080" > .env.development
-```
-
-#### ❌ Docker Login Failed
-
-**Problem:** Access token ไม่ถูกต้อง
-
-**Solution:**
-1. ไปที่ Docker Hub → Account Settings → Security
-2. สร้าง Access Token ใหม่
-3. อัพเดท `DOCKER_TOKEN` ใน script
-
-#### ❌ Push Failed: "denied: requested access to the resource is denied"
-
-**Problem:** Repository name ผิด หรือไม่มีสิทธิ์
-
-**Solution:**
-```bash
-# ตรวจสอบว่า IMAGE_NAME ตรงกับ Docker Hub username
-IMAGE_NAME="your-exact-username/reports-ui"  # ต้องตรงกับ Docker Hub
-```
-
-#### ❌ Build Failed: "Cannot find module"
-
-**Problem:** Dependencies ไม่ครบ
-
-**Solution:**
-```bash
-# ลบ node_modules และติดตั้งใหม่
-rm -rf node_modules package-lock.json
-npm install
-./build-dev.sh
-```
-
-#### ⚠️ Image Size Too Large (>1GB)
-
-**Solution:** ใช้ multi-stage build (ทำไว้แล้วใน Dockerfile)
-
-```bash
-# ตรวจสอบขนาด image
-docker images your-username/reports-ui
-
-# Expected size: ~400-600MB
 ```
 
 ---
@@ -656,296 +554,6 @@ docker inspect nopadol-prod
 # Clean up unused images
 docker image prune -a
 ```
-
----
-
-### Docker Hub Repository Information
-
-**View Your Images:**
-
-Visit: `https://hub.docker.com/r/your-username/reports-ui`
-
-**Available Tags:**
-```bash
-# List all tags on Docker Hub
-curl -s https://hub.docker.com/v2/repositories/your-username/reports-ui/tags/ | jq '.results[].name'
-
-# Pull specific tag
-docker pull your-username/reports-ui:dev
-docker pull your-username/reports-ui:latest
-docker pull your-username/reports-ui:0.1.9
-```
-
-**Image Information:**
-
-| Tag | Purpose | Size | Dockerfile |
-|-----|---------|------|------------|
-| `dev` | Development builds | ~500MB | `Dockerfile.dev` |
-| `latest` | Latest production | ~400MB | `Dockerfile` |
-| `0.1.9` | Version-specific | ~400MB | `Dockerfile` |
-
-**Check Image Details:**
-```bash
-# View image details locally
-docker images your-username/reports-ui
-
-# View image history (layers)
-docker history your-username/reports-ui:latest
-
-# Inspect image
-docker inspect your-username/reports-ui:latest
-```
-
----
-
-## 📦 Build & Deployment Pipeline
-
-### Manual Build Process
-
-**Step 1: Build Application**
-```bash
-# Install dependencies
-npm ci
-
-# Run linter
-npm run lint
-
-# Build for production
-npm run build
-
-# Test production build locally
-npm start
-```
-
-**Build outputs:**
-- `.next/` - Next.js build output
-- `.next/standalone/` - Standalone server files (for Docker)
-- `.next/static/` - Static assets
-
-**Step 2: Deploy to Server**
-```bash
-# Copy files to server
-scp -r .next package.json server.js user@server:/app/
-
-# SSH into server
-ssh user@server
-
-# Start application
-cd /app
-NODE_ENV=production node server.js
-```
-
-### CI/CD Pipeline Examples
-
-#### GitHub Actions Workflow
-
-**`.github/workflows/deploy.yml`:**
-
-```yaml
-name: Build and Deploy
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run linter
-      run: npm run lint
-    
-    - name: Build application
-      run: npm run build
-      env:
-        NEXT_PUBLIC_API_BASE: ${{ secrets.API_BASE_URL }}
-    
-    - name: Run tests (if any)
-      run: npm test --if-present
-
-  docker:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=branch
-          type=ref,event=pr
-          type=semver,pattern={{version}}
-          type=sha
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-
-  deploy:
-    needs: docker
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - name: Deploy to server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SERVER_HOST }}
-        username: ${{ secrets.SERVER_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /app/nopadol-helpdesk
-          docker-compose pull
-          docker-compose up -d
-          docker image prune -f
-```
-
-#### GitLab CI/CD
-
-**`.gitlab-ci.yml`:**
-
-```yaml
-stages:
-  - install
-  - lint
-  - build
-  - docker
-  - deploy
-
-variables:
-  DOCKER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
-  NODE_VERSION: "18"
-
-cache:
-  paths:
-    - node_modules/
-    - .next/cache/
-
-install:
-  stage: install
-  image: node:${NODE_VERSION}-alpine
-  script:
-    - npm ci
-  artifacts:
-    paths:
-      - node_modules/
-    expire_in: 1 hour
-
-lint:
-  stage: lint
-  image: node:${NODE_VERSION}-alpine
-  dependencies:
-    - install
-  script:
-    - npm run lint
-
-build:
-  stage: build
-  image: node:${NODE_VERSION}-alpine
-  dependencies:
-    - install
-  script:
-    - npm run build
-  artifacts:
-    paths:
-      - .next/
-    expire_in: 1 hour
-
-docker-build:
-  stage: docker
-  image: docker:latest
-  services:
-    - docker:dind
-  only:
-    - main
-    - tags
-  script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $DOCKER_IMAGE:$CI_COMMIT_SHA -t $DOCKER_IMAGE:latest .
-    - docker push $DOCKER_IMAGE:$CI_COMMIT_SHA
-    - docker push $DOCKER_IMAGE:latest
-
-deploy-production:
-  stage: deploy
-  image: alpine:latest
-  only:
-    - main
-  before_script:
-    - apk add --no-cache openssh-client
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-  script:
-    - |
-      ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_HOST << EOF
-        cd /app/nopadol-helpdesk
-        docker pull $DOCKER_IMAGE:latest
-        docker-compose up -d
-        docker image prune -f
-      EOF
-```
-
-### Deployment Checklist
-
-**Pre-deployment:**
-- [ ] Environment variables configured
-- [ ] Backend API accessible
-- [ ] Database migrations completed (backend)
-- [ ] SSL certificates ready (for production)
-- [ ] Backup current version
-
-**Deployment:**
-- [ ] Build application
-- [ ] Run tests
-- [ ] Create Docker image
-- [ ] Push to registry
-- [ ] Deploy to server
-- [ ] Health check
-
-**Post-deployment:**
-- [ ] Verify application is running
-- [ ] Check logs for errors
-- [ ] Test core functionality
-- [ ] Monitor performance
-- [ ] Update documentation
 
 ---
 
@@ -1161,7 +769,7 @@ Features:
 
 ### 7. Problem Type Management
 
-**Location**: `/type` (Admin only)
+**Location**: `/type` 
 
 Features:
 - Create new problem types/categories
@@ -1169,89 +777,6 @@ Features:
 - Delete types
 - View all types in searchable table
 - Used for categorizing problems in task creation
-
-**Key Components**:
-- `app/(dashboard)/type/page.tsx`: Type list page (with loading & error states)
-- `app/(dashboard)/type/create/page.tsx`: Create type form
-- `app/(dashboard)/type/edit/[id]/page.tsx`: Edit type form
-- `components/tables/type-table.tsx`: Type data table
-- `hooks/useTypes.ts`: Type API integration
-- `types/type/model.ts`: TypeData, AddType, UpdateType interfaces
-
-**API Endpoints**:
-- `GET /api/v1/program/type/list` - Get all types
-- `GET /api/v1/program/type/list/:id` - Get type by ID
-- `POST /api/v1/program/type/create` - Create new type
-- `PUT /api/v1/program/type/update/:id` - Update type
-- `DELETE /api/v1/program/type/delete/:id` - Delete type
-
-### 8. User Management
-
-**Location**: `/account` (Admin only)
-
-Features:
-- Create new users (admin or user role)
-- Edit user details
-- Delete users
-- View all users
-
-**Key Components**:
-- `app/(dashboard)/account/page.tsx`: Account list
-- `hooks/useAccount.ts`: Account API integration
-
----
-
-## 💻 Development Guidelines
-
-### Code Style
-
-- **TypeScript**: Always use TypeScript, no plain JavaScript
-- **Naming**: 
-  - Components: PascalCase or kebab-case (`TasksTable.tsx` or `tasks-table.tsx`)
-  - Hooks: camelCase with 'use' prefix (`useAuth.ts`, `useTypes.ts`)
-  - Utilities: kebab-case (`branch-chart-utils.ts`)
-- **Imports**: Use path aliases (`@/` instead of `../../`)
-- **Types**: Define types in `types/` directory
-
-### Component Guidelines
-
-1. **Keep components small**: Single responsibility principle
-2. **Use TypeScript interfaces**: Strongly type all props
-3. **Error handling**: Use `error.tsx` files for error boundaries
-4. **Loading states**: Use `loading.tsx` files for instant feedback
-5. **No layout duplication**: Pages should only contain content
-6. **Accessibility**: Use semantic HTML and ARIA labels
-7. **Responsive design**: Mobile-first approach
-
-### API Integration Guidelines
-
-1. **Use custom hooks**: Import from `hooks/` directory
-2. **Type safety**: Use interfaces from `types/` directory
-3. **Error handling**: Try-catch blocks with user-friendly messages
-4. **Loading states**: Leverage Next.js loading.tsx
-5. **Abort controllers**: Cancel in-flight requests when needed
-6. **Pagination**: Use URL state management pattern
-
-### Best Practices
-
-```typescript
-// ✅ Good: Type-safe component with error handling
-import { TaskWithPhone } from '@/types/entities';
-
-interface Props {
-  task: TaskWithPhone;
-  onUpdate: (id: number) => void;
-}
-
-export function TaskCard({ task, onUpdate }: Props) {
-  // Component logic...
-}
-
-// ❌ Bad: No types, no error handling
-export function TaskCard({ task, onUpdate }) {
-  // Component logic...
-}
-```
 
 ### Testing
 
@@ -1261,76 +786,6 @@ While this project doesn't include automated tests, manual testing should cover:
 - ✅ Pagination and search
 - ✅ Mobile responsiveness
 - ✅ Authentication flows
-- ✅ Role-based access control
-
----
-
-## 🚢 Deployment
-
-### Docker Deployment (Recommended)
-
-#### Build Production Image
-
-```bash
-docker build -f Dockerfile -t nopadol-helpdesk:latest .
-```
-
-#### Run Container
-
-```bash
-docker run -d \
-  -p 3000:3000 \
-  -e NEXT_PUBLIC_API_BASE=http://your-backend-api \
-  --name nopadol-helpdesk \
-  nopadol-helpdesk:latest
-```
-
-#### Using Docker Compose
-
-Create `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-services:
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_BASE=http://your-backend-api
-    restart: unless-stopped
-```
-
-Run:
-```bash
-docker-compose up -d
-```
-
-### Traditional Deployment
-
-#### 1. Build the Application
-
-```bash
-npm run build
-```
-
-#### 2. Start Production Server
-
-```bash
-npm start
-```
-
-
-### Environment Setup
-
-Ensure these environment variables are set in production:
-
-```bash
-NEXT_PUBLIC_API_BASE=https://your-production-api.com
-NODE_ENV=production
-```
 
 ---
 
@@ -1365,15 +820,6 @@ test: add tests
 chore: maintenance tasks
 ```
 
-### Pull Request Process
-
-1. Create a feature branch
-2. Make your changes
-3. Test thoroughly
-4. Update documentation
-5. Submit pull request
-6. Wait for review
-
 ---
 
 ## 📚 Additional Resources
@@ -1392,18 +838,6 @@ chore: maintenance tasks
 
 ---
 
-## 🎯 Quick Start Checklist
-
-- [ ] Node.js 18+ installed
-- [ ] Clone repository
-- [ ] Run `npm install`
-- [ ] Create `.env` file with `NEXT_PUBLIC_API_BASE`
-- [ ] Run `npm run dev`
-- [ ] Access `http://localhost:3000`
-- [ ] Test login with credentials
-- [ ] Verify backend connectivity
-
----
 
 ## 🎯 What's New in v0.1.9
 
