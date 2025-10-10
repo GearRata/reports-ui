@@ -66,6 +66,7 @@
 - 🏛️ **Department Management**: Organize departments within branches
 - ☎️ **IP Phone Management**: Track IP phone inventory
 - 💻 **System Management**: Manage software/hardware systems
+- 🏷️ **Type Management**: Manage problem types/categories
 - 📈 **Analytics**: Detailed problem statistics by time, location, and system
 
 ---
@@ -1145,6 +1146,7 @@ Features:
 - `/department` - Department management
 - `/phone` - IP Phone management
 - `/program` - Program/System management
+- `/type` - Problem Type management
 - `/supervisor` - Supervisor assignments
 
 Features:
@@ -1155,9 +1157,35 @@ Features:
 
 **Key Components**:
 - `components/tables/`: Data table components
-- `app/api/`: API integration hooks
+- `hooks/`: API integration hooks
 
-### 7. User Management
+### 7. Problem Type Management
+
+**Location**: `/type` (Admin only)
+
+Features:
+- Create new problem types/categories
+- Edit existing types
+- Delete types
+- View all types in searchable table
+- Used for categorizing problems in task creation
+
+**Key Components**:
+- `app/(dashboard)/type/page.tsx`: Type list page (with loading & error states)
+- `app/(dashboard)/type/create/page.tsx`: Create type form
+- `app/(dashboard)/type/edit/[id]/page.tsx`: Edit type form
+- `components/tables/type-table.tsx`: Type data table
+- `hooks/useTypes.ts`: Type API integration
+- `types/type/model.ts`: TypeData, AddType, UpdateType interfaces
+
+**API Endpoints**:
+- `GET /api/v1/program/type/list` - Get all types
+- `GET /api/v1/program/type/list/:id` - Get type by ID
+- `POST /api/v1/program/type/create` - Create new type
+- `PUT /api/v1/program/type/update/:id` - Update type
+- `DELETE /api/v1/program/type/delete/:id` - Delete type
+
+### 8. User Management
 
 **Location**: `/account` (Admin only)
 
@@ -1169,7 +1197,7 @@ Features:
 
 **Key Components**:
 - `app/(dashboard)/account/page.tsx`: Account list
-- `app/api/account.ts`: Account API integration
+- `hooks/useAccount.ts`: Account API integration
 
 ---
 
@@ -1179,8 +1207,8 @@ Features:
 
 - **TypeScript**: Always use TypeScript, no plain JavaScript
 - **Naming**: 
-  - Components: PascalCase (`TasksTable.tsx`)
-  - Hooks: camelCase with 'use' prefix (`useAuth.ts`)
+  - Components: PascalCase or kebab-case (`TasksTable.tsx` or `tasks-table.tsx`)
+  - Hooks: camelCase with 'use' prefix (`useAuth.ts`, `useTypes.ts`)
   - Utilities: kebab-case (`branch-chart-utils.ts`)
 - **Imports**: Use path aliases (`@/` instead of `../../`)
 - **Types**: Define types in `types/` directory
@@ -1388,6 +1416,14 @@ chore: maintenance tasks
 - ✅ **Eliminated code duplication** - No more repeated Sidebar/Header code
 - ✅ **Improved UX** with instant navigation feedback
 - ✅ **Better error handling** with retry functionality
+
+### New Features
+
+- 🏷️ **Problem Type Management** - New `/type` route for managing problem categories
+  - Full CRUD operations with dedicated pages
+  - Search and filter functionality
+  - Loading states and error boundaries
+  - API integration via `hooks/useTypes.ts`
 
 ### Benefits
 

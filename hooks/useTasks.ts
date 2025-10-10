@@ -252,6 +252,8 @@ export async function updateTaskNew(id: number, task: UpdateTask) {
       reported_by: task.reported_by,
       issue_type: task.issue_type,
       phone_id: task.phone_id && task.phone_id > 0 ? task.phone_id : null,
+      phone_else: task.phone_else,
+      department_id: task.department_id,
       system_id: task.system_id,
       text: task.text,
       issue_else: task.issue_else || "",

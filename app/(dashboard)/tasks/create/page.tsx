@@ -42,7 +42,7 @@ import CameraButton from "@/components/images/CameraButton";
 import GalleryButton from "@/components/images/GalleryButton";
 import ImageCompressor from "@/components/images/ImageCompressor";
 import { cn } from "@/lib/utils";
-import { ChevronsUpDown, Check } from "lucide-react";
+import { ChevronsUpDown, Check, ArrowLeft  } from "lucide-react";
 import toast from "react-hot-toast";
 
 function CreateTaskPage() {
@@ -195,6 +195,9 @@ function CreateTaskPage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
           <div className="container mx-auto max-w-2xl">
+            <div className="flex mb-3">
+              <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+            </div>
             {/* Create Task Form */}
             <Card>
               <CardHeader>

@@ -28,10 +28,12 @@ export function LoginForm({
       if (passwordRef.current) {
         passwordRef.current.value = "";
       }
-      // ตรวจสอบ cookies หลัง login
-      console.log("All cookies after login:", document.cookie);
       
-      // รอสักครู่ให้ cookie ถูกตั้งก่อน redirect
+      // HttpOnly cookies ไม่สามารถอ่านด้วย document.cookie ได้ (ถูกต้องเพื่อความปลอดภัย)
+      // Browser จะส่ง cookie ไปกับ request อัตโนมัติ
+      console.log("Login successful - redirecting to dashboard");
+      
+      // รอสักครู่ให้ browser ประมวลผล cookie ก่อน redirect
       setTimeout(() => {
         router.push("/dashboard");
       }, 500);

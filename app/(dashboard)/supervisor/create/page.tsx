@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { addAssignTo } from "@/hooks/useAssign";
+import { ArrowLeft } from "lucide-react";
 
 function CreateSupervisorPage() {
   const router = useRouter();
@@ -46,6 +47,9 @@ function CreateSupervisorPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-2 px-2">
               <div className="container mx-auto max-w-2xl">
+                <div className="flex mb-3">
+                  <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+                </div>
                 {/* Create Branch Form */}
                 <Card>
                   <CardHeader>

@@ -17,9 +17,6 @@ export function useAuth() {
       });
       const data = await res.json();
 
-      console.log("Login Response Status:", res.status);
-      console.log("Login Response Headers:", Object.fromEntries(res.headers.entries()));
-      console.log("Login Response Data:", data);
 
       if (!res.ok || !data.success || !data.data) {
         console.error("Login failed:", data);
@@ -38,19 +35,9 @@ export function useAuth() {
       };
       setUser(userObj);
       
-      // เก็บ token จาก header และ set cookie แบบ manual
-      const token = res.headers.get("token");
-      if (token && typeof window !== "undefined") {
-        // ตรวจสอบว่าใช้ HTTPS หรือไม่
-        const isSecure = window.location.protocol === 'https:';
-        const secureFlag = isSecure ? '; Secure' : '';
-        const sameSiteFlag = isSecure ? '; SameSite=None' : '; SameSite=Lax';
-        
-        // ตั้ง auth_token cookie
-        document.cookie = `auth_token=${token}; path=/; max-age=86400${sameSiteFlag}${secureFlag}`;
-        
-        console.log("Set auth_token cookie:", `auth_token=${token}; path=/; max-age=86400${sameSiteFlag}${secureFlag}`);
-      }
+      // Backend ส่ง session_cookie มาให้แล้วผ่าน Set-Cookie header
+      // Browser จะจัดการ cookie อัตโนมัติผ่าน credentials: "include"
+      // ไม่ต้องเก็บ token เพราะ Backend จัดการ session ด้วย cookie (HttpOnly)
       
       return userObj;
     } catch (error) {
@@ -62,6 +49,7 @@ export function useAuth() {
   async function logout() {
     try {
       // เรียก backend logout API
+      // Backend จะลบ session_cookie ให้เอง
       await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/authEntry/logout`, {
         method: "POST",
         credentials: "include",
@@ -71,10 +59,7 @@ export function useAuth() {
     }
     
     setUser(null);
-    // ลบ cookies
-    if (typeof window !== "undefined") {
-      document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-    }
+    // ไม่ต้องลบอะไรเพราะ Backend จัดการ cookie ทั้งหมด
   }
 
   return { user, login, logout };

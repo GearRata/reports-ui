@@ -40,7 +40,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Pencil, Trash, X, MessageCircle } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash, X, MessageCircle, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAssign } from "@/hooks/useAssign";
 
@@ -140,6 +140,9 @@ function ShowTaskPage() {
       const taskData = await getTaskNewById(Number(taskId));
       setTask(taskData);
       toast.success("อัปเดตผู้รับผิดชอบเรียบร้อยแล้ว");
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } catch (error) {
       console.error("Error updating assignment:", error);
       toast.error("ไม่สามารถอัปเดตผู้รับผิดชอบได้");
@@ -444,12 +447,17 @@ function ShowTaskPage() {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
+      <div className="@container/main flex flex-1 flex-col gap-2 ">
         <div className="flex flex-col gap-4 py-3 md:gap-6 md:py-6 px-6">
-          <div className="container mx-auto max-w-2xl">
+          <div className="container mx-auto max-w-2xl ">
+        
             {/*================ แสดงข้อมูลและแก้ไขข้อมูล ================*/}
 
             {/* ทริกเกอร์ระหว่างแสดงข้อมูลกับเพิ่มวิธีแก้ไขปัญหา */}
+
+            <div className="flex mb-3">
+                  <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+            </div>
             <Tabs defaultValue="show">
               <TabsList>
                 <TabsTrigger value="show">ปัญหา</TabsTrigger>
@@ -546,11 +554,35 @@ function ShowTaskPage() {
                           โทรศัพท์ไอพี (IP Phone)
                         </Label>
                         <p className="text-muted-foreground">
-                          {task.phone_id
+                          {task.phone_id && task.phone_id > 0
                             ? `${task.number} - ${task.phone_name}`
-                            : "ไม่ได้ระบุ ID"}
+                            : "ไม่มีเบอร์"}
                         </p>
                       </div>
+
+                      {/* Phone Else - แสดงถ้า phone_id === 0 */}
+                      {task.phone_id === 0 && task.phone_else && (
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            เบอร์โทรศัพท์
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.phone_else}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Department - แสดงถ้า phone_id === 0 */}
+                      {task.phone_id === 0 && task.department_name && (
+                        <div className="space-y-2">
+                          <Label className="font-bold text-[16px]">
+                            แผนก (Department)
+                          </Label>
+                          <p className="text-muted-foreground">
+                            {task.department_name}
+                          </p>
+                        </div>
+                      )}
 
                       {/* Type Selection */}
                       <div className="space-y-2">

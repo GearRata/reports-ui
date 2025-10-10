@@ -13,6 +13,7 @@ export function middleware(request: NextRequest) {
   const sessionCookie = request.cookies.get("session_cookie")
   
   console.log("Middleware - Path:", pathname)
+  console.log("Middleware - All Cookies:", request.cookies.getAll())
   console.log("Middleware - Session Cookie:", sessionCookie?.value || "Not found")
   
   // ถ้าไม่มี session ให้ redirect ไป login

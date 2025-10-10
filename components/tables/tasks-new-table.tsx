@@ -128,12 +128,13 @@ export function TasksNewTable({
     const wantMap: Record<string, string[]> = {
       hardware: ["H", "W"],
       software: ["S", "W"],
+      network: ["N", "W"],
       request: ["R", "Q"],
     };
 
     const key = str.toLowerCase();
     const targets = wantMap[key] ?? [];
-    if (targets.length === 0) return "";
+    if (targets.length === 0) return "OT";
 
     const need = new Set(targets.map((c) => c.toUpperCase()));
     const seen = new Set<string>();

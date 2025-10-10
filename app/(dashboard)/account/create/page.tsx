@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { createUser } from "@/hooks/useAccount";
+import { ArrowLeft } from "lucide-react";
 
 export default function CreateUserPage() {
   const router = useRouter();
@@ -39,7 +40,10 @@ export default function CreateUserPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
               <div className="container mx-auto max-w-2xl">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex flex-col items-start gap-4 mb-6">
+                 
+                    <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+                  
                  
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Create User</h1>

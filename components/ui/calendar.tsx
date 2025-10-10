@@ -192,11 +192,22 @@ function CalendarDayButton({
 
   // Check if this day has tasks
   const hasTask = React.useMemo(() => {
-    if (!tasksData) return false
-    const dayString = day.date.toISOString().split('T')[0]
+    if (!tasksData || tasksData.length === 0) return false
+    
+    // Use local date format to avoid timezone issues
+    const year = day.date.getFullYear()
+    const month = String(day.date.getMonth() + 1).padStart(2, '0')
+    const date = String(day.date.getDate()).padStart(2, '0')
+    const dayString = `${year}-${month}-${date}`
+    
     return tasksData.some(task => {
-      const taskDate = new Date(task.created_at).toISOString().split('T')[0]
-      return taskDate === dayString
+      const taskDate = new Date(task.created_at)
+      const taskYear = taskDate.getFullYear()
+      const taskMonth = String(taskDate.getMonth() + 1).padStart(2, '0')
+      const taskDay = String(taskDate.getDate()).padStart(2, '0')
+      const taskString = `${taskYear}-${taskMonth}-${taskDay}`
+      
+      return taskString === dayString
     })
   }, [tasksData, day.date])
 

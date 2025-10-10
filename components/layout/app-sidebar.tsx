@@ -63,6 +63,11 @@ const data = {
       icon: BadgeAlert,
     },
     {
+      title: "Type",
+      url: "/type",
+      icon: Network,
+    },
+    {
       title: "Add Supervisor",
       url: "/supervisor",
       icon: Users,

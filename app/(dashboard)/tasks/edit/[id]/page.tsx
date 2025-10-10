@@ -14,6 +14,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Card,
   CardContent,
   CardDescription,
@@ -26,7 +39,10 @@ import { useAssign } from "@/hooks/useAssign";
 import { useType } from "@/hooks/useTypes";
 import { useProgramsForDropdown } from "@/hooks/usePrograms";
 import { useIPPhonesForDropdown } from "@/hooks/usePhones";
+import { useDepartmentsForDropdown } from "@/hooks/useDepartments";
 import type { TaskWithPhone } from "@/types/entities";
+import { ArrowLeft, ChevronsUpDown, Check } from 'lucide-react';
+import { cn } from "@/lib/utils";
 
 function EditTaskPage() {
   const router = useRouter();
@@ -37,6 +53,7 @@ function EditTaskPage() {
   const { programs } = useProgramsForDropdown();
   const { types } = useType();
   const { assignTo: assignTo } = useAssign();
+  const { departments } = useDepartmentsForDropdown();
 
   const [task, setTask] = useState<TaskWithPhone | null>(null);
   const [phoneId, setPhoneId] = useState<string>("");
@@ -49,6 +66,10 @@ function EditTaskPage() {
   const [assignId, setAssignId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [phoneElse, setPhoneElse] = useState<string>("");
+  const [departmentId, setDepartmentId] = useState<string>("");
+  const [open, setOpen] = useState(false);
+  const [departmentOpen, setDepartmentOpen] = useState(false);
 
   // Load the specific task data
   useEffect(() => {
@@ -58,7 +79,9 @@ function EditTaskPage() {
           const taskData = await getTaskNewById(Number(taskId));
           setTask(taskData);
           setReportBy(taskData.reported_by);
-          setPhoneId(taskData.phone_id ? taskData.phone_id.toString() : "null");
+          setPhoneId(taskData.phone_id ? taskData.phone_id.toString() : "0");
+          setPhoneElse(taskData.phone_else || "");
+          setDepartmentId(taskData.department_id ? taskData.department_id.toString() : "");
           setProgramID(
             taskData.system_id !== null && taskData.system_id !== undefined
               ? taskData.system_id.toString()
@@ -107,9 +130,11 @@ function EditTaskPage() {
       await updateTaskNew(task.id, {
         reported_by: reportBy,
         phone_id:
-          phoneId && phoneId !== "" && phoneId !== "null"
+          phoneId && phoneId !== "" && phoneId !== "0"
             ? Number(phoneId)
-            : null,
+            : 0,
+        phone_else: phoneId === "0" ? phoneElse : "",
+        department_id: phoneId === "0" ? Number(departmentId) : 0,
         system_id: Number(programID),
         issue_type: Number(type),
         issue_else: issue,
@@ -160,6 +185,9 @@ function EditTaskPage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
           <div className="container mx-auto max-w-2xl">
+              <div className="flex mb-3">
+                <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+              </div>
             {/* Edit Task Form */}
             <Card>
               <CardHeader>
@@ -183,27 +211,178 @@ function EditTaskPage() {
                     />
                   </div>
                   {/* IP Phone Selection */}
-                  <div className="space-y-2">
-                    <Label htmlFor="phone_id">IP Phone</Label>
-                    <Select
-                      value={phoneId}
-                      onValueChange={(value) => setPhoneId(value)}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select IP phone" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="null">ไม่ได้ระบุ ID</SelectItem>
-                        {ipPhones.map((phone) => (
-                          <SelectItem
-                            key={phone.id}
-                            value={phone.id.toString()}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="phone_id">IP Phone</Label>
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="w-full justify-between"
                           >
-                            {phone.number} - {phone.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                            {phoneId ? (
+                              phoneId === "0" ? (
+                                "ไม่มีเบอร์"
+                              ) : (
+                                (() => {
+                                  const phone = ipPhones.find(
+                                    (phone) => phone.id.toString() === phoneId
+                                  );
+                                  return phone
+                                    ? `${phone.number} - ${phone.name}`
+                                    : "Select Phone ID...";
+                                })()
+                              )
+                            ) : (
+                              <span className="text-muted-foreground">
+                                Select Phone IP
+                              </span>
+                            )}
+                            <ChevronsUpDown className="opacity-50" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-full p-0">
+                          <Command>
+                            <CommandInput
+                              placeholder="Search phone..."
+                              className="h-9"
+                            />
+                            <CommandList>
+                              <CommandEmpty>No phone found.</CommandEmpty>
+                              <CommandGroup>
+                                <CommandItem
+                                  value="0"
+                                  onSelect={() => {
+                                    setPhoneId("0");
+                                    setOpen(false);
+                                  }}
+                                >
+                                  ไม่มีเบอร์
+                                  <Check
+                                    className={cn(
+                                      "ml-auto",
+                                      phoneId === "0"
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                                {ipPhones.map((phone) => (
+                                  <CommandItem
+                                    key={phone.id}
+                                    value={`${phone.number} ${phone.name}`}
+                                    onSelect={() => {
+                                      setPhoneId(phone.id.toString());
+                                      setOpen(false);
+                                    }}
+                                  >
+                                    {phone.number} - {phone.name}
+                                    <Check
+                                      className={cn(
+                                        "ml-auto",
+                                        phoneId === phone.id.toString()
+                                          ? "opacity-100"
+                                          : "opacity-0"
+                                      )}
+                                    />
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+
+                    {/* Phone Else Input - แสดงเมื่อเลือก "ไม่มีเบอร์" */}
+                    {phoneId === "0" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="phone_else">เบอร์โทรศัพท์</Label>
+                        <input
+                          type="text"
+                          id="phone_else"
+                          className="w-full border-1 rounded-md p-1.5"
+                          value={phoneElse}
+                          onChange={(e) => setPhoneElse(e.target.value)}
+                          placeholder="กรอกเบอร์โทรศัพท์ (เช่น 081-234-5678)"
+                        />
+                      </div>
+                    )}
+                    {phoneId === "0" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="department_id">Department</Label>
+                        <Popover
+                          open={departmentOpen}
+                          onOpenChange={setDepartmentOpen}
+                        >
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={departmentOpen}
+                              className="w-full justify-between"
+                            >
+                              {departmentId ? (
+                                (() => {
+                                  const department = departments.find(
+                                    (department) =>
+                                      department.id.toString() === departmentId
+                                  );
+                                  return department
+                                    ? `${department.name}`
+                                    : "Select Department...";
+                                })()
+                              ) : (
+                                <span className="text-muted-foreground">
+                                  Select Department
+                                </span>
+                              )}
+                              <ChevronsUpDown className="opacity-50" />
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-full p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Search department..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>
+                                  No Department found.
+                                </CommandEmpty>
+                                <CommandGroup>
+                                  {departments.map((department) => (
+                                    <CommandItem
+                                      key={department.id}
+                                      value={`${department.number} ${department.name}`}
+                                      onSelect={() => {
+                                        setDepartmentId(
+                                          department.id.toString()
+                                        );
+                                        setDepartmentOpen(false);
+                                      }}
+                                    >
+                                      {department.name}
+                                      <Check
+                                        className={cn(
+                                          "ml-auto",
+                                          departmentId ===
+                                            department.id.toString()
+                                            ? "opacity-100"
+                                            : "opacity-0"
+                                        )}
+                                      />
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    )}
                   </div>
 
                   {/* Type Selection */}

@@ -12,6 +12,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
 import { toast } from "sonner";
 import { getUserById, updateUser } from "@/hooks/useAccount";
+import { ArrowLeft } from "lucide-react";
 
 export default function EditUserPage() {
   const router = useRouter();
@@ -96,7 +97,8 @@ export default function EditUserPage() {
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
               <div className="container mx-auto max-w-2xl">
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex flex-col items-start gap-4 mb-6">
+                  <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
                   <div>
                     <h1 className="text-3xl font-bold tracking-tight">Edit User</h1>
                     <p className="text-muted-foreground">Update user information</p>

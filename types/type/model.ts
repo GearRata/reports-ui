@@ -3,6 +3,6 @@ export interface TypeData {
     name: string;
 }
 
-export type AddType = string;
-export type UpdateType = string;
+export type AddType = { name: string};
+export type UpdateType = { name: string};
 export type DeleteType = number;

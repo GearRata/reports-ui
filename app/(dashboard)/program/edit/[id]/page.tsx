@@ -23,6 +23,7 @@ import { useRouter, useParams } from "next/navigation";
 import { getProgramById, updateProgram } from "@/hooks/usePrograms";
 import type { Program } from "@/types/entities";
 import { useTypesForDropdown } from "@/hooks/useTypes";
+import { ArrowLeft } from "lucide-react";
 
 function EditProgramPage() {
   const router = useRouter();
@@ -103,6 +104,9 @@ function EditProgramPage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
           <div className="container mx-auto max-w-2xl">
+            <div className="flex mb-3">
+              <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+            </div>  
             {/* Edit Program Form */}
             <Card>
               <CardHeader>

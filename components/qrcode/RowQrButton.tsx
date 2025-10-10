@@ -109,7 +109,7 @@ async function generateQrPdf(
     });
 
     // เตรียมข้อความที่จะแสดง
-    const title = d.name;                                    // ชื่อแผนก
+    const title = `แผนก: ${d.name}`;                                    // ชื่อแผนก
     const sub = `สาขา: ${d.branch_name}`;     // ข้อมูลสาขาและรหัส
 
     // วาดชื่อแผนก (ด้านบน QR)
@@ -129,6 +129,15 @@ async function generateQrPdf(
       size: 32,                        // ขนาดตัวอักษร (เล็กกว่าชื่อแผนก)
       font: thaiFont,                  // ฟอนต์ไทย
       color: rgb(0.5, 0.5, 0.5),    // สีเทาเข้ม
+      maxWidth: PAPER.w - MARGIN * 2,     // ความกว้างสูงสุด
+    });
+
+    page.drawText("แบบฟอร์มแจ้งปัญหา", {
+      x: qrX ,                       // ตำแหน่ง X (ชิดขอบซ้าย)
+      y: 200,                  // ตำแหน่ง Y (เหนือขอบล่าง 14pt)
+      size: 36,                        // ขนาดตัวอักษร (เล็กกว่าชื่อแผนก)
+      font: thaiFont,
+      color: rgb(0, 0, 0),    // สีเทาเข้ม
       maxWidth: PAPER.w - MARGIN * 2,     // ความกว้างสูงสุด
     });
   }

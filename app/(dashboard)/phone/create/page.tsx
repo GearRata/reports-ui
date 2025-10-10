@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { addIPPhone } from "@/hooks/usePhones";
 import { cn } from "@/lib/utils";
 import { useDepartmentsForDropdown } from "@/hooks/useDepartments";
+import { ArrowLeft } from 'lucide-react';
 
 function CreatePhonePage() {
   const router = useRouter();
@@ -69,7 +70,9 @@ function CreatePhonePage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
           <div className="container mx-auto max-w-2xl">
-            {/* Create Phone Form */}
+            <div className="flex mb-3">
+              <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+            </div>
             <Card>
               <CardHeader>
                 <CardTitle>Create New IP Phone</CardTitle>

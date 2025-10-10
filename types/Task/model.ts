@@ -4,6 +4,7 @@ export interface TaskData {
     issue_else: string
     id: number
     phone_id: number
+    phone_else?: string
     text: string
     status: number  // เปลี่
     reported_by: string
@@ -47,6 +48,8 @@ export interface AddTask {
 export interface UpdateTask {
     reported_by: string;
     phone_id: number | null;
+    phone_else: string;
+    department_id: number;
     system_id: number;
     text: string;
     issue_type: number;

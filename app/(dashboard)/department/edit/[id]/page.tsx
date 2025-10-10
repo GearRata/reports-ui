@@ -23,6 +23,7 @@ import { useRouter, useParams } from "next/navigation";
 import { getDepartmentById, updateDepartment } from "@/hooks/useDepartments";
 import { useBranchesForDropdown } from "@/hooks/useBranches";
 import type { Department } from "@/types/entities";
+import { ArrowLeft } from 'lucide-react';
 
 function EditDepartmentPage() {
   const router = useRouter();
@@ -108,6 +109,9 @@ function EditDepartmentPage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
           <div className="container mx-auto max-w-2xl">
+            <div className="flex mb-3">
+              <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+            </div>
             {/* Edit Department Form */}
             <Card>
               <CardHeader>

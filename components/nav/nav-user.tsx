@@ -1,19 +1,15 @@
-"use client"
+"use client";
 
 import {
   IconDotsVertical,
   IconLogout,
   IconUserCircle,
-} from "@tabler/icons-react"
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+} from "@tabler/icons-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,24 +18,24 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function NavUser({
   user: initialUser,
 }: {
   user: {
-    name: string
-    avatar: string
-  }
+    name: string;
+    avatar: string;
+  };
 }) {
-  const { isMobile } = useSidebar()
-  const router = useRouter()
+  const { isMobile } = useSidebar();
+  const router = useRouter();
   const { user, logout: authLogout } = useAuth();
 
   async function handleLogout() {
@@ -47,12 +43,17 @@ export function NavUser({
     router.push("/");
   }
 
+  async function handleAccout() {
+    router.push("/account");
+  }
+
   // ใช้ user data จาก useAuth หรือ fallback ไป initialUser
-  const displayUser = user ? {
-    name: user.username,
-    avatar: "https://github.com/evilrabbit.png"
-  } : initialUser;
-    
+  const displayUser = user
+    ? {
+        name: user.username,
+        avatar: "https://github.com/evilrabbit.png",
+      }
+    : initialUser;
 
   return (
     <SidebarMenu>
@@ -69,8 +70,7 @@ export function NavUser({
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{displayUser.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
-                </span>
+                <span className="text-muted-foreground truncate text-xs"></span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -84,38 +84,43 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={displayUser.avatar} alt={displayUser.name} />
+                  <AvatarImage
+                    src={displayUser.avatar}
+                    alt={displayUser.name}
+                  />
                   <AvatarFallback className="rounded-lg"></AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{displayUser.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
+                  <span className="truncate font-medium">
+                    {displayUser.name}
                   </span>
+                  <span className="text-muted-foreground truncate text-xs"></span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-            {user?.role === "admin" && (
               <Link href="/account" className="flex items-center gap-2">
-                <DropdownMenuItem className="w-full cursor-pointer">
-                    <IconUserCircle /> 
-                    <p>Account</p>
+                <DropdownMenuItem
+                  className="w-full cursor-pointer"
+                  onClick={handleAccout}
+                >
+                  <IconUserCircle />
+                  <p>Account</p>
                 </DropdownMenuItem>
-                </Link>
-            )}
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
+            <DropdownMenuItem
               className="w-full cursor-pointer"
               onClick={handleLogout}
             >
-                <IconLogout /> 
-                <p>Logout</p>
+              <IconLogout />
+              <p>Logout</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

@@ -83,6 +83,23 @@ export async function updateType(id: number, type: UpdateType) {
   }
 }
 
+export async function getTypeById(id: number): Promise<TypeData> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/program/type/list/${id}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch type");
+    }
+    const data = await response.json();
+    // API returns array, get first element
+    return Array.isArray(data.data) ? data.data[0] : data.data;
+  } catch (error) {
+    console.error("Failed to fetch type:", error);
+    throw error;
+  }
+}
+
 export async function deleteType(id: DeleteType) {
   try {
     const response = await fetch(

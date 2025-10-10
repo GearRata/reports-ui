@@ -22,6 +22,7 @@ import {
 import { useRouter } from "next/navigation";
 import { addProgram } from "@/hooks/usePrograms";
 import { useTypesForDropdown } from "@/hooks/useTypes";
+import { ArrowLeft } from 'lucide-react';
 
 function CreateProgramPage() {
   const router = useRouter();
@@ -57,6 +58,9 @@ function CreateProgramPage() {
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-4 px-2">
           <div className="container mx-auto max-w-2xl">
+            <div className="flex mb-3">
+              <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+            </div>
             {/* Create Program Form */}
             <Card>
               <CardHeader>

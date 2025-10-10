@@ -5,9 +5,9 @@ import QRCode from "qrcode";
 import { PDFDocument, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 import { buildQrUrl } from "@/hooks/useQrPdf";
-import { DepartmentData } from "@/types/qr-code/model"
+import { DepartmentData } from "@/types/qr-code/model";
 import { Button } from "@/components/ui/button";
-import { QrCode } from 'lucide-react';
+import { QrCode } from "lucide-react";
 
 // กำหนดขนาดกระดาษ A4
 const A4 = { w: 595.28, h: 841.89 };
@@ -57,9 +57,9 @@ export function DownloadQrPdfButton({
       pdf.registerFontkit(fontkit);
 
       // โหลดฟอนต์ไทยจาก public/fonts
-      const fontBytes = await fetch("/fonts/NotoSansThai_SemiCondensed-Regular.ttf").then((r) =>
-        r.arrayBuffer()
-      );
+      const fontBytes = await fetch(
+        "/fonts/NotoSansThai_SemiCondensed-Regular.ttf"
+      ).then((r) => r.arrayBuffer());
       const thaiFont = await pdf.embedFont(fontBytes, { subset: true });
 
       const cellW = (A4.w - MARGIN * 2) / COLS;
@@ -132,6 +132,7 @@ export function DownloadQrPdfButton({
 
           // 2.4) วางข้อความไทย: department + branch + id
           const labelTop = qrY + qrPtSize + 22; // เส้นฐานตัวอักษรเหนือ QR
+          const labelBottom = qrY + qrPtSize - 198; // เส้นฐานตัวอักษรเหนือ QR
           const txtSize = 14;
 
           // แสดงชื่อแผนก
@@ -153,6 +154,15 @@ export function DownloadQrPdfButton({
             color: rgb(0.15, 0.15, 0.15),
             maxWidth: cellW - pad * 2,
           });
+
+          page.drawText("แบบฟอร์มแจ้งปัญหา", {
+            x: x0 + 60,
+            y: Math.min(y0 + cellH, labelBottom),
+            size: 18,
+            font: thaiFont,
+            color: rgb(0.15, 0.15, 0.15),
+            maxWidth: cellW - pad * 2,
+          });
         }
       }
 
@@ -164,7 +174,7 @@ export function DownloadQrPdfButton({
         .replace(/[-:]/g, "")
         .replace(/\..+/, "");
       const name = `${safeFilename(fileNamePrefix)}-${stamp}.pdf`;
-      
+
       // สร้าง URL และดาวน์โหลดทันที
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -174,7 +184,7 @@ export function DownloadQrPdfButton({
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      
+
       // ล้าง URL หลังจากดาวน์โหลดเสร็จ
       setTimeout(() => {
         URL.revokeObjectURL(url);
@@ -188,10 +198,19 @@ export function DownloadQrPdfButton({
   };
 
   return (
-    <Button onClick={handleDownload} disabled={busy} className="bg-linear-to-r/srgb from-indigo-500 to-teal-400">
-      {busy ? "กำลังสร้าง PDF..." 
-      : <span className="flex justify-center items-center gap-2 text-white s">
-        <QrCode className="h-5 w-5" />All QR Code</span>}
+    <Button
+      onClick={handleDownload}
+      disabled={busy}
+      className="bg-linear-to-r/srgb from-indigo-500 to-teal-400"
+    >
+      {busy ? (
+        "กำลังสร้าง PDF..."
+      ) : (
+        <span className="flex justify-center items-center gap-2 text-white s">
+          <QrCode className="h-5 w-5" />
+          All QR Code
+        </span>
+      )}
     </Button>
   );
 }

@@ -5,71 +5,65 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter, useParams } from "next/navigation";
-import { getAssignToId, updateAssignTo } from "@/hooks/useAssign";
-import type { AssignData } from "@/types/assignto/model";
-import { ArrowLeft } from "lucide-react";
+import {
+  getTypeById,
+  updateType,
+} from "@/hooks/useTypes";
+import type { TypeData } from "@/types/type/model";
+import { ArrowLeft } from 'lucide-react';
 
-function EditSupervisorPage() {
+function EditTypePage() {
   const router = useRouter();
   const params = useParams();
-  const assignToId = params.id as string;
+  const typeId = params.id as string;
 
-  const [assignTo, setAssignTo] = useState<AssignData | null>(null);
+  const [type, setType] = useState<TypeData | null>(null);
   const [name, setName] = useState("");
-  const [user, setUser] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Load the specific branch data
+  // Load the specific type data
   useEffect(() => {
-    const loadAssignTo = async () => {
-      if (assignToId) {
+    const loadType = async () => {
+      if (typeId) {
         try {
-          const assignToData = await getAssignToId(Number(assignToId));
-          setAssignTo(assignToData);
-          setName(assignToData.name);
-          setUser(assignToData.telegram_username);
+          const typeData = await getTypeById(Number(typeId));
+          setType(typeData);
+          setName(typeData.name);
           setLoading(false);
+
+          console.log(typeData);
         } catch (error) {
-          console.error("Error loading assign:", error);
+          console.error("Error loading type:", error);
           setLoading(false);
         }
       }
     };
 
-    loadAssignTo();
-  }, [assignToId]);
+    loadType();
+  }, [typeId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!assignTo) return;
-
+    if (!type) return;
+    
     setIsSubmitting(true);
 
     try {
-      await updateAssignTo(assignTo.id, {
-        name: name,
-        telegram_username: user,
-      });
-      // Navigate back to branches page
-      router.push("/supervisor");
+      await updateType(type.id, {name} );
+      // Navigate back to type page
+      router.push('/type');
     } catch (error) {
-      console.error("Error updating assign:", error);
+      console.error("Error updating type:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleCancel = () => {
-    router.push("/supervisor");
+    router.push('/type');
   };
 
   if (loading) {
@@ -77,18 +71,18 @@ function EditSupervisorPage() {
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading supervisor...</p>
+          <p>Loading type...</p>
         </div>
       </div>
     );
   }
 
-  if (!assignTo) {
+  if (!type) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center">
         <div className="text-center">
-          <p className="text-red-500 mb-4">Branch not found</p>
-          <Button onClick={handleCancel}>Back to Branches</Button>
+          <p className="text-red-500 mb-4">Type not found</p>
+          <Button onClick={handleCancel}>Back to Types</Button>
         </div>
       </div>
     );
@@ -102,35 +96,24 @@ function EditSupervisorPage() {
             <div className="flex mb-3">
               <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
             </div>
-            {/* Edit Branch Form */}
+            {/* Edit Type Form */}
             <Card>
               <CardHeader>
-                <CardTitle>Edit AssignTo {assignTo.id}</CardTitle>
+                <CardTitle>Edit Type: {type.name}</CardTitle>
                 <CardDescription>
-                  Update the branch details below.
+                  Update the type details below.
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Branch Name */}
+                  {/* Type Name */}
                   <div className="space-y-2">
-                    <Label htmlFor="name">Supervisor Name</Label>
+                    <Label htmlFor="name">Type Name</Label>
                     <Input
                       id="name"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter Supervisor name"
-                      required
-                    />
-                  </div>
-                  {/* Telegram */}
-                  <div className="space-y-2">
-                    <Label htmlFor="user">Telegram Username</Label>
-                    <Input
-                      id="user"
-                      value={user}
-                      onChange={(e) => setUser(e.target.value)}
-                      placeholder="Enter Supervisor name"
+                      placeholder="Enter type name"
                       required
                     />
                   </div>
@@ -147,10 +130,10 @@ function EditSupervisorPage() {
                     </Button>
                     <Button
                       type="submit"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || !name?.trim()}
                       className="text-white"
                     >
-                      {isSubmitting ? "Updating..." : "Update Branch"}
+                      {isSubmitting ? "Updating..." : "Update Type"}
                     </Button>
                   </div>
                 </form>
@@ -163,4 +146,4 @@ function EditSupervisorPage() {
   );
 }
 
-export default EditSupervisorPage;
+export default EditTypePage;

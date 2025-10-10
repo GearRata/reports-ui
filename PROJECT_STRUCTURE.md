@@ -54,6 +54,12 @@ project_test/
 │   │   │   ├── loading.tsx    # Loading state
 │   │   │   ├── error.tsx      # Error boundary
 │   │   │   └── page.tsx       # Supervisors list page
+│   │   ├── type/              # Problem Type management pages
+│   │   │   ├── create/        # Create new type page
+│   │   │   ├── edit/[id]/     # Edit type by ID page
+│   │   │   ├── loading.tsx    # Loading state
+│   │   │   ├── error.tsx      # Error boundary
+│   │   │   └── page.tsx       # Types list page
 │   │   └── tasks/             # Task/Problem management pages
 │   │       ├── chat/          # Task chat/progress tracking
 │   │       │   ├── admin/[id]/    # Admin chat view
@@ -113,12 +119,13 @@ project_test/
 │   │   ├── dialog-form.tsx    # Report submission form
 │   │   └── success.tsx        # Success notification
 │   ├── tables/                # Data table components
-│   │   ├── AccountsTable.tsx  # Accounts data table
-│   │   ├── BranchesTable.tsx  # Branches data table
-│   │   ├── DepartmentsTable.tsx # Departments data table
-│   │   ├── IPPhonesTable.tsx  # IP Phones data table
-│   │   ├── ProgramsTable.tsx  # Programs data table
-│   │   └── TasksTable.tsx     # Tasks data table
+│   │   ├── branches-table.tsx  # Branches data table
+│   │   ├── departments-table.tsx # Departments data table
+│   │   ├── ip-phones-table.tsx  # IP Phones data table
+│   │   ├── programs-table.tsx  # Programs data table
+│   │   ├── supervisor-table.tsx # Supervisors data table
+│   │   ├── tasks-new-table.tsx  # Tasks data table
+│   │   └── type-table.tsx      # Problem Types data table
 │   ├── ui/                    # shadcn/ui components (53 components)
 │   │   ├── accordion.tsx      # Accordion component
 │   │   ├── alert.tsx          # Alert component
@@ -138,7 +145,7 @@ project_test/
 │   ├── useAccount.ts         # 🔄 User account management API
 │   ├── useAssign.ts          # 🔄 Supervisor assignment API
 │   ├── useBranches.ts        # 🔄 Branch CRUD API
-│   ├── useChat.ts            # 🔄 Task progress/chat API
+│   ├── useChats.ts           # 🔄 Task progress/chat API
 │   ├── useDashboard.ts       # 🔄 Dashboard analytics API
 │   ├── useDepartments.ts     # 🔄 Department CRUD API
 │   ├── usePhones.ts          # 🔄 IP Phone CRUD API
@@ -146,7 +153,7 @@ project_test/
 │   ├── useQrPdf.ts           # 🔄 QR code PDF generation API
 │   ├── useSolution.ts        # 🔄 Solution management API
 │   ├── useTasks.ts           # 🔄 Task/Problem management API
-│   └── useType.ts            # 🔄 Problem type API
+│   └── useTypes.ts           # 🔄 Problem type management API
 │
 ├── lib/                       # Utility functions
 │   ├── branch-chart-utils.ts # Chart utility functions
@@ -193,7 +200,7 @@ project_test/
 │   ├── taskstate/            # Task state types
 │   │   └── model.ts
 │   ├── type/                 # Problem type types
-│   │   └── model.ts
+│   │   └── model.ts          # TypeData, AddType, UpdateType interfaces
 │   ├── entities.ts           # Core entity interfaces
 │   ├── pagination.ts         # Pagination interfaces
 │   └── user.ts               # User interface
@@ -233,7 +240,7 @@ project_test/
 ### 2. API Layer (Migrated to `hooks/`)
 - **Location**: All API hooks moved from `app/api/` to `hooks/` directory
 - **Custom Hooks**: Each file exports custom React hooks and API functions
-- **Naming Convention**: `use[Entity].ts` (e.g., `useTasks.ts`, `useBranches.ts`)
+- **Naming Convention**: `use[Entity].ts` or `use[Entity]s.ts` (e.g., `useTasks.ts`, `useBranches.ts`, `useTypes.ts`)
 - **Consistent Pattern**: All use `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/` base URL
 - **Type Safety**: Strongly typed with TypeScript interfaces
 - **Features**: Pagination support, AbortController for cancellation, error handling
@@ -385,6 +392,7 @@ The `middleware.ts` file implements authentication:
 | `/department` | Department management | Yes (Admin) |
 | `/phone` | IP Phone management | Yes (Admin) |
 | `/program` | Program management | Yes (Admin) |
+| `/type` | Problem Type management | Yes (Admin) |
 | `/supervisor` | Supervisor assignments | Yes (Admin) |
 | `/account` | User account management | Yes (Admin) |
 | `/reports` | Public problem reporting | No |
@@ -442,6 +450,6 @@ The `middleware.ts` file implements authentication:
 
 ---
 
-*Last Updated: 2025-10-01*  
+*Last Updated: 2025-10-10*  
 *Version: 0.1.9*  
 *Architecture: Next.js 15 App Router with Shared Layouts*

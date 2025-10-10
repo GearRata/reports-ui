@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useChatID } from "@/hooks/useChats";
 import { useParams } from "next/navigation";
-import { Send, X, MoreHorizontal, Pencil, Trash, Wrench } from "lucide-react";
+import { Send, X, MoreHorizontal, Pencil, Trash, Wrench, ArrowLeft  } from "lucide-react";
 import CameraButton from "@/components/images/CameraButton";
 import GalleryButton from "@/components/images/GalleryButton";
 import { addChatNew, updateChat, deleteChat } from "@/hooks/useChats";
@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Badge } from "../ui/badge";
+import { useRouter } from "next/navigation";
 
 export default function ChatAdminPage() {
+  const router = useRouter();
   const taskId = Number(useParams().id);
   const { Chat, loading, error, refreshChat } = useChatID(taskId);
   const [input, setInput] = useState("");
@@ -330,9 +332,12 @@ export default function ChatAdminPage() {
     );
 
   return (
-        <div className="flex items-center justify-center min-h-screen p-2">
-          <div className="w-full max-w-3xl rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between border-b px-4 py-3">
+        <div className="flex flex-col items-center justify-center min-h-screen p-2 gap-2 ">
+          <div className="flex w-full max-w-3xl ">
+            <Button variant="outline" onClick={() => router.back()}><ArrowLeft/>Back</Button>
+          </div>
+          <div className="w-full max-w-3xl rounded-2xl border bg-white  dark:bg-zinc-900 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between border-b  px-4 py-3">
               <div className="flex-cols gap-2 text-lg font-semibold ">
                 <div className="flex pb-3">{ticketNo}</div>
                 <div className="flex gap-2">

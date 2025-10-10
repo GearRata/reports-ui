@@ -473,7 +473,7 @@ export default function DialogForm() {
       if (!response.ok) {
         const txt = await response.text();
         console.error("Create failed:", response.status, txt);
-        toast.error("ไม่สามารถแจ้งปัญหาได้ กรุณาลองใหม่อีกครั้ง");
+        toast.error("กรุณากรอกข้อมูลให้ครบถ้วน");
         return;
       }
 
@@ -569,7 +569,6 @@ export default function DialogForm() {
                   <Input
                     type="text"
                     id="report_by"
-                    placeholder="นายเมาคลี ล่าสัตว์ ฆ่าแชร์คลาน ถลกหนังมันออกมาหมด"
                     value={reportby}
                     onChange={(e) => setReportBy(e.target.value)}
                     className={cn(
